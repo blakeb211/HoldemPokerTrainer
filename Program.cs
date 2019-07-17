@@ -13,6 +13,7 @@ namespace PokerConsoleApp
         static void Main(string[] args)
         {
             var d = new Deck();
+            var h = new Hand();
             d.buildDeck();
             d.shuffleDeck();
             d.printDeck();
