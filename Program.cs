@@ -4,7 +4,7 @@
  *          a) the odds of winning a game texas holdem for a given set of hole cards.
  *                   
  * Input:                number of players
- * Output:               odds of winning for each set of hole cards
+ * Output:               odds of winning and tieing for each set of hole cards
  */
 namespace PokerConsoleApp
 {
