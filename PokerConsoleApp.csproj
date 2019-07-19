@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Evaluator.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="poker-hand-rankings.pdf" />
   </ItemGroup>
 
