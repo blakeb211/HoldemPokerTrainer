@@ -23,7 +23,7 @@ namespace PokerConsoleApp
             Card c = new Card();
             c.setRank(this.deck[0].getRank());
             c.setSuit(this.deck[0].getSuit());
-            this.deck.Remove(c);
+            this.deck.RemoveAt(0);
             this.cardCount--;
             return c;
         }
@@ -45,6 +45,7 @@ namespace PokerConsoleApp
                 if (count % 4 == 0)
                     Console.Write("\n");
             }
+            Console.Write("\n");
         }
 
         public void shuffleDeck()
