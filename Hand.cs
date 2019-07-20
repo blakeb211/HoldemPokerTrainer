@@ -15,8 +15,9 @@ namespace PokerConsoleApp
 {
     class Hand
     {
-        public enum handtype
+        public enum HandType
         {
+            NotAssignedYet = 9,
             StraightFlush = 8,
             FourOfAKind = 7,
             FullHouse = 6,
@@ -28,16 +29,21 @@ namespace PokerConsoleApp
             HighCard = 0
         };
         private List<Card> cards = new List<Card> { };
+        private HandType hand_type = new HandType();
         public Hand(List<Card> c)
         {
             if (c.Count != 5)
                 throw new Exception("Something other than a 5-Card List was passed to the Hand() constructor");
             cards.Capacity = 5;
+            this.hand_type = HandType.NotAssignedYet;
             foreach (var ci in c)
                 cards.Add(ci);
 
         }
-    
+        public HandType getHandType()
+        {
+            return this.hand_type;
+        }
         public void addCard(Card c)
         {
             if (cards.Count == 5)
@@ -52,26 +58,85 @@ namespace PokerConsoleApp
             }
             Console.Write("\n");
         }
-        public void evaluateHandtype ()
+        public void evaluateHandtype()
         {
+            const int HEART = 1;
+            const int DIAMOND = 2;
+            const int SPADE = 3;
+            const int CLUB = 4;
             // examples of handtypes are FourOfAKind, Straight, etc
             // at end set this.handtype =  the handtype
             // evaluate from top type down, like check straight and flush.
             // start by counting how many of each suit, and how many of each rank.
 
-            int[] rankcount = new int[13];  // let 0 index be a waste to make code more clear.
-            int[] suitcount = new int[4];   // let 0 be waste, 1 = hearts, 2 = diamonds, 3 = spade, 4 = club
+            int[] rankcount = new int[15];  // let 0 and 1 indices be a waste to make code more clear. 
+            int[] suitcount = new int[5];   // let 0 be waste, 1 = hearts, 2 = diamonds, 3 = spade, 4 = club
+            // zero the counts
+            for (int i = 1; i < 5; i++)
+                suitcount[i] = 0;
 
-            // count the rank
-            //  ?? how to interate over a type
-            foreach(var ci in this.cards)
+            for (int i = 2; i < 15; i++)
+                rankcount[i] = 0;
+
+            suitcount[0] = -1;
+            rankcount[0] = rankcount[1] = -1;
+            // count the number of cards with each suit and rank
+
+            foreach (var ci in this.cards)
             {
-                Card.Suit s_h = new Card.Suit();
-                s_h = Card.Suit.Heart;
-                if (ci.getSuit() == s_h)
-                    suitcount[1]++;
+                // tally up the number of each suit
+                if (ci.getSuit() == Card.Suit.Heart)
+                    suitcount[HEART]++;
+                else if (ci.getSuit() == Card.Suit.Diamond)
+                    suitcount[DIAMOND]++;
+                else if (ci.getSuit() == Card.Suit.Spade)
+                    suitcount[SPADE]++;
+                else if (ci.getSuit() == Card.Suit.Club)
+                    suitcount[CLUB]++;
+                // tally up the number of each rank
+                int x = (int)ci.getRank();
+                rankcount[x]++;
             }
-            Console.WriteLine($"{suitcount[1]} hearts");
+            // print out number of each suit
+            Console.WriteLine($"\nHearts: {suitcount[HEART]}, Diamonds: {suitcount[DIAMOND]}, Spades: {suitcount[SPADE]}, Clubs: {suitcount[CLUB]}\n");
+            // print out number of each rank
+            for(int r_i = 2; r_i < 15; r_i++ )
+            {
+                if (rankcount[r_i] != 0) // only print ranks with non-zero counts
+                {
+                    switch(r_i)
+                    {
+                        case 2:
+                        case 3:
+                        case 4:
+                        case 5:
+                        case 6:
+                        case 7:
+                        case 8:
+                        case 9:
+                        case 10:
+                            Console.Write($" # of {r_i} cards: {rankcount[r_i]} ,");
+                            break;
+                        case 11:
+                            Console.Write($" # of Jack cards: {rankcount[r_i]} ,");
+                            break;
+                        case 12:
+                            Console.Write($" # of Queen cards: {rankcount[r_i]} ,");
+                            break;
+                        case 13:
+                            Console.Write($" # of King cards: {rankcount[r_i]} ,");
+                            break;
+                        case 14:
+                            Console.Write($" # of Ace cards: {rankcount[r_i]} ,");
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                
+            }
+            Console.WriteLine("");
+
         }
     }
 }

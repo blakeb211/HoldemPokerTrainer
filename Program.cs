@@ -4,9 +4,11 @@ using System.Collections.Generic;
  * Purpose: This program draws a random hand from the deck and displays the handtype. 
  *          Ultimately, it will use monte carlo to calculate the odds of winning for different hole cards. 
  * Input:   None. Player number is fixed at 4.
- * Output:  Hand types, odds of winning for each different set of hole cards.             
+ * Output:  Print four hands, their hand types, and who wins           
  *
  *Todo: Add evaluator method
+ *             Identify and print out correct hand type, e.g. four 5s and a queen kicker, full house, 3s over 2s. 
+ *             
  *      Add testing 
  * 
  */
@@ -19,7 +21,6 @@ namespace PokerConsoleApp
             var d = new Deck();
             d.buildDeck();
             d.shuffleDeck();
-            d.printDeck();
             Card c1 = d.removeCard();
             Card c2 = d.removeCard();
             Card c3 = d.removeCard();
