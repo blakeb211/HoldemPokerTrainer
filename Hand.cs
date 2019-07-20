@@ -15,7 +15,7 @@ namespace PokerConsoleApp
 {
     class Hand
     {
-        public enum handrank
+        public enum handtype
         {
             StraightFlush = 8,
             FourOfAKind = 7,
@@ -51,6 +51,27 @@ namespace PokerConsoleApp
                 Console.Write($"{c.getRank()}-{c.getSuit()} ");
             }
             Console.Write("\n");
+        }
+        public void evaluateHandtype ()
+        {
+            // examples of handtypes are FourOfAKind, Straight, etc
+            // at end set this.handtype =  the handtype
+            // evaluate from top type down, like check straight and flush.
+            // start by counting how many of each suit, and how many of each rank.
+
+            int[] rankcount = new int[13];  // let 0 index be a waste to make code more clear.
+            int[] suitcount = new int[4];   // let 0 be waste, 1 = hearts, 2 = diamonds, 3 = spade, 4 = club
+
+            // count the rank
+            //  ?? how to interate over a type
+            foreach(var ci in this.cards)
+            {
+                Card.Suit s_h = new Card.Suit();
+                
+
+                rankcount[x]++;
+            }
+            Console.WriteLine($"{rankcount[1]} twos, {rankcount[2]} threes");
         }
     }
 }

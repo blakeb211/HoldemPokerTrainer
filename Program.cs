@@ -27,6 +27,7 @@ namespace PokerConsoleApp
             Card c5 = d.removeCard();
             Hand h = new Hand(new List<Card> { c1, c2, c3, c4, c5 });
             h.printHand();
+            h.evaluateHandtype();
         }
     }
 }
