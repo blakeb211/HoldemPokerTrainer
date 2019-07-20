@@ -40,17 +40,17 @@ namespace PokerConsoleApp
                 cards.Add(ci);
 
         }
-        public HandType getHandType()
+        public HandType GetHandType()
         {
             return this.hand_type;
         }
-        public void addCard(Card c)
+        public void AddCard(Card c)
         {
             if (cards.Count == 5)
                 throw new Exception("Can't add a card to a hand that already has 5 cards!");
             cards.Add(c);
         }
-        public void printHand()
+        public void PrintHand()
         {
             foreach (var c in this.cards)
             {
@@ -58,10 +58,10 @@ namespace PokerConsoleApp
             }
             Console.Write("\n");
         }
-        public bool isThisAStraight(int[] rankcount)
+        public bool IsThisAStraight(int[] rankcount)
         {
             if (rankcount.Length != 15)
-                throw new Exception("The array passed to isThisAStraight doesn't have 15 elements!");
+                throw new Exception("The array passed to IsThisAStraight doesn't have 15 elements!");
             // count single cards that are in order
             int cards_in_a_row_counter = 0;
             int last_card = -2;
@@ -85,7 +85,22 @@ namespace PokerConsoleApp
             else
                 return false;
         }
-        public void evaluateHandtype()
+        public bool IsThisAFlush(int[] suitcount)
+        {
+            if (suitcount.Length != 5)
+                throw new Exception("The array passed to IsThisAFlush doesn't have 5 elements!");
+
+            bool flush_flag = false;
+            // check for 5 cards of a single suit
+            for (int i = 1; i < 5; i++)
+            {
+                if (suitcount[i] == 5)
+                    flush_flag = true;
+            }
+
+            return flush_flag;
+        }
+        public void EvaluateHandtype()
         {
             // examples of handtypes are FourOfAKind, Straight, etc
             // at end set this.handtype =  the handtype
@@ -162,7 +177,7 @@ namespace PokerConsoleApp
                 
             }
             Console.WriteLine("");
-
+            Console.WriteLine("");
             /* ALGORITHM TO IDENTIFY WHAT HAND WE HAVE
              * 
              * Start out by writing methods for flush and straight
@@ -177,9 +192,11 @@ namespace PokerConsoleApp
              *  OnePair
              *  HighCard
              */
-            if (this.isThisAStraight(rankcount))
+            if (this.IsThisAStraight(rankcount))
                 Console.WriteLine("This is a straight!");
 
+            if (this.IsThisAFlush(suitcount))
+                Console.WriteLine("This is a flush!");
 
         }
     }

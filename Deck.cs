@@ -13,12 +13,12 @@ namespace PokerConsoleApp
             this.cardCount = 0;
             this.deck = new List<Card> { };
         }
-        public void addCard(Card c)
+        public void AddCard(Card c)
         {
             deck.Add(c);
             this.cardCount++;
         }
-        public Card removeCard()
+        public Card RemoveCard()
         {
             Card c = new Card();
             c.SetRank(this.deck[0].GetRank());
@@ -27,11 +27,11 @@ namespace PokerConsoleApp
             this.cardCount--;
             return c;
         }
-        public int getCount()
+        public int GetCount()
         {
             return this.cardCount;
         }
-        public void printDeck()
+        public void PrintDeck()
         {
             int count = 0;
             foreach(var c in deck)
@@ -48,7 +48,7 @@ namespace PokerConsoleApp
             Console.Write("\n");
         }
 
-        public void shuffleDeck()
+        public void ShuffleDeck()
         {
             Card temp = new Card();
             for (int i = 0; i < 5000; i++)
@@ -66,7 +66,7 @@ namespace PokerConsoleApp
                 this.deck[rand2].SetSuit(temp.GetSuit());
             }
         }
-        public void buildDeck()
+        public void BuildDeck()
         {
             foreach(Card.Suit s in Enum.GetValues(typeof(Card.Suit)))
             {
@@ -75,7 +75,7 @@ namespace PokerConsoleApp
                     Card c = new Card();
                     c.SetRank(r);
                     c.SetSuit(s);
-                    this.addCard(c);
+                    this.AddCard(c);
                 }
             }
             

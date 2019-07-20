@@ -19,24 +19,24 @@ namespace PokerConsoleApp
         static void Main(string[] args)
         {
             var d = new Deck();
-            d.buildDeck();
-            d.shuffleDeck();
-            Card c1 = new Card(Card.Suit.Heart, Card.Rank.ACE);
-            Card c2 = new Card(Card.Suit.Club, Card.Rank.TWO);
-            Card c3 = new Card(Card.Suit.Diamond, Card.Rank.THREE);
-            Card c4 = new Card(Card.Suit.Club, Card.Rank.FOUR);
-            Card c5 = new Card(Card.Suit.Club, Card.Rank.FIVE);
+            d.BuildDeck();
+            d.ShuffleDeck();
+            Card c1 = new Card(Card.Suit.Diamond, Card.Rank.ACE);
+            Card c2 = new Card(Card.Suit.Diamond, Card.Rank.TWO);
+            Card c3 = new Card(Card.Suit.Diamond, Card.Rank.QUEEN);
+            Card c4 = new Card(Card.Suit.Diamond, Card.Rank.FOUR);
+            Card c5 = new Card(Card.Suit.Diamond, Card.Rank.FIVE);
             
             
            
-            //Card c2 = d.removeCard();
+            //Card c2 = d.RemoveCard();
 
-            //Card c3 = d.removeCard();
-            //Card c4 = d.removeCard();
-            //Card c5 = d.removeCard();
+            //Card c3 = d.RemoveCard();
+            //Card c4 = d.RemoveCard();
+            //Card c5 = d.RemoveCard();
             Hand h = new Hand(new List<Card> { c1, c2, c3, c4, c5 });
-            h.printHand();
-            h.evaluateHandtype();
+            h.PrintHand();
+            h.EvaluateHandtype();
         }
     }
 }
