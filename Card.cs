@@ -11,19 +11,28 @@ namespace PokerConsoleApp
             NINE, TEN, JACK, QUEEN, KING, ACE };
         private Suit suit;
         private Rank rank;
-        public void setRank(Rank _rank)
+        public Card(Card.Suit cs, Card.Rank cr)
+        {
+            this.suit = cs;
+            this.rank = cr;
+        }
+        public Card()
+        {
+
+        }
+        public void SetRank(Rank _rank)
         {
             this.rank = _rank;
         }
-        public Rank getRank()
+        public Rank GetRank()
         {
             return this.rank;
         }
-        public void setSuit(Suit _suit)
+        public void SetSuit(Suit _suit)
         {
             this.suit = _suit;
         }
-        public Suit getSuit()
+        public Suit GetSuit()
         {
             return this.suit;
         }

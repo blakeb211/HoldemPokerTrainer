@@ -54,30 +54,55 @@ namespace PokerConsoleApp
         {
             foreach (var c in this.cards)
             {
-                Console.Write($"{c.getRank()}-{c.getSuit()} ");
+                Console.Write($"{c.GetRank()}-{c.GetSuit()} ");
             }
             Console.Write("\n");
         }
+        public bool isThisAStraight(int[] rankcount)
+        {
+            if (rankcount.Length != 15)
+                throw new Exception("The array passed to isThisAStraight doesn't have 15 elements!");
+            // count single cards that are in order
+            int cards_in_a_row_counter = 0;
+            int last_card = -2;
+            for (int i = 2; i < 15; i++)
+            {
+                if (rankcount[i] == 1)
+                {
+                    if (last_card == -2 || (i - last_card) == 1)
+                    {
+                        cards_in_a_row_counter++;
+                        last_card = i;
+                    }
+                }
+            }
+            // check for Ace, Two, Three, Four, Five straight
+            if (rankcount[(int)Card.Rank.ACE] == 1 && rankcount[(int)Card.Rank.TWO] == 1 && rankcount[(int)Card.Rank.THREE] == 1 && rankcount[(int)Card.Rank.FOUR] == 1 && rankcount[(int)Card.Rank.FIVE] == 1)
+                cards_in_a_row_counter = 5;
+
+            if (cards_in_a_row_counter == 5)
+                return true;
+            else
+                return false;
+        }
         public void evaluateHandtype()
         {
-            const int HEART = 1;
-            const int DIAMOND = 2;
-            const int SPADE = 3;
-            const int CLUB = 4;
             // examples of handtypes are FourOfAKind, Straight, etc
             // at end set this.handtype =  the handtype
             // evaluate from top type down, like check straight and flush.
             // start by counting how many of each suit, and how many of each rank.
-
+            const int HEART = 1;
+            const int DIAMOND = 2;
+            const int SPADE = 3;
+            const int CLUB = 4;
             int[] rankcount = new int[15];  // let 0 and 1 indices be a waste to make code more clear. 
             int[] suitcount = new int[5];   // let 0 be waste, 1 = hearts, 2 = diamonds, 3 = spade, 4 = club
             // zero the counts
             for (int i = 1; i < 5; i++)
                 suitcount[i] = 0;
-
             for (int i = 2; i < 15; i++)
                 rankcount[i] = 0;
-
+            // mark the unused indices
             suitcount[0] = -1;
             rankcount[0] = rankcount[1] = -1;
             // count the number of cards with each suit and rank
@@ -85,18 +110,19 @@ namespace PokerConsoleApp
             foreach (var ci in this.cards)
             {
                 // tally up the number of each suit
-                if (ci.getSuit() == Card.Suit.Heart)
+                if (ci.GetSuit() == Card.Suit.Heart)
                     suitcount[HEART]++;
-                else if (ci.getSuit() == Card.Suit.Diamond)
+                else if (ci.GetSuit() == Card.Suit.Diamond)
                     suitcount[DIAMOND]++;
-                else if (ci.getSuit() == Card.Suit.Spade)
+                else if (ci.GetSuit() == Card.Suit.Spade)
                     suitcount[SPADE]++;
-                else if (ci.getSuit() == Card.Suit.Club)
+                else if (ci.GetSuit() == Card.Suit.Club)
                     suitcount[CLUB]++;
                 // tally up the number of each rank
-                int x = (int)ci.getRank();
+                int x = (int)ci.GetRank();
                 rankcount[x]++;
             }
+
             // print out number of each suit
             Console.WriteLine($"\nHearts: {suitcount[HEART]}, Diamonds: {suitcount[DIAMOND]}, Spades: {suitcount[SPADE]}, Clubs: {suitcount[CLUB]}\n");
             // print out number of each rank
@@ -136,6 +162,24 @@ namespace PokerConsoleApp
                 
             }
             Console.WriteLine("");
+
+            /* ALGORITHM TO IDENTIFY WHAT HAND WE HAVE
+             * 
+             * Start out by writing methods for flush and straight
+             * 
+             *  StraightFlush
+             *  FourOfAKind
+             *  FullHouse
+             *  Flush
+             *  Straight
+             *  ThreeOfAKind
+             *  TwoPair
+             *  OnePair
+             *  HighCard
+             */
+            if (this.isThisAStraight(rankcount))
+                Console.WriteLine("This is a straight!");
+
 
         }
     }

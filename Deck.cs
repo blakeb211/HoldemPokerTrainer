@@ -21,8 +21,8 @@ namespace PokerConsoleApp
         public Card removeCard()
         {
             Card c = new Card();
-            c.setRank(this.deck[0].getRank());
-            c.setSuit(this.deck[0].getSuit());
+            c.SetRank(this.deck[0].GetRank());
+            c.SetSuit(this.deck[0].GetSuit());
             this.deck.RemoveAt(0);
             this.cardCount--;
             return c;
@@ -37,8 +37,8 @@ namespace PokerConsoleApp
             foreach(var c in deck)
             {
                 ++count;
-                String message = $"{c.getRank()} of {c.getSuit()}";
-                Console.Write($"{c.getRank()} of {c.getSuit()}");
+                String message = $"{c.GetRank()} of {c.GetSuit()}";
+                Console.Write($"{c.GetRank()} of {c.GetSuit()}");
                 // add spaces after printing card
                 for (int i = 0; i < 20 - message.Length; i++)
                     Console.Write(" ");
@@ -58,12 +58,12 @@ namespace PokerConsoleApp
                 Random random_number2 = new Random();
                 int rand1 = random_number1.Next(0, 52);
                 int rand2 = random_number2.Next(0, 52);
-                temp.setRank(this.deck[rand1].getRank());
-                temp.setSuit(this.deck[rand1].getSuit());
-                this.deck[rand1].setRank(this.deck[rand2].getRank());
-                this.deck[rand1].setSuit(this.deck[rand2].getSuit());
-                this.deck[rand2].setRank(temp.getRank());
-                this.deck[rand2].setSuit(temp.getSuit());
+                temp.SetRank(this.deck[rand1].GetRank());
+                temp.SetSuit(this.deck[rand1].GetSuit());
+                this.deck[rand1].SetRank(this.deck[rand2].GetRank());
+                this.deck[rand1].SetSuit(this.deck[rand2].GetSuit());
+                this.deck[rand2].SetRank(temp.GetRank());
+                this.deck[rand2].SetSuit(temp.GetSuit());
             }
         }
         public void buildDeck()
@@ -73,8 +73,8 @@ namespace PokerConsoleApp
                 foreach (Card.Rank r in Enum.GetValues(typeof(Card.Rank)))
                 {
                     Card c = new Card();
-                    c.setRank(r);
-                    c.setSuit(s);
+                    c.SetRank(r);
+                    c.SetSuit(s);
                     this.addCard(c);
                 }
             }
