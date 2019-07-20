@@ -67,11 +67,11 @@ namespace PokerConsoleApp
             foreach(var ci in this.cards)
             {
                 Card.Suit s_h = new Card.Suit();
-                
-
-                rankcount[x]++;
+                s_h = Card.Suit.Heart;
+                if (ci.getSuit() == s_h)
+                    suitcount[1]++;
             }
-            Console.WriteLine($"{rankcount[1]} twos, {rankcount[2]} threes");
+            Console.WriteLine($"{suitcount[1]} hearts");
         }
     }
 }
