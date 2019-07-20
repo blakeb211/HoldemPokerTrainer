@@ -58,7 +58,7 @@ namespace PokerConsoleApp
             }
             Console.Write("\n");
         }
-        public bool IsThisAStraight(int[] rankcount)
+        private bool IsThisAStraight(int[] rankcount)
         {
             if (rankcount.Length != 15)
                 throw new Exception("The array passed to IsThisAStraight doesn't have 15 elements!");
@@ -85,7 +85,7 @@ namespace PokerConsoleApp
             else
                 return false;
         }
-        public bool IsThisAFlush(int[] suitcount)
+        private bool IsThisAFlush(int[] suitcount)
         {
             if (suitcount.Length != 5)
                 throw new Exception("The array passed to IsThisAFlush doesn't have 5 elements!");
@@ -100,28 +100,100 @@ namespace PokerConsoleApp
 
             return flush_flag;
         }
+        private bool IsThisFourOfAKind(int[] rankcount)
+        {
+            bool ret_flag = false;
+            for(int i = 2; i < 15; i++)
+            {
+                if (rankcount[i] == 4)
+                    ret_flag = true;
+            }
+            return ret_flag;
+        }
+        private bool IsThisAFullHouse(int[] rankcount)
+        {
+            bool ret_flag = false;
+            bool has_a_set_of_three = false;
+            bool has_a_pair = false;
+            int pair_rank = -1; // store the rank of the pair found
+            int set_of_three_rank = -1; // store the rank of the three of a kind found
+
+            for (int i = 2; i < 15; i++)
+            {
+                if(rankcount[i] == 3)
+                {
+                    set_of_three_rank = i;
+                    has_a_set_of_three = true;
+                }
+                if (rankcount[i] == 2)
+                {
+                    pair_rank = i;
+                    has_a_pair = true;
+                }
+            }
+            if (has_a_pair && has_a_set_of_three)
+                ret_flag = true;
+
+            return ret_flag;
+        }
+        private bool IsThisThreeOfAKind(int[] rankcount)
+        {
+            // note that this method would return false positive on a FourOfAKind hand or FullHouse 
+            // if run by itself outside of the evaluate hand method
+            bool ret_flag = false;
+            for (int i = 2; i < 15; i++)
+            {
+                if (rankcount[i] == 3)
+                    ret_flag = true;
+            }
+            return ret_flag;
+        }
+        private bool IsThisTwoPair(int[] rankcount)
+        {
+            bool ret_flag = false;
+            int rank_of_first_pair = -1;
+            int rank_of_second_pair = -1;
+            for (int i = 2; i < 15; i++)
+            {
+                if (rankcount[i] == 2 && rank_of_first_pair == -1)
+                {
+                    rank_of_first_pair = i;
+                    continue;
+                }
+                if (rankcount[i] == 2 && rank_of_first_pair != -1)
+                {
+                    rank_of_second_pair = i;
+                    continue;
+                }
+            }
+            if (rank_of_first_pair != -1 && rank_of_second_pair != -1 && rank_of_first_pair != rank_of_second_pair)
+                ret_flag = true;
+            return ret_flag;
+        }
         public void EvaluateHandtype()
         {
-            // examples of handtypes are FourOfAKind, Straight, etc
-            // at end set this.handtype =  the handtype
-            // evaluate from top type down, like check straight and flush.
-            // start by counting how many of each suit, and how many of each rank.
+            // Examples of handtypes are FourOfAKind, Straight, etc
+            // At end set this.handtype =  the handtype
+            // Evaluate from top type down, like check straight and flush.
+            // Start by counting how many of each suit, and how many of each rank.
+
             const int HEART = 1;
             const int DIAMOND = 2;
             const int SPADE = 3;
             const int CLUB = 4;
             int[] rankcount = new int[15];  // let 0 and 1 indices be a waste to make code more clear. 
             int[] suitcount = new int[5];   // let 0 be waste, 1 = hearts, 2 = diamonds, 3 = spade, 4 = club
-            // zero the counts
-            for (int i = 1; i < 5; i++)
-                suitcount[i] = 0;
-            for (int i = 2; i < 15; i++)
-                rankcount[i] = 0;
-            // mark the unused indices
-            suitcount[0] = -1;
-            rankcount[0] = rankcount[1] = -1;
+            // zero the counts and mark the unused indices in arrays 
+            {
+                for (int i = 1; i < 5; i++)
+                    suitcount[i] = 0;
+                for (int i = 2; i < 15; i++)
+                    rankcount[i] = 0;
+                // mark the unused indices
+                suitcount[0] = -1;
+                rankcount[0] = rankcount[1] = -1;
+            }
             // count the number of cards with each suit and rank
-
             foreach (var ci in this.cards)
             {
                 // tally up the number of each suit
@@ -180,7 +252,7 @@ namespace PokerConsoleApp
             Console.WriteLine("");
             /* ALGORITHM TO IDENTIFY WHAT HAND WE HAVE
              * 
-             * Start out by writing methods for flush and straight
+             * Start out by writing methods for flush and straight - done
              * 
              *  StraightFlush
              *  FourOfAKind
@@ -192,13 +264,56 @@ namespace PokerConsoleApp
              *  OnePair
              *  HighCard
              */
-            if (this.IsThisAStraight(rankcount))
-                Console.WriteLine("This is a straight!");
-
-            if (this.IsThisAFlush(suitcount))
-                Console.WriteLine("This is a flush!");
-
+            bool straight_flag = false;
+            bool flush_flag = false;
+            straight_flag = this.IsThisAStraight(rankcount);
+            flush_flag = this.IsThisAFlush(suitcount);
+            
+            // Check for straight flush
+            if (straight_flag == true && flush_flag == true)
+            {
+                this.hand_type = Hand.HandType.StraightFlush;
+                return;
+            }
+            // Check for Four of A Kind
+            if (this.IsThisFourOfAKind(rankcount))
+            {
+                this.hand_type = Hand.HandType.FourOfAKind;
+                return;
+            }
+            // Check for Full House
+            if (this.IsThisAFullHouse(rankcount))
+            {
+                this.hand_type = Hand.HandType.FullHouse;
+                return;
+            }
+            // Check for Flush using flag we set when we checked for straight flush
+            if (flush_flag == true)
+            {
+                this.hand_type = Hand.HandType.Flush;
+                return;
+            }
+            // Check for Straight using flag we set when we checked for straight flush
+            if (straight_flag == true)
+            {
+                this.hand_type = Hand.HandType.Straight;
+                return;
+            }
+            // Check for Three of a kind 
+            if (this.IsThisThreeOfAKind(rankcount))
+            {
+                this.hand_type = Hand.HandType.ThreeOfAKind;
+                return;
+            }
+            // Check for Two Pair
+            if (this.IsThisTwoPair(rankcount))
+            {
+                this.hand_type = Hand.HandType.TwoPair;
+                return;
+            }
         }
+
+        
     }
 }
 

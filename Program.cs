@@ -21,22 +21,67 @@ namespace PokerConsoleApp
             var d = new Deck();
             d.BuildDeck();
             d.ShuffleDeck();
-            Card c1 = new Card(Card.Suit.Diamond, Card.Rank.ACE);
-            Card c2 = new Card(Card.Suit.Diamond, Card.Rank.TWO);
-            Card c3 = new Card(Card.Suit.Diamond, Card.Rank.QUEEN);
-            Card c4 = new Card(Card.Suit.Diamond, Card.Rank.FOUR);
-            Card c5 = new Card(Card.Suit.Diamond, Card.Rank.FIVE);
-            
-            
-           
-            //Card c2 = d.RemoveCard();
+            // Construct a hand to test the EvaluateHandtype() method
 
-            //Card c3 = d.RemoveCard();
-            //Card c4 = d.RemoveCard();
-            //Card c5 = d.RemoveCard();
+            // UN-COMMENT TO TEST STRAIGHT FLUSH
+            //Card c1 = new Card(Card.Suit.Diamond, Card.Rank.SIX);
+            //Card c2 = new Card(Card.Suit.Diamond, Card.Rank.FOUR);
+            //Card c3 = new Card(Card.Suit.Diamond, Card.Rank.THREE);
+            //Card c4 = new Card(Card.Suit.Diamond, Card.Rank.TWO);
+            //Card c5 = new Card(Card.Suit.Diamond, Card.Rank.FIVE);
+            // UN-COMMENT TO TEST STRAIGHT FLUSH WITH A LOW ACE
+            //Card c1 = new Card(Card.Suit.Diamond, Card.Rank.ACE);
+            //Card c2 = new Card(Card.Suit.Diamond, Card.Rank.FOUR);
+            //Card c3 = new Card(Card.Suit.Diamond, Card.Rank.THREE);
+            //Card c4 = new Card(Card.Suit.Diamond, Card.Rank.TWO);
+            //Card c5 = new Card(Card.Suit.Diamond, Card.Rank.FIVE);
+            // UN-COMMENT TO TEST FOUR OF A KIND
+            //Card c1 = new Card(Card.Suit.Club, Card.Rank.FOUR);
+            //Card c2 = new Card(Card.Suit.Spade, Card.Rank.FOUR);
+            //Card c3 = new Card(Card.Suit.Heart, Card.Rank.FOUR);
+            //Card c4 = new Card(Card.Suit.Diamond, Card.Rank.FOUR);
+            //Card c5 = new Card(Card.Suit.Diamond, Card.Rank.TWO);
+            // UN-COMMENT TO TEST FULL HOUSE
+            //Card c1 = new Card(Card.Suit.Club, Card.Rank.FOUR);
+            //Card c2 = new Card(Card.Suit.Spade, Card.Rank.FOUR);
+            //Card c3 = new Card(Card.Suit.Heart, Card.Rank.JACK);
+            //Card c4 = new Card(Card.Suit.Diamond, Card.Rank.JACK);
+            //Card c5 = new Card(Card.Suit.Spade, Card.Rank.JACK);
+            // UN-COMMENT TO TEST FLUSH
+            //Card c1 = new Card(Card.Suit.Club, Card.Rank.FOUR);
+            //Card c2 = new Card(Card.Suit.Club, Card.Rank.NINE);
+            //Card c3 = new Card(Card.Suit.Club, Card.Rank.QUEEN);
+            //Card c4 = new Card(Card.Suit.Club, Card.Rank.TEN);
+            //Card c5 = new Card(Card.Suit.Club, Card.Rank.KING);
+            // UN-COMMENT TO TEST STRAIGHT
+            //Card c1 = new Card(Card.Suit.Club, Card.Rank.FOUR);
+            //Card c2 = new Card(Card.Suit.Club, Card.Rank.FIVE);
+            //Card c3 = new Card(Card.Suit.Diamond, Card.Rank.SIX);
+            //Card c4 = new Card(Card.Suit.Club, Card.Rank.SEVEN);
+            //Card c5 = new Card(Card.Suit.Club, Card.Rank.EIGHT);
+            // UN-COMMENT TO TEST THREE OF A KIND
+            //Card c1 = new Card(Card.Suit.Club, Card.Rank.FOUR);
+            //Card c2 = new Card(Card.Suit.Spade, Card.Rank.FOUR);
+            //Card c3 = new Card(Card.Suit.Diamond, Card.Rank.FIVE);
+            //Card c4 = new Card(Card.Suit.Heart, Card.Rank.FOUR);
+            //Card c5 = new Card(Card.Suit.Club, Card.Rank.EIGHT);
+            // UN-COMMENT TO TEST FOR TWO PAIR
+            //Card c1 = new Card(Card.Suit.Club, Card.Rank.FOUR);
+            //Card c2 = new Card(Card.Suit.Spade, Card.Rank.FOUR);
+            //Card c3 = new Card(Card.Suit.Diamond, Card.Rank.FIVE);
+            //Card c4 = new Card(Card.Suit.Spade, Card.Rank.FIVE);
+            //Card c5 = new Card(Card.Suit.Club, Card.Rank.EIGHT);
+            // UN-COMMENT TO TEST FOR ONE PAIR
+            Card c1 = new Card(Card.Suit.Club, Card.Rank.FOUR);
+            Card c2 = new Card(Card.Suit.Spade, Card.Rank.FOUR);
+            Card c3 = new Card(Card.Suit.Diamond, Card.Rank.FIVE);
+            Card c4 = new Card(Card.Suit.Spade, Card.Rank.JACK);
+            Card c5 = new Card(Card.Suit.Club, Card.Rank.QUEEN);
             Hand h = new Hand(new List<Card> { c1, c2, c3, c4, c5 });
             h.PrintHand();
+
             h.EvaluateHandtype();
+            Console.WriteLine($"hand type = {h.GetHandType()}");
         }
     }
 }
