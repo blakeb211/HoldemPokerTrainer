@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 /*
- * Purpose: this program uses monte carlo simulation to calculate
- *          a) the odds of winning a game texas holdem for a given set of hole cards.
- *                   
- * Input:                number of players
- * Output:               odds of winning and tieing for each set of hole cards
+ * Purpose: This program draws a random hand from the deck and displays the handtype. 
+ *          Ultimately, it will use monte carlo to calculate the odds of winning for different hole cards. 
+ * Input:   None. Player number is fixed at 4.
+ * Output:  Hand types, odds of winning for each different set of hole cards.             
  *
  *Todo: Add evaluator method
  *      Add testing 

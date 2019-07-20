@@ -15,16 +15,18 @@ namespace PokerConsoleApp
 {
     class Hand
     {
-        public bool isRoyalFlush;
-        public bool isStraightFlush;
-        public bool isFourOfAKind;
-        public bool isFullHouse;
-        public bool isFlush;
-        public bool isStraight;
-        public bool isThreeOfAKind;
-        public bool isTwoPair;
-        public bool isOnePair;
-        public bool isHighCard;
+        public enum handrank
+        {
+            StraightFlush = 8,
+            FourOfAKind = 7,
+            FullHouse = 6,
+            Flush = 5,
+            Straight = 4,
+            ThreeOfAKind = 3,
+            TwoPair = 2,
+            OnePair = 1,
+            HighCard = 0
+        };
         private List<Card> cards = new List<Card> { };
         public Hand(List<Card> c)
         {
@@ -34,18 +36,8 @@ namespace PokerConsoleApp
             foreach (var ci in c)
                 cards.Add(ci);
 
-            // reset flags
-            isRoyalFlush = false;
-            isStraightFlush = false;
-            isFourOfAKind = false;
-            isFullHouse = false;
-            isFlush = false;
-            isStraight = false;
-            isThreeOfAKind = false;
-            isTwoPair = false;
-            isOnePair = false;
-            isHighCard = false;
-    }
+        }
+    
         public void addCard(Card c)
         {
             if (cards.Count == 5)
@@ -62,3 +54,5 @@ namespace PokerConsoleApp
         }
     }
 }
+
+
