@@ -21,7 +21,6 @@ namespace PokerConsoleApp
             var d = new Deck();
             d.BuildDeck();
             d.ShuffleDeck();
-            // Construct a hand to test the EvaluateHandtype() method
 
             // UN-COMMENT TO TEST STRAIGHT FLUSH
             //Card c1 = new Card(Card.Suit.Diamond, Card.Rank.SIX);
@@ -36,11 +35,11 @@ namespace PokerConsoleApp
             //Card c4 = new Card(Card.Suit.Diamond, Card.Rank.TWO);
             //Card c5 = new Card(Card.Suit.Diamond, Card.Rank.FIVE);
             // UN-COMMENT TO TEST FOUR OF A KIND
-            //Card c1 = new Card(Card.Suit.Club, Card.Rank.FOUR);
-            //Card c2 = new Card(Card.Suit.Spade, Card.Rank.FOUR);
-            //Card c3 = new Card(Card.Suit.Heart, Card.Rank.FOUR);
-            //Card c4 = new Card(Card.Suit.Diamond, Card.Rank.FOUR);
-            //Card c5 = new Card(Card.Suit.Diamond, Card.Rank.TWO);
+            //Card c1 = new Card(Card.Suit.Club, Card.Rank.SIX);
+            //Card c2 = new Card(Card.Suit.Heart, Card.Rank.SIX);
+            //Card c3 = new Card(Card.Suit.Heart, Card.Rank.SEVEN);
+            //Card c4 = new Card(Card.Suit.Diamond, Card.Rank.SIX);
+            //Card c5 = new Card(Card.Suit.Spade, Card.Rank.SIX);
             // UN-COMMENT TO TEST FULL HOUSE
             //Card c1 = new Card(Card.Suit.Club, Card.Rank.FOUR);
             //Card c2 = new Card(Card.Suit.Spade, Card.Rank.FOUR);
@@ -77,6 +76,12 @@ namespace PokerConsoleApp
             Card c3 = new Card(Card.Suit.Diamond, Card.Rank.FIVE);
             Card c4 = new Card(Card.Suit.Spade, Card.Rank.JACK);
             Card c5 = new Card(Card.Suit.Club, Card.Rank.QUEEN);
+            // UN-COMMENT TO TEST FOR HIGH CARD
+            //Card c1 = new Card(Card.Suit.Club, Card.Rank.FOUR);
+            //Card c2 = new Card(Card.Suit.Spade, Card.Rank.SEVEN);
+            //Card c3 = new Card(Card.Suit.Diamond, Card.Rank.NINE);
+            //Card c4 = new Card(Card.Suit.Spade, Card.Rank.JACK);
+            //Card c5 = new Card(Card.Suit.Club, Card.Rank.TWO);
             Hand h = new Hand(new List<Card> { c1, c2, c3, c4, c5 });
             h.PrintHand();
 

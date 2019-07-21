@@ -170,6 +170,22 @@ namespace PokerConsoleApp
                 ret_flag = true;
             return ret_flag;
         }
+
+        private bool IsThisOnePair(int[] rankcount)
+        {
+            bool ret_flag = false;
+            int rank_of_pair = -1;
+            for (int i = 2; i < 15; i++)
+            {
+                if (rankcount[i] == 2 && rank_of_pair == -1)
+                {
+                    rank_of_pair = i;
+                }
+            }
+            if (rank_of_pair != -1)
+                ret_flag = true;
+            return ret_flag;
+        }
         public void EvaluateHandtype()
         {
             // Examples of handtypes are FourOfAKind, Straight, etc
@@ -311,9 +327,18 @@ namespace PokerConsoleApp
                 this.hand_type = Hand.HandType.TwoPair;
                 return;
             }
+            // Check for One Pair
+            if (this.IsThisOnePair(rankcount))
+            {
+                this.hand_type = Hand.HandType.OnePair;
+                return;
+            }
+            // Check for High Card
+            // If the functions above didn't return from the method already, it must be high card
+            this.hand_type = Hand.HandType.HighCard;
+            return;
         }
 
-        
     }
 }
 
