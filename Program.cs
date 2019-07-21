@@ -84,7 +84,7 @@ namespace PokerConsoleApp
             //Card c5 = new Card(Card.Suit.Club, Card.Rank.TWO);
             Hand h = new Hand(new List<Card> { c1, c2, c3, c4, c5 });
             h.PrintHand();
-
+            d.PrintDeck();
             h.EvaluateHandtype();
             Console.WriteLine($"hand type = {h.GetHandType()}");
         }

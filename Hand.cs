@@ -186,6 +186,27 @@ namespace PokerConsoleApp
                 ret_flag = true;
             return ret_flag;
         }
+        public bool DoesItBeat(Hand hand_to_compare_to)
+        {
+            bool ret_val = false;
+            // Check whether hand objects can be compared safely
+            if (this.hand_type == Hand.HandType.NotAssignedYet || hand_to_compare_to.hand_type == Hand.HandType.NotAssignedYet)
+               throw new Exception("One of the hands passed to Hand.DoesItBeat() has not been assigned a handtype yet!! Need to call EvaluateHandtype method first.");
+
+            // If this hand has a higher rank, we know right away that it beats the hand_to_compare_to
+            if ((int)this.GetHandType() > (int)hand_to_compare_to.GetHandType())
+            {
+                ret_val = true;
+                return ret_val;
+            }
+            // if hands are of the same rank, we need to compare them card by card
+
+
+
+
+
+            return ret_val;
+        }
         public void EvaluateHandtype()
         {
             // Examples of handtypes are FourOfAKind, Straight, etc
