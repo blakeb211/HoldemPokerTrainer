@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 /* TODO
  * add evaluateTypeOfHand(void) method
@@ -13,7 +12,7 @@ using System.Text;
  */
 namespace PokerConsoleApp
 {
-    class Hand
+    public class Hand
     {
         public enum HandType
         {
@@ -103,7 +102,7 @@ namespace PokerConsoleApp
         private bool IsThisFourOfAKind(int[] rankcount)
         {
             bool ret_flag = false;
-            for(int i = 2; i < 15; i++)
+            for (int i = 2; i < 15; i++)
             {
                 if (rankcount[i] == 4)
                     ret_flag = true;
@@ -120,7 +119,7 @@ namespace PokerConsoleApp
 
             for (int i = 2; i < 15; i++)
             {
-                if(rankcount[i] == 3)
+                if (rankcount[i] == 3)
                 {
                     set_of_three_rank = i;
                     has_a_set_of_three = true;
@@ -186,29 +185,27 @@ namespace PokerConsoleApp
                 ret_flag = true;
             return ret_flag;
         }
-        public bool DoesItBeat(Hand hand_to_compare_to)
+        public static bool DoesThisHandBeatThatHand(Hand hand_1, Hand hand_2)
         {
+            // This method compares two hands and returns a 1 if hand1 beats hand2.
             bool ret_val = false;
             // Check whether hand objects can be compared safely
-            if (this.hand_type == Hand.HandType.NotAssignedYet || hand_to_compare_to.hand_type == Hand.HandType.NotAssignedYet)
-               throw new Exception("One of the hands passed to Hand.DoesItBeat() has not been assigned a handtype yet!! Need to call EvaluateHandtype method first.");
+            if (hand_1.hand_type == Hand.HandType.NotAssignedYet || hand_2.hand_type == Hand.HandType.NotAssignedYet)
+                throw new Exception("One of the hands passed to DoesThisHandBeatThatHand() has not been assigned a handtype yet!! Need to call EvaluateHandtype method first.");
 
             // If this hand has a higher rank, we know right away that it beats the hand_to_compare_to
-            if ((int)this.GetHandType() > (int)hand_to_compare_to.GetHandType())
+            if ((int)hand_1.GetHandType() > (int)hand_2.GetHandType())
             {
                 ret_val = true;
                 return ret_val;
             }
             // if hands are of the same rank, we need to compare them card by card
 
-
-
-
-
             return ret_val;
         }
         public void EvaluateHandtype()
         {
+            // This method sets the general Handtype of the hand.
             // Examples of handtypes are FourOfAKind, Straight, etc
             // At end set this.handtype =  the handtype
             // Evaluate from top type down, like check straight and flush.
@@ -250,11 +247,11 @@ namespace PokerConsoleApp
             // print out number of each suit
             Console.WriteLine($"\nHearts: {suitcount[HEART]}, Diamonds: {suitcount[DIAMOND]}, Spades: {suitcount[SPADE]}, Clubs: {suitcount[CLUB]}\n");
             // print out number of each rank
-            for(int r_i = 2; r_i < 15; r_i++ )
+            for (int r_i = 2; r_i < 15; r_i++)
             {
                 if (rankcount[r_i] != 0) // only print ranks with non-zero counts
                 {
-                    switch(r_i)
+                    switch (r_i)
                     {
                         case 2:
                         case 3:
@@ -283,7 +280,7 @@ namespace PokerConsoleApp
                             break;
                     }
                 }
-                
+
             }
             Console.WriteLine("");
             Console.WriteLine("");
@@ -305,7 +302,7 @@ namespace PokerConsoleApp
             bool flush_flag = false;
             straight_flag = this.IsThisAStraight(rankcount);
             flush_flag = this.IsThisAFlush(suitcount);
-            
+
             // Check for straight flush
             if (straight_flag == true && flush_flag == true)
             {

@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+
+
 
 namespace PokerConsoleApp
 {
-    class Deck
+    public class Deck
     {
-        private List<Card> deck;
+        private readonly List<Card> deck;
         private int cardCount;
         public Deck()
         {
             this.cardCount = 0;
             this.deck = new List<Card> { };
+            this.BuildDeck();
         }
         public void AddCard(Card c)
         {
@@ -34,7 +36,7 @@ namespace PokerConsoleApp
         public void PrintDeck()
         {
             int count = 0;
-            foreach(var c in deck)
+            foreach (var c in deck)
             {
                 ++count;
                 String message = $"{c.GetRank()} of {c.GetSuit()}";
@@ -68,7 +70,7 @@ namespace PokerConsoleApp
         }
         public void BuildDeck()
         {
-            foreach(Card.Suit s in Enum.GetValues(typeof(Card.Suit)))
+            foreach (Card.Suit s in Enum.GetValues(typeof(Card.Suit)))
             {
                 foreach (Card.Rank r in Enum.GetValues(typeof(Card.Rank)))
                 {
@@ -78,7 +80,7 @@ namespace PokerConsoleApp
                     this.AddCard(c);
                 }
             }
-            
+
         }
     }
 }
