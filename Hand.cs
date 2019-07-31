@@ -193,19 +193,33 @@ namespace PokerConsoleApp
             // Return a -1 if hand1 ties hand2
             int ret_val = 0;
             // Check whether hand objects can be compared safely
-            if (hand_1.hand_type == Hand.HandType.NotAssignedYet || hand_2.hand_type == Hand.HandType.NotAssignedYet)
+            Hand.HandType ht_1 = hand_1.GetHandType();
+            Hand.HandType ht_2 = hand_2.GetHandType();
+            if (ht_1 == Hand.HandType.NotAssignedYet || ht_2 == Hand.HandType.NotAssignedYet)
                 throw new Exception("One of the hands passed to DoesThisHandBeatThatHand() has not been assigned a handtype yet!! Need to call EvaluateHandtype method first.");
 
             // If this hand has a higher rank, we know right away that it beats the hand_to_compare_to
-            if ((int)hand_1.GetHandType() > (int)hand_2.GetHandType())
+            if ((int)ht_1 > (int)ht_2)
             {
                 ret_val = 1;
                 return ret_val;
             }
             // if hands are of the same rank, we need to compare them card by card
-
+            if ( ( (int)ht_1 == (int)ht_2 ) )
+            {
+                hand_1.RankSort();
+                hand_2.RankSort();
+            }
             return ret_val;
         }
+
+        private void RankSort()
+        {
+            // SORT HANDS BY RANK, WITH DOUBLES, TRIPLES, QUADRUPLES at the end
+            // TAKE CARE TO INCLUDE CASES WHERE ACE IS LOW
+            throw new NotImplementedException();
+        }
+
         public void EvaluateHandtype()
         {
             // This method sets the general Handtype of the hand.
