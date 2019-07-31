@@ -185,10 +185,13 @@ namespace PokerConsoleApp
                 ret_flag = true;
             return ret_flag;
         }
-        public static bool DoesThisHandBeatThatHand(Hand hand_1, Hand hand_2)
+        public static int DoesThisHandBeatThatHand(Hand hand_1, Hand hand_2)
         {
-            // This method compares two hands and returns a 1 if hand1 beats hand2.
-            bool ret_val = false;
+            // This method compares two hands.
+            // Return a 1 if hand1 beats hand2
+            // Return a 0 if hand1 loses to hand2
+            // Return a -1 if hand1 ties hand2
+            int ret_val = 0;
             // Check whether hand objects can be compared safely
             if (hand_1.hand_type == Hand.HandType.NotAssignedYet || hand_2.hand_type == Hand.HandType.NotAssignedYet)
                 throw new Exception("One of the hands passed to DoesThisHandBeatThatHand() has not been assigned a handtype yet!! Need to call EvaluateHandtype method first.");
@@ -196,7 +199,7 @@ namespace PokerConsoleApp
             // If this hand has a higher rank, we know right away that it beats the hand_to_compare_to
             if ((int)hand_1.GetHandType() > (int)hand_2.GetHandType())
             {
-                ret_val = true;
+                ret_val = 1;
                 return ret_val;
             }
             // if hands are of the same rank, we need to compare them card by card
