@@ -18,6 +18,17 @@ namespace PokerConsoleApp
         {
             var d = new Deck();
             d.ShuffleDeck();
+            Hand h = new Hand();
+            for (int i = 0; i < 5; i++)
+            {
+                Card c = d.RemoveCard();
+                h.AddCard(c);
+                
+            }
+            h.PrintHand();
+            h.EvaluateHandtype();
+            h.DoSort();
+            h.PrintHand();
 
         }
     }
