@@ -233,6 +233,22 @@ namespace PokerConsoleApp
             // COMPARING STRAIGHT FLUSHES
             if (ht_1 == Hand.HandType.StraightFlush)
             {
+                // Check for low ace straights
+                Card.Rank hand1_last_card = sorted_hand_1[4].GetRank();
+                Card.Rank hand2_last_card = sorted_hand_2[4].GetRank();
+                Card.Rank hand1_first_card = sorted_hand_1[0].GetRank();
+                Card.Rank hand2_first_card = sorted_hand_2[0].GetRank();
+                // two low ace straights tie
+                if ((int)hand1_last_card == 14 && (int)hand1_first_card == 2 && ((int)hand2_last_card == 14 && (int)hand2_first_card == 2))
+                    return -1;
+                // first hand is low ace straight and other hand isn't so other hand must win 
+                if ((int)hand1_last_card == 14 && (int)hand1_first_card == 2 && (int)hand2_first_card >= 2)
+                    return 0;
+                // second hand is low ace straight and other hand isn't so other hand must win 
+                if ((int)hand2_last_card == 14 && (int)hand2_first_card == 2 && (int)hand1_first_card >= 2)
+                    return 1;
+                // Done checking for low ace straights
+
                 int tied_cards = 0;
                 for (int i = 4; i >= 0; i--) // progress from right to left
                 {
@@ -244,7 +260,6 @@ namespace PokerConsoleApp
                         return 0;
                     if (hand1_card_rank == hand2_card_rank)
                         tied_cards++;
-
                 }
                 if (tied_cards == 5)
                     return -1;
