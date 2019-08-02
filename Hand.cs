@@ -45,6 +45,19 @@ namespace PokerConsoleApp
         {
             hand_type = HandType.NotAssignedYet;
         }
+        public Card this[int index]
+        {
+            get
+            {
+                return cards[index];
+            }
+
+            set
+            {
+                cards[index] = value;
+            }
+        }
+
         public HandType GetHandType()
         {
             return this.hand_type;
@@ -210,16 +223,67 @@ namespace PokerConsoleApp
                 ret_val = 1;
                 return ret_val;
             }
+            // hands should be of same handtype if we are executing code below here
+            if ( (int)ht_1 != (int)ht_2 )
+                throw new Exception("ht_1 != ht_2 in the DoesThisHandBeatThatHand() and that shouldn't happen");
+            
             // if hands are of the same rank, we need to compare them card by card
-            if (((int)ht_1 == (int)ht_2))
+            Hand sorted_hand_1 = hand_1.DoSort();
+            Hand sorted_hand_2 = hand_2.DoSort();
+            // COMPARING STRAIGHT FLUSHES
+            if (ht_1 == Hand.HandType.StraightFlush)
             {
-                hand_1.DoSort();
-                hand_2.DoSort();
+                int tied_cards = 0;
+                for (int i = 4; i >= 0; i--) // progress from right to left
+                {
+                    Card.Rank hand1_card_rank = sorted_hand_1[i].GetRank();
+                    Card.Rank hand2_card_rank = sorted_hand_2[i].GetRank();
+                    if (hand1_card_rank > hand2_card_rank)
+                        return 1;
+                    if (hand2_card_rank > hand1_card_rank)
+                        return 0;
+                    if (hand1_card_rank == hand2_card_rank)
+                        tied_cards++;
+                        
+                }
+                if (tied_cards == 5)
+                    return -1;
+                    
             }
+            // COMPARING FOUR OF A KINDS
+            if (ht_1 == Hand.HandType.FourOfAKind)
+            {
+                    // first check quads rank
+                    Card.Rank hand1_quads_rank = sorted_hand_1[4].GetRank();
+                    Card.Rank hand2_quads_rank = sorted_hand_2[4].GetRank();
+                    if (hand1_quads_rank > hand2_quads_rank)
+                        return 1;
+                    if (hand2_quads_rank > hand1_quads_rank)
+                        return 0;
+                // second check kicker rank
+                Card.Rank hand1_kicker_rank = sorted_hand_1[0].GetRank();
+                Card.Rank hand2_kicker_rank = sorted_hand_2[0].GetRank();
+                if (hand1_kicker_rank > hand2_kicker_rank)
+                    return 1;
+                if (hand2_kicker_rank > hand1_kicker_rank)
+                    return 0;
+                // if quads ranks and kicker ranks are the same then they tie
+                if ((hand1_quads_rank == hand2_quads_rank) && (hand1_kicker_rank == hand2_kicker_rank))
+                {
+                    return -1;
+                }
+            }
+            // COMPARING FLUSHES
+
+            // COMPARING STRAIGHTS
+            // COMPARING THREE OF A KINDS
+            // COMPARING TWO PAIRS
+            // COMPARING ONE PAIRS
+            // COMPARING HIGH CARDS
             return ret_val;
         }
 
-        public void DoSort()
+        public Hand DoSort()
         {
             //put doubles triples and quads at end
             //each multiplet should be sorted by suit
@@ -231,6 +295,7 @@ namespace PokerConsoleApp
             List<Card> lst_doubles2 = new List<Card> { };
             List<Card> lst_triples = new List<Card> { };
             List<Card> lst_quads = new List<Card> { };
+            List<Card> mylist = new List<Card> { };
             for (int i = 2; i < 15; i++)
             {
                 //1) decompose hand into singles, doubles, triples, etc lists
@@ -327,13 +392,13 @@ namespace PokerConsoleApp
                 } // end of switch statement
 
             } // end of for loop over rank_tally. cards should be split up into separate lists
-            List<Card> mylist = new List<Card> { };
+            
             for(int i = 0; i < lst_singles.Count; i++)
             {
                 mylist.Add(lst_singles[i]);
             }
-            // check which double is bigger
-            if (lst_doubles1.Count == 2 && lst_doubles2.Count == 2 && (lst_doubles1[0].GetRank() < lst_doubles2[0].GetRank()))
+            // check which double is bigger so they are sorted low to high
+            if (lst_doubles1.Count == 2 && lst_doubles2.Count == 2 && (lst_doubles1[0].GetRank() > lst_doubles2[0].GetRank()))
             {
                 for (int i = 0; i < lst_doubles2.Count; i++)
                 {
@@ -344,7 +409,7 @@ namespace PokerConsoleApp
                     mylist.Add(lst_doubles1[i]);
                 }
             }
-            else if (lst_doubles1.Count == 2 && lst_doubles2.Count == 2 && (lst_doubles1[0].GetRank() > lst_doubles2[0].GetRank()))
+            else if (lst_doubles1.Count == 2 && lst_doubles2.Count == 2 && (lst_doubles1[0].GetRank() < lst_doubles2[0].GetRank()))
             {
                 for (int i = 0; i < lst_doubles1.Count; i++)
                 {
@@ -374,7 +439,10 @@ namespace PokerConsoleApp
             {
                 Console.WriteLine($"{c.GetRank()} {c.GetSuit()}");
             }
+            Hand ret_hand = new Hand(mylist);
+            return ret_hand;
         }
+        
 
 
         public void EvaluateHandtype()
