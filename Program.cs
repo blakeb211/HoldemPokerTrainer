@@ -31,5 +31,13 @@ namespace PokerConsoleApp
             h.PrintHand();
 
         }
+        static int Simulate_Game_and_Save_to_DB()
+        {
+            return 0;
+        }
+        static int Play_Game_Showing_Statistics()
+        {
+            return 0;
+        }
     }
 }

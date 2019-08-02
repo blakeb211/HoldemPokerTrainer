@@ -479,16 +479,54 @@ namespace PokerConsoleApp
             }
             return ret_val;
         }
-        public static Hand Find_Best_Hand(List<Hand> lst_hand)
+        public static int Find_Best_Hand(List<Hand> lst_hand)
         {
             /*********************************************************
              * input a List of Hands
              * go through and compare with DoesThisHandBeatThatHand()
-             * return the best hand
+             * return the integer number of the best hand 1, 2, 3, 4, etc. 
+             * 0 index not used
+             * if two hands tie and win the hand, only one of them is returned.
              * ********************************************************/
+            Hand[] lst_hand_copy = lst_hand.ToArray();
+            int hand_count = lst_hand.Count;
 
-            Hand temp_hand;
-            return temp_hand;
+            List<Hand> Winners_List = new List<Hand> { };
+            
+            
+
+            for (int i = 0; i < hand_count; i++)
+            {
+                int loss_counter = 0;
+                for (int j = 0; j < hand_count; j++)
+                {
+                    if (lst_hand_copy[i].Equals(lst_hand_copy[j]))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        int comparison_result = Hand.DoesThisHandBeatThatHand(lst_hand_copy[i], lst_hand_copy[j]);
+                        if (comparison_result == 0) // if i loses
+                        {
+                            loss_counter++;
+                        }
+                    }
+                    if (loss_counter == 0) // if i never lost its a winnner
+                    {
+                        Winners_List.Add(lst_hand_copy[i]);
+                    }
+
+                }
+            }
+            // Only thing left in Winners_List should be tied winners or a single a winner
+            Hand h = Winners_List[0];
+            for (int i = 0; i < hand_count; i++)
+            {
+                if (h.Equals(lst_hand_copy[i]))
+                    return (i + 1);
+            }
+            return 0;
         }
         public Hand DoSort()
         {
