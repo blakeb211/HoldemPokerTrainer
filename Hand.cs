@@ -217,7 +217,7 @@ namespace PokerConsoleApp
             if (ht_1 == Hand.HandType.NotAssignedYet || ht_2 == Hand.HandType.NotAssignedYet)
                 throw new Exception("One of the hands passed to DoesThisHandBeatThatHand() has not been assigned a handtype yet!! Need to call EvaluateHandtype method first.");
 
-            // If this hand has a higher rank, we know right away that it beats the hand_to_compare_to
+            // If hand1 has a higher rank, we know right away that it beats hand2
             if ((int)ht_1 > (int)ht_2)
             {
                 ret_val = 1;
@@ -274,12 +274,194 @@ namespace PokerConsoleApp
                 }
             }
             // COMPARING FLUSHES
+            if (ht_1 == Hand.HandType.Flush)
+            {
+                int tied_cards = 0;
+                for (int i = 4; i >= 0; i--) // progress from right to left
+                {
+                    Card.Rank hand1_card_rank = sorted_hand_1[i].GetRank();
+                    Card.Rank hand2_card_rank = sorted_hand_2[i].GetRank();
+                    if (hand1_card_rank > hand2_card_rank)
+                        return 1;
+                    if (hand2_card_rank > hand1_card_rank)
+                        return 0;
+                    if (hand1_card_rank == hand2_card_rank)
+                        tied_cards++;
 
+                }
+                if (tied_cards == 5)
+                    return -1;
+
+            }
             // COMPARING STRAIGHTS
+            if (ht_1 == Hand.HandType.Straight)
+            {
+                // Check for low ace straights
+                Card.Rank hand1_last_card = sorted_hand_1[4].GetRank();
+                Card.Rank hand2_last_card = sorted_hand_2[4].GetRank();
+                Card.Rank hand1_first_card = sorted_hand_1[0].GetRank();
+                Card.Rank hand2_first_card = sorted_hand_2[0].GetRank();
+                // two low ace straights tie
+                if ((int)hand1_last_card == 14 && (int)hand1_first_card == 2 && ((int)hand2_last_card == 14 && (int)hand2_first_card == 2))
+                    return -1;
+                // first hand is low ace straight and other hand isn't so other hand must win 
+                if ((int)hand1_last_card == 14 && (int)hand1_first_card == 2 && (int)hand2_first_card >= 2)
+                    return 0;
+                // second hand is low ace straight and other hand isn't so other hand must win 
+                if ((int)hand2_last_card == 14 && (int)hand2_first_card == 2 && (int)hand1_first_card >= 2)
+                    return 1;
+                int tied_cards = 0;
+                for (int i = 4; i >= 0; i--) // progress from right to left
+                {
+                    Card.Rank hand1_card_rank = sorted_hand_1[i].GetRank();
+                    Card.Rank hand2_card_rank = sorted_hand_2[i].GetRank();
+                    
+                    if (hand1_card_rank > hand2_card_rank)
+                        return 1;
+                    if (hand2_card_rank > hand1_card_rank)
+                        return 0;
+                    if (hand1_card_rank == hand2_card_rank)
+                        tied_cards++;
+
+                }
+                if (tied_cards == 5)
+                    return -1;
+
+            }
             // COMPARING THREE OF A KINDS
+            if (ht_1 == Hand.HandType.ThreeOfAKind)
+            {
+                // first check trips rank
+                Card.Rank hand1_trips_rank = sorted_hand_1[4].GetRank();
+                Card.Rank hand2_trips_rank = sorted_hand_2[4].GetRank();
+                if (hand1_trips_rank > hand2_trips_rank)
+                    return 1;
+                if (hand2_trips_rank > hand1_trips_rank)
+                    return 0;
+                // second check - first kicker rank
+                Card.Rank hand1_kicker_rank = sorted_hand_1[1].GetRank();
+                Card.Rank hand2_kicker_rank = sorted_hand_2[1].GetRank();
+                if (hand1_kicker_rank > hand2_kicker_rank)
+                    return 1;
+                if (hand2_kicker_rank > hand1_kicker_rank)
+                    return 0;
+                // third check - second kicker rank
+                hand1_kicker_rank = sorted_hand_1[0].GetRank();
+                hand2_kicker_rank = sorted_hand_2[0].GetRank();
+                if (hand1_kicker_rank > hand2_kicker_rank)
+                    return 1;
+                if (hand2_kicker_rank > hand1_kicker_rank)
+                    return 0;
+                // check for tie
+                if ((hand1_trips_rank == hand2_trips_rank) && (hand1_kicker_rank == hand2_kicker_rank))
+                {
+                    return -1;
+                }
+            }
             // COMPARING TWO PAIRS
+            if (ht_1 == Hand.HandType.TwoPair)
+            {
+                // first check big pair rank
+                Card.Rank big_pair_rank1 = sorted_hand_1[4].GetRank();
+                Card.Rank big_pair_rank2 = sorted_hand_2[4].GetRank();
+                if (big_pair_rank1 > big_pair_rank2)
+                    return 1;
+                if (big_pair_rank2 > big_pair_rank1)
+                    return 0;
+                // second check - small pair rank
+                Card.Rank small_pair_rank1 = sorted_hand_1[2].GetRank();
+                Card.Rank small_pair_rank2 = sorted_hand_2[2].GetRank();
+                if (small_pair_rank1 > small_pair_rank2)
+                    return 1;
+                if (small_pair_rank2 > small_pair_rank1)
+                    return 0;
+                // third check - check kicker
+                Card.Rank hand1_kicker_rank = sorted_hand_1[0].GetRank();
+                Card.Rank hand2_kicker_rank = sorted_hand_2[0].GetRank();
+                if (hand1_kicker_rank > hand2_kicker_rank)
+                    return 1;
+                if (hand2_kicker_rank > hand1_kicker_rank)
+                    return 0;
+                // if nothing has returned yet then its a tie
+                return -1;
+               
+            }
             // COMPARING ONE PAIRS
+            if (ht_1 == Hand.HandType.OnePair)
+            {
+                // first check big pair rank
+                Card.Rank pair_rank1 = sorted_hand_1[4].GetRank();
+                Card.Rank pair_rank2 = sorted_hand_2[4].GetRank();
+                if (pair_rank1 > pair_rank2)
+                    return 1;
+                if (pair_rank2 > pair_rank1)
+                    return 0;
+                // second check - first kicker
+                Card.Rank kicker_rank1 = sorted_hand_1[2].GetRank();
+                Card.Rank kicker_rank2 = sorted_hand_2[2].GetRank();
+                if (kicker_rank1 > kicker_rank2)
+                    return 1;
+                if (kicker_rank2 > kicker_rank1)
+                    return 0;
+                // third check - second kicker
+                kicker_rank1 = sorted_hand_1[1].GetRank();
+                kicker_rank2 = sorted_hand_2[1].GetRank();
+                if (kicker_rank1 > kicker_rank2)
+                    return 1;
+                if (kicker_rank2 > kicker_rank1)
+                    return 0;
+                // fourth check - third kicker
+                kicker_rank1 = sorted_hand_1[0].GetRank();
+                kicker_rank2 = sorted_hand_2[0].GetRank();
+                if (kicker_rank1 > kicker_rank2)
+                    return 1;
+                if (kicker_rank2 > kicker_rank1)
+                    return 0;
+                // if nothing has been returned yet then its a tie
+                return -1;
+
+            }
+            //COMPARING FULL HOUSE
+            if (ht_1 == Hand.HandType.FullHouse)
+            {
+                // first check trips rank
+                Card.Rank hand1_trips_rank = sorted_hand_1[4].GetRank();
+                Card.Rank hand2_trips_rank = sorted_hand_2[4].GetRank();
+                if (hand1_trips_rank > hand2_trips_rank)
+                    return 1;
+                if (hand2_trips_rank > hand1_trips_rank)
+                    return 0;
+                // second check doublets rank
+                Card.Rank hand1_doublet_rank = sorted_hand_1[0].GetRank();
+                Card.Rank hand2_doublet_rank = sorted_hand_2[0].GetRank();
+                if (hand1_doublet_rank > hand2_doublet_rank)
+                    return 1;
+                if (hand2_doublet_rank > hand1_doublet_rank)
+                    return 0;
+                // if nothing has returned yet, doublet and triple ranks are same
+                return -1;
+            }
             // COMPARING HIGH CARDS
+            if (ht_1 == Hand.HandType.HighCard)
+            {
+                int tied_cards = 0;
+                for (int i = 4; i >= 0; i--) // progress from right to left
+                {
+                    Card.Rank hand1_card_rank = sorted_hand_1[i].GetRank();
+                    Card.Rank hand2_card_rank = sorted_hand_2[i].GetRank();
+
+                    if (hand1_card_rank > hand2_card_rank)
+                        return 1;
+                    if (hand2_card_rank > hand1_card_rank)
+                        return 0;
+                    if (hand1_card_rank == hand2_card_rank)
+                        tied_cards++;
+
+                }
+                if (tied_cards == 5)
+                    return -1;
+
+            }
             return ret_val;
         }
 
