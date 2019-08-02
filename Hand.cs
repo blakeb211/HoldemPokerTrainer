@@ -479,7 +479,17 @@ namespace PokerConsoleApp
             }
             return ret_val;
         }
+        public static Hand Find_Best_Hand(List<Hand> lst_hand)
+        {
+            /*********************************************************
+             * input a List of Hands
+             * go through and compare with DoesThisHandBeatThatHand()
+             * return the best hand
+             * ********************************************************/
 
+            Hand temp_hand;
+            return temp_hand;
+        }
         public Hand DoSort()
         {
             //put doubles triples and quads at end
@@ -496,7 +506,7 @@ namespace PokerConsoleApp
             for (int i = 2; i < 15; i++)
             {
                 //1) decompose hand into singles, doubles, triples, etc lists
-                //2) sort singles by rank
+                //2) sort singles by rank 
                 //3) concatenate lists together in order
                 //4) this way the hands can be compared to each other easily
 
