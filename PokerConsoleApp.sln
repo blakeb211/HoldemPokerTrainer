@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PokerConsoleApp", "PokerCon
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6552F773-4183-4309-AF3B-DD3AD63BD354}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokerAppTests", "..\PokerAppTests\PokerAppTests.csproj", "{AD0D15F9-415A-49D8-9C91-826FA62ECD65}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PokerConsoleAppTests", "..\PokerAppTests\PokerConsoleAppTests.csproj", "{AD0D15F9-415A-49D8-9C91-826FA62ECD65}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
