@@ -224,9 +224,9 @@ namespace PokerConsoleApp
                 return ret_val;
             }
             // hands should be of same handtype if we are executing code below here
-            if ( (int)ht_1 != (int)ht_2 )
+            if ((int)ht_1 != (int)ht_2)
                 throw new Exception("ht_1 != ht_2 in the DoesThisHandBeatThatHand() and that shouldn't happen");
-            
+
             // if hands are of the same rank, we need to compare them card by card
             Hand sorted_hand_1 = hand_1.DoSort();
             Hand sorted_hand_2 = hand_2.DoSort();
@@ -244,22 +244,22 @@ namespace PokerConsoleApp
                         return 0;
                     if (hand1_card_rank == hand2_card_rank)
                         tied_cards++;
-                        
+
                 }
                 if (tied_cards == 5)
                     return -1;
-                    
+
             }
             // COMPARING FOUR OF A KINDS
             if (ht_1 == Hand.HandType.FourOfAKind)
             {
-                    // first check quads rank
-                    Card.Rank hand1_quads_rank = sorted_hand_1[4].GetRank();
-                    Card.Rank hand2_quads_rank = sorted_hand_2[4].GetRank();
-                    if (hand1_quads_rank > hand2_quads_rank)
-                        return 1;
-                    if (hand2_quads_rank > hand1_quads_rank)
-                        return 0;
+                // first check quads rank
+                Card.Rank hand1_quads_rank = sorted_hand_1[4].GetRank();
+                Card.Rank hand2_quads_rank = sorted_hand_2[4].GetRank();
+                if (hand1_quads_rank > hand2_quads_rank)
+                    return 1;
+                if (hand2_quads_rank > hand1_quads_rank)
+                    return 0;
                 // second check kicker rank
                 Card.Rank hand1_kicker_rank = sorted_hand_1[0].GetRank();
                 Card.Rank hand2_kicker_rank = sorted_hand_2[0].GetRank();
@@ -315,7 +315,7 @@ namespace PokerConsoleApp
                 {
                     Card.Rank hand1_card_rank = sorted_hand_1[i].GetRank();
                     Card.Rank hand2_card_rank = sorted_hand_2[i].GetRank();
-                    
+
                     if (hand1_card_rank > hand2_card_rank)
                         return 1;
                     if (hand2_card_rank > hand1_card_rank)
@@ -384,7 +384,7 @@ namespace PokerConsoleApp
                     return 0;
                 // if nothing has returned yet then its a tie
                 return -1;
-               
+
             }
             // COMPARING ONE PAIRS
             if (ht_1 == Hand.HandType.OnePair)
@@ -553,8 +553,8 @@ namespace PokerConsoleApp
                         break;
 
                     case 1:
-                        foreach( var c in cards.ToArray() )
-                        { 
+                        foreach (var c in cards.ToArray())
+                        {
                             Card.Rank cr = c.GetRank();
 
                             if ((int)cr == i)
@@ -574,8 +574,8 @@ namespace PokerConsoleApp
                 } // end of switch statement
 
             } // end of for loop over rank_tally. cards should be split up into separate lists
-            
-            for(int i = 0; i < lst_singles.Count; i++)
+
+            for (int i = 0; i < lst_singles.Count; i++)
             {
                 mylist.Add(lst_singles[i]);
             }
@@ -601,7 +601,8 @@ namespace PokerConsoleApp
                 {
                     mylist.Add(lst_doubles2[i]);
                 }
-            } else
+            }
+            else
             {
                 for (int i = 0; i < lst_doubles1.Count; i++)
                 {
@@ -617,14 +618,14 @@ namespace PokerConsoleApp
                 mylist.Add(lst_quads[i]);
             }
             Console.WriteLine($"number of cards in cards list {mylist.Count}");
-            foreach(var c in mylist)
+            foreach (var c in mylist)
             {
                 Console.WriteLine($"{c.GetRank()} {c.GetSuit()}");
             }
             Hand ret_hand = new Hand(mylist);
             return ret_hand;
         }
-        
+
 
 
         public void EvaluateHandtype()

@@ -23,7 +23,7 @@ namespace PokerConsoleApp
             {
                 Card c = d.RemoveCard();
                 h.AddCard(c);
-                
+
             }
             h.PrintHand();
             h.EvaluateHandtype();
