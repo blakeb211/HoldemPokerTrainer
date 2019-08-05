@@ -45,19 +45,23 @@ namespace PokerConsoleApp
         {
             hand_type = HandType.NotAssignedYet;
         }
-        public Card this[int index]
+        //public Card this[int index]
+        //{
+        //    get
+        //    {
+        //        return cards[index];
+        //    }
+
+        //    set
+        //    {
+        //        cards[index] = value;
+        //    }
+        //}
+
+        public int GetCount()
         {
-            get
-            {
-                return cards[index];
-            }
-
-            set
-            {
-                cards[index] = value;
-            }
+            return this.cards.Count;
         }
-
         public HandType GetHandType()
         {
             return this.hand_type;
@@ -220,8 +224,12 @@ namespace PokerConsoleApp
             // If hand1 has a higher rank, we know right away that it beats hand2
             if ((int)ht_1 > (int)ht_2)
             {
-                ret_val = 1;
-                return ret_val;
+                return 1;
+            }
+            // If hand2 has a higher rank, we know right away that it beats hand1
+            if ((int)ht_2 > (int)ht_1)
+            {
+                return 0;
             }
             // hands should be of same handtype if we are executing code below here
             if ((int)ht_1 != (int)ht_2)
@@ -234,10 +242,10 @@ namespace PokerConsoleApp
             if (ht_1 == Hand.HandType.StraightFlush)
             {
                 // Check for low ace straights
-                Card.Rank hand1_last_card = sorted_hand_1[4].GetRank();
-                Card.Rank hand2_last_card = sorted_hand_2[4].GetRank();
-                Card.Rank hand1_first_card = sorted_hand_1[0].GetRank();
-                Card.Rank hand2_first_card = sorted_hand_2[0].GetRank();
+                Card.Rank hand1_last_card = sorted_hand_1.cards[4].GetRank();
+                Card.Rank hand2_last_card = sorted_hand_2.cards[4].GetRank();
+                Card.Rank hand1_first_card = sorted_hand_1.cards[0].GetRank();
+                Card.Rank hand2_first_card = sorted_hand_2.cards[0].GetRank();
                 // two low ace straights tie
                 if ((int)hand1_last_card == 14 && (int)hand1_first_card == 2 && ((int)hand2_last_card == 14 && (int)hand2_first_card == 2))
                     return -1;
@@ -252,8 +260,8 @@ namespace PokerConsoleApp
                 int tied_cards = 0;
                 for (int i = 4; i >= 0; i--) // progress from right to left
                 {
-                    Card.Rank hand1_card_rank = sorted_hand_1[i].GetRank();
-                    Card.Rank hand2_card_rank = sorted_hand_2[i].GetRank();
+                    Card.Rank hand1_card_rank = sorted_hand_1.cards[i].GetRank();
+                    Card.Rank hand2_card_rank = sorted_hand_2.cards[i].GetRank();
                     if (hand1_card_rank > hand2_card_rank)
                         return 1;
                     if (hand2_card_rank > hand1_card_rank)
@@ -268,16 +276,18 @@ namespace PokerConsoleApp
             // COMPARING FOUR OF A KINDS
             if (ht_1 == Hand.HandType.FourOfAKind)
             {
+                
                 // first check quads rank
-                Card.Rank hand1_quads_rank = sorted_hand_1[4].GetRank();
-                Card.Rank hand2_quads_rank = sorted_hand_2[4].GetRank();
+                Card.Rank hand1_quads_rank = sorted_hand_1.cards[4].GetRank();
+                Card.Rank hand2_quads_rank = sorted_hand_2.cards[4].GetRank();
                 if (hand1_quads_rank > hand2_quads_rank)
                     return 1;
                 if (hand2_quads_rank > hand1_quads_rank)
                     return 0;
                 // second check kicker rank
-                Card.Rank hand1_kicker_rank = sorted_hand_1[0].GetRank();
-                Card.Rank hand2_kicker_rank = sorted_hand_2[0].GetRank();
+                Card.Rank hand1_kicker_rank = sorted_hand_1.cards[0].GetRank();
+                Card.Rank hand2_kicker_rank = sorted_hand_2.cards[0].GetRank();
+                Console.WriteLine("Comparing Kicker ranks of four of a kinds");
                 if (hand1_kicker_rank > hand2_kicker_rank)
                     return 1;
                 if (hand2_kicker_rank > hand1_kicker_rank)
@@ -294,8 +304,8 @@ namespace PokerConsoleApp
                 int tied_cards = 0;
                 for (int i = 4; i >= 0; i--) // progress from right to left
                 {
-                    Card.Rank hand1_card_rank = sorted_hand_1[i].GetRank();
-                    Card.Rank hand2_card_rank = sorted_hand_2[i].GetRank();
+                    Card.Rank hand1_card_rank = sorted_hand_1.cards[i].GetRank();
+                    Card.Rank hand2_card_rank = sorted_hand_2.cards[i].GetRank();
                     if (hand1_card_rank > hand2_card_rank)
                         return 1;
                     if (hand2_card_rank > hand1_card_rank)
@@ -312,10 +322,10 @@ namespace PokerConsoleApp
             if (ht_1 == Hand.HandType.Straight)
             {
                 // Check for low ace straights
-                Card.Rank hand1_last_card = sorted_hand_1[4].GetRank();
-                Card.Rank hand2_last_card = sorted_hand_2[4].GetRank();
-                Card.Rank hand1_first_card = sorted_hand_1[0].GetRank();
-                Card.Rank hand2_first_card = sorted_hand_2[0].GetRank();
+                Card.Rank hand1_last_card = sorted_hand_1.cards[4].GetRank();
+                Card.Rank hand2_last_card = sorted_hand_2.cards[4].GetRank();
+                Card.Rank hand1_first_card = sorted_hand_1.cards[0].GetRank();
+                Card.Rank hand2_first_card = sorted_hand_2.cards[0].GetRank();
                 // two low ace straights tie
                 if ((int)hand1_last_card == 14 && (int)hand1_first_card == 2 && ((int)hand2_last_card == 14 && (int)hand2_first_card == 2))
                     return -1;
@@ -328,8 +338,8 @@ namespace PokerConsoleApp
                 int tied_cards = 0;
                 for (int i = 4; i >= 0; i--) // progress from right to left
                 {
-                    Card.Rank hand1_card_rank = sorted_hand_1[i].GetRank();
-                    Card.Rank hand2_card_rank = sorted_hand_2[i].GetRank();
+                    Card.Rank hand1_card_rank = sorted_hand_1.cards[i].GetRank();
+                    Card.Rank hand2_card_rank = sorted_hand_2.cards[i].GetRank();
 
                     if (hand1_card_rank > hand2_card_rank)
                         return 1;
@@ -347,22 +357,22 @@ namespace PokerConsoleApp
             if (ht_1 == Hand.HandType.ThreeOfAKind)
             {
                 // first check trips rank
-                Card.Rank hand1_trips_rank = sorted_hand_1[4].GetRank();
-                Card.Rank hand2_trips_rank = sorted_hand_2[4].GetRank();
+                Card.Rank hand1_trips_rank = sorted_hand_1.cards[4].GetRank();
+                Card.Rank hand2_trips_rank = sorted_hand_2.cards[4].GetRank();
                 if (hand1_trips_rank > hand2_trips_rank)
                     return 1;
                 if (hand2_trips_rank > hand1_trips_rank)
                     return 0;
                 // second check - first kicker rank
-                Card.Rank hand1_kicker_rank = sorted_hand_1[1].GetRank();
-                Card.Rank hand2_kicker_rank = sorted_hand_2[1].GetRank();
+                Card.Rank hand1_kicker_rank = sorted_hand_1.cards[1].GetRank();
+                Card.Rank hand2_kicker_rank = sorted_hand_2.cards[1].GetRank();
                 if (hand1_kicker_rank > hand2_kicker_rank)
                     return 1;
                 if (hand2_kicker_rank > hand1_kicker_rank)
                     return 0;
                 // third check - second kicker rank
-                hand1_kicker_rank = sorted_hand_1[0].GetRank();
-                hand2_kicker_rank = sorted_hand_2[0].GetRank();
+                hand1_kicker_rank = sorted_hand_1.cards[0].GetRank();
+                hand2_kicker_rank = sorted_hand_2.cards[0].GetRank();
                 if (hand1_kicker_rank > hand2_kicker_rank)
                     return 1;
                 if (hand2_kicker_rank > hand1_kicker_rank)
@@ -377,22 +387,22 @@ namespace PokerConsoleApp
             if (ht_1 == Hand.HandType.TwoPair)
             {
                 // first check big pair rank
-                Card.Rank big_pair_rank1 = sorted_hand_1[4].GetRank();
-                Card.Rank big_pair_rank2 = sorted_hand_2[4].GetRank();
+                Card.Rank big_pair_rank1 = sorted_hand_1.cards[4].GetRank();
+                Card.Rank big_pair_rank2 = sorted_hand_2.cards[4].GetRank();
                 if (big_pair_rank1 > big_pair_rank2)
                     return 1;
                 if (big_pair_rank2 > big_pair_rank1)
                     return 0;
                 // second check - small pair rank
-                Card.Rank small_pair_rank1 = sorted_hand_1[2].GetRank();
-                Card.Rank small_pair_rank2 = sorted_hand_2[2].GetRank();
+                Card.Rank small_pair_rank1 = sorted_hand_1.cards[2].GetRank();
+                Card.Rank small_pair_rank2 = sorted_hand_2.cards[2].GetRank();
                 if (small_pair_rank1 > small_pair_rank2)
                     return 1;
                 if (small_pair_rank2 > small_pair_rank1)
                     return 0;
                 // third check - check kicker
-                Card.Rank hand1_kicker_rank = sorted_hand_1[0].GetRank();
-                Card.Rank hand2_kicker_rank = sorted_hand_2[0].GetRank();
+                Card.Rank hand1_kicker_rank = sorted_hand_1.cards[0].GetRank();
+                Card.Rank hand2_kicker_rank = sorted_hand_2.cards[0].GetRank();
                 if (hand1_kicker_rank > hand2_kicker_rank)
                     return 1;
                 if (hand2_kicker_rank > hand1_kicker_rank)
@@ -405,29 +415,29 @@ namespace PokerConsoleApp
             if (ht_1 == Hand.HandType.OnePair)
             {
                 // first check big pair rank
-                Card.Rank pair_rank1 = sorted_hand_1[4].GetRank();
-                Card.Rank pair_rank2 = sorted_hand_2[4].GetRank();
+                Card.Rank pair_rank1 = sorted_hand_1.cards[4].GetRank();
+                Card.Rank pair_rank2 = sorted_hand_2.cards[4].GetRank();
                 if (pair_rank1 > pair_rank2)
                     return 1;
                 if (pair_rank2 > pair_rank1)
                     return 0;
                 // second check - first kicker
-                Card.Rank kicker_rank1 = sorted_hand_1[2].GetRank();
-                Card.Rank kicker_rank2 = sorted_hand_2[2].GetRank();
+                Card.Rank kicker_rank1 = sorted_hand_1.cards[2].GetRank();
+                Card.Rank kicker_rank2 = sorted_hand_2.cards[2].GetRank();
                 if (kicker_rank1 > kicker_rank2)
                     return 1;
                 if (kicker_rank2 > kicker_rank1)
                     return 0;
                 // third check - second kicker
-                kicker_rank1 = sorted_hand_1[1].GetRank();
-                kicker_rank2 = sorted_hand_2[1].GetRank();
+                kicker_rank1 = sorted_hand_1.cards[1].GetRank();
+                kicker_rank2 = sorted_hand_2.cards[1].GetRank();
                 if (kicker_rank1 > kicker_rank2)
                     return 1;
                 if (kicker_rank2 > kicker_rank1)
                     return 0;
                 // fourth check - third kicker
-                kicker_rank1 = sorted_hand_1[0].GetRank();
-                kicker_rank2 = sorted_hand_2[0].GetRank();
+                kicker_rank1 = sorted_hand_1.cards[0].GetRank();
+                kicker_rank2 = sorted_hand_2.cards[0].GetRank();
                 if (kicker_rank1 > kicker_rank2)
                     return 1;
                 if (kicker_rank2 > kicker_rank1)
@@ -440,15 +450,15 @@ namespace PokerConsoleApp
             if (ht_1 == Hand.HandType.FullHouse)
             {
                 // first check trips rank
-                Card.Rank hand1_trips_rank = sorted_hand_1[4].GetRank();
-                Card.Rank hand2_trips_rank = sorted_hand_2[4].GetRank();
+                Card.Rank hand1_trips_rank = sorted_hand_1.cards[4].GetRank();
+                Card.Rank hand2_trips_rank = sorted_hand_2.cards[4].GetRank();
                 if (hand1_trips_rank > hand2_trips_rank)
                     return 1;
                 if (hand2_trips_rank > hand1_trips_rank)
                     return 0;
                 // second check doublets rank
-                Card.Rank hand1_doublet_rank = sorted_hand_1[0].GetRank();
-                Card.Rank hand2_doublet_rank = sorted_hand_2[0].GetRank();
+                Card.Rank hand1_doublet_rank = sorted_hand_1.cards[0].GetRank();
+                Card.Rank hand2_doublet_rank = sorted_hand_2.cards[0].GetRank();
                 if (hand1_doublet_rank > hand2_doublet_rank)
                     return 1;
                 if (hand2_doublet_rank > hand1_doublet_rank)
@@ -462,8 +472,8 @@ namespace PokerConsoleApp
                 int tied_cards = 0;
                 for (int i = 4; i >= 0; i--) // progress from right to left
                 {
-                    Card.Rank hand1_card_rank = sorted_hand_1[i].GetRank();
-                    Card.Rank hand2_card_rank = sorted_hand_2[i].GetRank();
+                    Card.Rank hand1_card_rank = sorted_hand_1.cards[i].GetRank();
+                    Card.Rank hand2_card_rank = sorted_hand_2.cards[i].GetRank();
 
                     if (hand1_card_rank > hand2_card_rank)
                         return 1;
@@ -490,7 +500,7 @@ namespace PokerConsoleApp
              * ********************************************************/
             Hand[] lst_hand_copy = lst_hand.ToArray();
             int hand_count = lst_hand.Count;
-
+            Console.WriteLine($"hand_count in FindBestHand ={hand_count}");
             List<Hand> Winners_List = new List<Hand> { };
             
             
@@ -500,7 +510,8 @@ namespace PokerConsoleApp
                 int loss_counter = 0;
                 for (int j = 0; j < hand_count; j++)
                 {
-                    if (lst_hand_copy[i].Equals(lst_hand_copy[j]))
+                    Console.WriteLine($"DoesThisHandBeatThatHand i = {i} j = {j}");
+                    if (i == j)
                     {
                         continue;
                     }
@@ -512,21 +523,16 @@ namespace PokerConsoleApp
                             loss_counter++;
                         }
                     }
-                    if (loss_counter == 0) // if i never lost its a winnner
-                    {
-                        Winners_List.Add(lst_hand_copy[i]);
-                    }
-
+                }
+                if (loss_counter == 0) // if i-th hand always wins or ties then its a winner
+                {
+                    Winners_List.Add(lst_hand_copy[i]);
                 }
             }
             // Only thing left in Winners_List should be tied winners or a single a winner
+            Console.WriteLine($"Winners_List.Count = {Winners_List.Count}");
             Hand h = Winners_List[0];
-            for (int i = 0; i < hand_count; i++)
-            {
-                if (h.Equals(lst_hand_copy[i]))
-                    return (i + 1);
-            }
-            return 0;
+            return (lst_hand.IndexOf(h) + 1);
         }
         public Hand DoSort()
         {
@@ -534,6 +540,11 @@ namespace PokerConsoleApp
             //each multiplet should be sorted by suit
             //separate quads, triples, doubles to new lists
             //don't forget the case of a low ace
+            Card.Rank this_hand_card1_rank = this.cards[0].GetRank();
+            Card.Suit this_hand_card1_suit = this.cards[0].GetSuit();
+            Card.Rank this_hand_card5_rank = this.cards[4].GetRank();
+            Card.Suit this_hand_card5_suit = this.cards[4].GetSuit();
+            Console.WriteLine($"DEBUG: DOSORT(): {this_hand_card1_rank} {this_hand_card1_suit} {this_hand_card5_rank} {this_hand_card5_suit}");
             bool has_pair_been_found = false;
             List<Card> lst_singles = new List<Card> { };
             List<Card> lst_doubles1 = new List<Card> { };
@@ -680,17 +691,32 @@ namespace PokerConsoleApp
             {
                 mylist.Add(lst_quads[i]);
             }
-            Console.WriteLine($"number of cards in cards list {mylist.Count}");
-            foreach (var c in mylist)
-            {
-                Console.WriteLine($"{c.GetRank()} {c.GetSuit()}");
-            }
+            Console.WriteLine($"mylist.count = {mylist.Count}");
             Hand ret_hand = new Hand(mylist);
+            Copy_Hand_Info(this,ref ret_hand);
+            this.cards = ret_hand.cards;
+            if (this.cards[3].GetRank() != ret_hand.cards[3].GetRank())
+                throw new Exception("Hand destroyed from dosort function");
+
             return ret_hand;
         }
 
-
-
+        private void Copy_Hand_Info(Hand hand, ref Hand ret_hand)
+        {
+            ret_hand.setHandtype(hand.GetHandType());
+            for(int i = 0; i < hand.rank_tally.Length; i++)
+            {
+                ret_hand.rank_tally[i] = hand.rank_tally[i];
+            }
+            for (int i = 0; i < hand.suit_tally.Length; i++)
+            {
+                ret_hand.suit_tally[i] = hand.suit_tally[i];
+            }
+        }
+        private void setHandtype(Hand.HandType handtype)
+        {
+            this.hand_type = handtype;
+        }
         public void EvaluateHandtype()
         {
             // This method sets the general Handtype of the hand.
@@ -732,44 +758,8 @@ namespace PokerConsoleApp
                 rank_tally[x]++;
             }
 
-            // print out number of each suit
-            Console.WriteLine($"\nHearts: {suit_tally[HEART]}, Diamonds: {suit_tally[DIAMOND]}, Spades: {suit_tally[SPADE]}, Clubs: {suit_tally[CLUB]}\n");
-            // print out number of each rank
-            for (int r_i = 2; r_i < 15; r_i++)
-            {
-                if (rank_tally[r_i] != 0) // only print ranks with non-zero counts
-                {
-                    switch (r_i)
-                    {
-                        case 2:
-                        case 3:
-                        case 4:
-                        case 5:
-                        case 6:
-                        case 7:
-                        case 8:
-                        case 9:
-                        case 10:
-                            Console.Write($" # of {r_i} cards: {rank_tally[r_i]} ,");
-                            break;
-                        case 11:
-                            Console.Write($" # of Jack cards: {rank_tally[r_i]} ,");
-                            break;
-                        case 12:
-                            Console.Write($" # of Queen cards: {rank_tally[r_i]} ,");
-                            break;
-                        case 13:
-                            Console.Write($" # of King cards: {rank_tally[r_i]} ,");
-                            break;
-                        case 14:
-                            Console.Write($" # of Ace cards: {rank_tally[r_i]} ,");
-                            break;
-                        default:
-                            break;
-                    }
-                }
+                      
 
-            }
             Console.WriteLine("");
             Console.WriteLine("");
             /* ALGORITHM TO IDENTIFY WHAT HAND WE HAVE

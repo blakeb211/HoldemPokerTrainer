@@ -1,0 +1,3 @@
+TODO PokerConsoleApp Project
+
+mylist.count error when comparing two four of a kinds with different kickers
