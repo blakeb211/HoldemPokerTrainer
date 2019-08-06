@@ -287,7 +287,7 @@ namespace PokerConsoleApp
                 // second check kicker rank
                 Card.Rank hand1_kicker_rank = sorted_hand_1.cards[0].GetRank();
                 Card.Rank hand2_kicker_rank = sorted_hand_2.cards[0].GetRank();
-                Console.WriteLine("Comparing Kicker ranks of four of a kinds");
+                //Console.WriteLine("Comparing Kicker ranks of four of a kinds");
                 if (hand1_kicker_rank > hand2_kicker_rank)
                     return 1;
                 if (hand2_kicker_rank > hand1_kicker_rank)
@@ -540,6 +540,11 @@ namespace PokerConsoleApp
             //each multiplet should be sorted by suit
             //separate quads, triples, doubles to new lists
             //don't forget the case of a low ace
+            bool[] has_been_added = new bool[5];
+            // init to false
+            for (int k = 0; k < 5; k++)
+                has_been_added[k] = false;
+                       
             Card.Rank this_hand_card1_rank = this.cards[0].GetRank();
             Card.Suit this_hand_card1_suit = this.cards[0].GetSuit();
             Card.Rank this_hand_card5_rank = this.cards[4].GetRank();
@@ -562,29 +567,29 @@ namespace PokerConsoleApp
                 switch (rank_tally[i])
                 {
                     case 4:
-                        foreach (var c in cards.ToArray())
-                        {
-                            Card.Rank cr = c.GetRank();
-                            if ((int)cr == i)
+                        for (int k = 0; k < 5; k++)
+                        { 
+                            Card.Rank cr = cards[k].GetRank();
+                            if ((int)cr == i && has_been_added[k] == false)
                             {
-                                Card.Suit cs = c.GetSuit();
+                                Card.Suit cs = cards[k].GetSuit();
                                 Card cc = new Card(cs, cr);
                                 lst_quads.Add(cc);
-                                cards.Remove(c);
+                                has_been_added[k] = true;
                             }
                         }
                         break;
 
                     case 3:
-                        foreach (var c in cards.ToArray())
+                        for (int k = 0; k < 5; k++)
                         {
-                            Card.Rank cr = c.GetRank();
-                            if ((int)cr == i)
+                            Card.Rank cr = cards[k].GetRank();
+                            if ((int)cr == i && has_been_added[k] == false)
                             {
-                                Card.Suit cs = c.GetSuit();
+                                Card.Suit cs = cards[k].GetSuit();
                                 Card cc = new Card(cs, cr);
                                 lst_triples.Add(cc);
-                                cards.Remove(c);
+                                has_been_added[k] = true;
                             }
                         }
                         break;
@@ -595,48 +600,48 @@ namespace PokerConsoleApp
                         {
                             has_pair_been_found = true;
 
-                            foreach (var c in cards.ToArray())
+                            for(int k = 0; k < 5; k++)
                             {
-                                Card.Rank cr = c.GetRank();
+                                Card.Rank cr = cards[k].GetRank();
 
-                                if ((int)cr == i)
+                                if ((int)cr == i && has_been_added[k] == false)
                                 {
-                                    Card.Suit cs = c.GetSuit();
+                                    Card.Suit cs = cards[k].GetSuit();
                                     Card cc = new Card(cs, cr);
                                     lst_doubles1.Add(cc);
-                                    cards.Remove(c);
+                                    has_been_added[k] = true;
                                 }
                             }
 
                         }
                         if (has_pair_been_found == true)
                         {
-                            foreach (var c in cards.ToArray())
-                            {
-                                Card.Rank cr = c.GetRank();
+                            for (int k = 0; k < 5; k++)
+                            { 
+                                Card.Rank cr = cards[k].GetRank();
 
-                                if ((int)cr == i)
+                                if ((int)cr == i && has_been_added[k] == false)
                                 {
-                                    Card.Suit cs = c.GetSuit();
+                                    Card.Suit cs = cards[k].GetSuit();
                                     Card cc = new Card(cs, cr);
                                     lst_doubles2.Add(cc);
-                                    cards.Remove(c);
+                                    has_been_added[k] = true;
                                 }
                             }
                         }
                         break;
 
                     case 1:
-                        foreach (var c in cards.ToArray())
+                        for(int k = 0; k < 5; k++)
                         {
-                            Card.Rank cr = c.GetRank();
+                            Card.Rank cr = cards[k].GetRank();
 
-                            if ((int)cr == i)
+                            if ((int)cr == i && has_been_added[k] == false)
                             {
-                                Card.Suit cs = c.GetSuit();
+                                Card.Suit cs = cards[k].GetSuit();
                                 Card cc = new Card(cs, cr);
                                 lst_singles.Add(cc);
-                                cards.Remove(c);
+                                has_been_added[k] = true;
                             }
                         }
 
@@ -694,9 +699,9 @@ namespace PokerConsoleApp
             Console.WriteLine($"mylist.count = {mylist.Count}");
             Hand ret_hand = new Hand(mylist);
             Copy_Hand_Info(this,ref ret_hand);
-            this.cards = ret_hand.cards;
-            if (this.cards[3].GetRank() != ret_hand.cards[3].GetRank())
-                throw new Exception("Hand destroyed from dosort function");
+            //this.cards = ret_hand.cards;
+            //if (this.cards[3].GetRank() != ret_hand.cards[3].GetRank())
+            //    throw new Exception("Hand destroyed from DoSort function");
 
             return ret_hand;
         }
