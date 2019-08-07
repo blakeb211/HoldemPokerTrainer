@@ -502,9 +502,7 @@ namespace PokerConsoleApp
             int hand_count = lst_hand.Count;
             Console.WriteLine($"hand_count in FindBestHand ={hand_count}");
             List<Hand> Winners_List = new List<Hand> { };
-            
-            
-
+                 
             for (int i = 0; i < hand_count; i++)
             {
                 int loss_counter = 0;
@@ -534,6 +532,8 @@ namespace PokerConsoleApp
             Hand h = Winners_List[0];
             return (lst_hand.IndexOf(h) + 1);
         }
+
+
         public Hand DoSort()
         {
             //put doubles triples and quads at end
@@ -699,10 +699,7 @@ namespace PokerConsoleApp
             Console.WriteLine($"mylist.count = {mylist.Count}");
             Hand ret_hand = new Hand(mylist);
             Copy_Hand_Info(this,ref ret_hand);
-            //this.cards = ret_hand.cards;
-            //if (this.cards[3].GetRank() != ret_hand.cards[3].GetRank())
-            //    throw new Exception("Hand destroyed from DoSort function");
-
+        
             return ret_hand;
         }
 
