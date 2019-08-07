@@ -489,26 +489,27 @@ namespace PokerConsoleApp
             }
             return ret_val;
         }
-        public static int Find_Best_Hand(List<Hand> lst_hand)
+        public static List<int> Find_Best_Hand(List<Hand> lst_input_hands)
         {
             /*********************************************************
-             * input a List of Hands
-             * go through and compare with DoesThisHandBeatThatHand()
-             * return the integer number of the best hand 1, 2, 3, 4, etc. 
-             * 0 index not used
-             * if two hands tie and win the hand, only one of them is returned.
-             * ********************************************************/
-            Hand[] lst_hand_copy = lst_hand.ToArray();
-            int hand_count = lst_hand.Count;
-            Console.WriteLine($"hand_count in FindBestHand ={hand_count}");
-            List<Hand> Winners_List = new List<Hand> { };
+             * INPUT: a List of Hands to compare
+             * OUTPUT: a List<int> of the winnings hand indices,
+             *          starting at 0 for the first hand.
+             * 
+             * if two hands tie, they are both returned.
+             *********************************************************/
+            Hand[] lst_hand_copy = lst_input_hands.ToArray();
+            int hand_count = lst_input_hands.Count;
+            List<int> lst_winning_hand_indices = new List<int> { };
+            //Console.WriteLine($"hand_count in FindBestHand ={hand_count}");
+            List<Hand> lst_winning_hands = new List<Hand> { };
                  
             for (int i = 0; i < hand_count; i++)
             {
                 int loss_counter = 0;
                 for (int j = 0; j < hand_count; j++)
                 {
-                    Console.WriteLine($"DoesThisHandBeatThatHand i = {i} j = {j}");
+                    //Console.WriteLine($"DoesThisHandBeatThatHand i = {i} j = {j}");
                     if (i == j)
                     {
                         continue;
@@ -524,13 +525,16 @@ namespace PokerConsoleApp
                 }
                 if (loss_counter == 0) // if i-th hand always wins or ties then its a winner
                 {
-                    Winners_List.Add(lst_hand_copy[i]);
+                    lst_winning_hands.Add(lst_hand_copy[i]);
                 }
             }
-            // Only thing left in Winners_List should be tied winners or a single a winner
-            Console.WriteLine($"Winners_List.Count = {Winners_List.Count}");
-            Hand h = Winners_List[0];
-            return (lst_hand.IndexOf(h) + 1);
+            // Only thing left in lst_winning_hands should be tied winners or a single a winner
+            //Console.WriteLine($"lst_winning_hands.Count = {lst_winning_hands.Count}");
+            for(int i = 0; i < lst_winning_hands.Count; i++)
+            {
+                lst_winning_hand_indices.Add(lst_input_hands.IndexOf(lst_winning_hands[i]));
+            }
+            return lst_winning_hand_indices;
         }
 
 
@@ -549,7 +553,7 @@ namespace PokerConsoleApp
             Card.Suit this_hand_card1_suit = this.cards[0].GetSuit();
             Card.Rank this_hand_card5_rank = this.cards[4].GetRank();
             Card.Suit this_hand_card5_suit = this.cards[4].GetSuit();
-            Console.WriteLine($"DEBUG: DOSORT(): {this_hand_card1_rank} {this_hand_card1_suit} {this_hand_card5_rank} {this_hand_card5_suit}");
+            //Console.WriteLine($"DEBUG: DOSORT(): {this_hand_card1_rank} {this_hand_card1_suit} {this_hand_card5_rank} {this_hand_card5_suit}");
             bool has_pair_been_found = false;
             List<Card> lst_singles = new List<Card> { };
             List<Card> lst_doubles1 = new List<Card> { };
@@ -696,7 +700,7 @@ namespace PokerConsoleApp
             {
                 mylist.Add(lst_quads[i]);
             }
-            Console.WriteLine($"mylist.count = {mylist.Count}");
+            //Console.WriteLine($"mylist.count = {mylist.Count}");
             Hand ret_hand = new Hand(mylist);
             Copy_Hand_Info(this,ref ret_hand);
         

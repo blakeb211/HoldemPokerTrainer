@@ -18,7 +18,7 @@ namespace PokerConsoleApp
     {
         static void Main()
         {
-            Test5();
+            Test_method();
         }
         static List<Hand> Build_List_21_Hands(Card hole1, Card hole2, Card c1, Card c2, Card c3, Card c4, Card c5)
         {
@@ -73,7 +73,7 @@ namespace PokerConsoleApp
         {
             return 0;
         }
-        static void Test5()
+        static void Test_method()
         {
             // Compare two of a kind differing in high pair
             Card c1 = new Card(Card.Suit.Spade, Card.Rank.SIX);
