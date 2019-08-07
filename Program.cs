@@ -18,7 +18,9 @@ namespace PokerConsoleApp
     {
         static void Main()
         {
-            Test_method();
+            Board b = new Board();
+            b.Deal_Cards();
+            Console.WriteLine($"player 1 hole card ranks {b.players[0].hole[0].GetRank()} {b.players[0].hole[1].GetRank()}");
         }
         static List<Hand> Build_List_21_Hands(Card hole1, Card hole2, Card c1, Card c2, Card c3, Card c4, Card c5)
         {
@@ -75,23 +77,7 @@ namespace PokerConsoleApp
         }
         static void Test_method()
         {
-            // Compare two of a kind differing in high pair
-            Card c1 = new Card(Card.Suit.Spade, Card.Rank.SIX);
-            Card c2 = new Card(Card.Suit.Diamond, Card.Rank.SIX);
-            Card c3 = new Card(Card.Suit.Club, Card.Rank.QUEEN);
-            Card c4 = new Card(Card.Suit.Heart, Card.Rank.QUEEN);
-            Card c5 = new Card(Card.Suit.Spade, Card.Rank.FOUR);
-            Hand h1 = new Hand(new List<Card> { c1, c2, c3, c4, c5 });
-            c1 = new Card(Card.Suit.Heart, Card.Rank.SIX);
-            c2 = new Card(Card.Suit.Diamond, Card.Rank.SIX);
-            c3 = new Card(Card.Suit.Club, Card.Rank.JACK);
-            c4 = new Card(Card.Suit.Heart, Card.Rank.JACK);
-            c5 = new Card(Card.Suit.Spade, Card.Rank.FOUR);
-            Hand h2 = new Hand(new List<Card> { c1, c2, c3, c4, c5 });
-            h1.EvaluateHandtype();
-            h2.EvaluateHandtype();
-            int ret_val = Hand.DoesThisHandBeatThatHand(h1, h2);
-            Console.WriteLine($"return valule of DoesThisHandBeatThatHand(): {ret_val}");
+            
         }
     }
     

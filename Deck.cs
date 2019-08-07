@@ -50,7 +50,7 @@ namespace PokerConsoleApp
             Console.Write("\n");
         }
 
-        public void ShuffleDeck()
+        public void Shuffle()
         {
             Card temp = new Card();
             for (int i = 0; i < 5000; i++)

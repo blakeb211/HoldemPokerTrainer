@@ -27,10 +27,10 @@ namespace PokerConsoleApp
             OnePair = 1,
             HighCard = 0
         };
-        private List<Card> cards = new List<Card> { };
+        private readonly List<Card> cards = new List<Card> { };
         private HandType hand_type = new HandType();
-        int[] rank_tally = new int[15];  // let 0 and 1 indices be a waste to make code more clear. 
-        int[] suit_tally = new int[5];   // let 0 be waste, 1 = hearts, 2 = diamonds, 3 = spade, 4 = club
+        readonly int[] rank_tally = new int[15];  // let 0 and 1 indices be a waste to make code more clear. 
+        readonly int[] suit_tally = new int[5];   // let 0 be waste, 1 = hearts, 2 = diamonds, 3 = spade, 4 = club
         public Hand(List<Card> c)
         {
             if (c.Count != 5)
@@ -44,19 +44,12 @@ namespace PokerConsoleApp
         public Hand()
         {
             hand_type = HandType.NotAssignedYet;
+            for (int i = 0; i < 4; i++)
+                suit_tally[i] = 0;
+            for (int i = 0; i < 14; i++)
+                rank_tally[i] = 0;
         }
-        //public Card this[int index]
-        //{
-        //    get
-        //    {
-        //        return cards[index];
-        //    }
 
-        //    set
-        //    {
-        //        cards[index] = value;
-        //    }
-        //}
 
         public int GetCount()
         {
@@ -137,19 +130,15 @@ namespace PokerConsoleApp
             bool ret_flag = false;
             bool has_a_set_of_three = false;
             bool has_a_pair = false;
-            int pair_rank = -1; // store the rank of the pair found
-            int set_of_three_rank = -1; // store the rank of the three of a kind found
-
+           
             for (int i = 2; i < 15; i++)
             {
                 if (rank_tally[i] == 3)
                 {
-                    set_of_three_rank = i;
                     has_a_set_of_three = true;
                 }
                 if (rank_tally[i] == 2)
                 {
-                    pair_rank = i;
                     has_a_pair = true;
                 }
             }
@@ -549,11 +538,6 @@ namespace PokerConsoleApp
             for (int k = 0; k < 5; k++)
                 has_been_added[k] = false;
                        
-            Card.Rank this_hand_card1_rank = this.cards[0].GetRank();
-            Card.Suit this_hand_card1_suit = this.cards[0].GetSuit();
-            Card.Rank this_hand_card5_rank = this.cards[4].GetRank();
-            Card.Suit this_hand_card5_suit = this.cards[4].GetSuit();
-            //Console.WriteLine($"DEBUG: DOSORT(): {this_hand_card1_rank} {this_hand_card1_suit} {this_hand_card5_rank} {this_hand_card5_suit}");
             bool has_pair_been_found = false;
             List<Card> lst_singles = new List<Card> { };
             List<Card> lst_doubles1 = new List<Card> { };
