@@ -53,7 +53,7 @@ namespace PokerConsoleApp
         public void Shuffle()
         {
             Card temp = new Card();
-            for (int i = 0; i < 5000; i++)
+            for (int i = 0; i < 7000; i++)
             {
                 // shuffle deck by generating random numbers and exchanging the cards
                 Random random_number1 = new Random();

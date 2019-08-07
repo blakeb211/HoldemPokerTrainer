@@ -23,6 +23,11 @@
         {
             this.rank = _rank;
         }
+        public override string ToString()
+        {
+            string ret_string = this.GetRank() + "-" + this.GetSuit();
+            return ret_string;
+        }
         public Rank GetRank()
         {
             return this.rank;

@@ -20,7 +20,32 @@ namespace PokerConsoleApp
         {
             Board b = new Board();
             b.Deal_Cards();
-            Console.WriteLine($"player 1 hole card ranks {b.players[0].hole[0].GetRank()} {b.players[0].hole[1].GetRank()}");
+            Console.WriteLine(b);
+            List<Hand> lst_best_hands = new List<Hand> { };
+            for (int player_index = 0; player_index < 4; player_index++)
+            {
+                Card hole1 = b.players[player_index].hole[0];
+                Card hole2 = b.players[player_index].hole[1];
+                Card flop1 = b.flop_cards[0];
+                Card flop2 = b.flop_cards[1];
+                Card flop3 = b.flop_cards[2];
+                Card turn = b.turn_card;
+                Card river = b.river_card;
+                List<Hand> lst_hand = Build_List_21_Hands(hole1, hole2, flop1, flop2, flop3, turn, river);
+                List<int> winning_hand_indices = Hand.Find_Best_Hand(lst_hand);
+                lst_best_hands.Add(lst_hand[winning_hand_indices[0]]);
+                List<int> winning_player_indices = Hand.Find_Best_Hand(lst_best_hands);
+                Console.Write($"\n   Winners = ");
+                foreach(var ii in winning_hand_indices)
+                {
+                    Console.Write($" {ii} ");
+                }
+                Console.WriteLine(".");
+            }
+            for(int i = 0; i < 4; i++)
+            {
+                Console.WriteLine($"Player {i} " + " Best Hand = " + lst_best_hands[i]);
+            }
         }
         static List<Hand> Build_List_21_Hands(Card hole1, Card hole2, Card c1, Card c2, Card c3, Card c4, Card c5)
         {

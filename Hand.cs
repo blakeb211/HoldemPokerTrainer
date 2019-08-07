@@ -50,7 +50,17 @@ namespace PokerConsoleApp
                 rank_tally[i] = 0;
         }
 
-
+        public override string ToString()
+        {
+            string ret_string = "";
+            for (int i = 0; i < 5; i++)
+            {
+                ret_string += "( ";
+                ret_string = ret_string + this.cards[i].GetRank() + "-" + this.cards[i].GetSuit();
+                ret_string += " )";
+            }
+            return ret_string;
+        }
         public int GetCount()
         {
             return this.cards.Count;
@@ -496,9 +506,15 @@ namespace PokerConsoleApp
             for (int i = 0; i < hand_count; i++)
             {
                 int loss_counter = 0;
+
+                if (lst_hand_copy[i].GetHandType() == Hand.HandType.NotAssignedYet)
+                    lst_hand_copy[i].EvaluateHandtype();
+                
                 for (int j = 0; j < hand_count; j++)
                 {
-                    //Console.WriteLine($"DoesThisHandBeatThatHand i = {i} j = {j}");
+                    if (lst_hand_copy[j].GetHandType() == Hand.HandType.NotAssignedYet)
+                        lst_hand_copy[j].EvaluateHandtype();
+                    
                     if (i == j)
                     {
                         continue;
@@ -693,7 +709,7 @@ namespace PokerConsoleApp
 
         private void Copy_Hand_Info(Hand hand, ref Hand ret_hand)
         {
-            ret_hand.setHandtype(hand.GetHandType());
+            ret_hand.SetHandtype(hand.GetHandType());
             for(int i = 0; i < hand.rank_tally.Length; i++)
             {
                 ret_hand.rank_tally[i] = hand.rank_tally[i];
@@ -703,7 +719,7 @@ namespace PokerConsoleApp
                 ret_hand.suit_tally[i] = hand.suit_tally[i];
             }
         }
-        private void setHandtype(Hand.HandType handtype)
+        private void SetHandtype(Hand.HandType handtype)
         {
             this.hand_type = handtype;
         }
@@ -750,9 +766,7 @@ namespace PokerConsoleApp
 
                       
 
-            Console.WriteLine("");
-            Console.WriteLine("");
-            /* ALGORITHM TO IDENTIFY WHAT HAND WE HAVE
+             /* ALGORITHM TO IDENTIFY WHAT HAND WE HAVE
              * 
              * Start out by writing methods for flush and straight - done
              * 

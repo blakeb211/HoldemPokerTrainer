@@ -16,6 +16,21 @@ namespace PokerConsoleApp
         public Board()
         {
             // Board constructor
+            for (int i = 0; i < NUMBER_OF_PLAYERS; i++)
+            {
+                this.players[i] = new Player();
+            }
+        }
+        public override string ToString()
+        {
+            string ret_string;
+            ret_string = "| " + flop_cards[0] + " " + flop_cards[1] + " " + flop_cards[2] + "   " + turn_card + " " + river_card + " |";
+            ret_string = ret_string + "\n";
+            for (int i = 0; i < NUMBER_OF_PLAYERS; i++)
+            {
+                ret_string += "Player " + i + ":" + "\n" + players[i] + "\n";
+            }
+            return ret_string;
         }
         public void Deal_Cards()
         {
@@ -28,7 +43,8 @@ namespace PokerConsoleApp
                 for (int hole_card_index = 0; hole_card_index < 2; hole_card_index++)
                 {
                     // deal a card and remove it from the deck
-                    this.players[player_index].hole[hole_card_index] = cc;
+                    this.players[player_index].hole[hole_card_index] = deck.RemoveCard();
+                    
                 }
             }
             // burn a card
