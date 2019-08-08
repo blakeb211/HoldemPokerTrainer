@@ -31,24 +31,31 @@ namespace PokerConsoleApp
                 Card flop3 = b.flop_cards[2];
                 Card turn = b.turn_card;
                 Card river = b.river_card;
+                // Find individual players' best hand out of all possible
+                // combos of hole, flop, turn, and river cards
                 List<Hand> lst_hand = Build_List_21_Hands(hole1, hole2, flop1, flop2, flop3, turn, river);
                 List<int> winning_hand_indices = Hand.Find_Best_Hand(lst_hand);
                 lst_best_hands.Add(lst_hand[winning_hand_indices[0]]);
-                List<int> winning_player_indices = Hand.Find_Best_Hand(lst_best_hands);
-                Console.Write($"\n   Winners = ");
-                foreach(var ii in winning_hand_indices)
-                {
-                    Console.Write($" {ii} ");
-                }
-                Console.WriteLine(".");
+                
             }
             for(int i = 0; i < 4; i++)
             {
-                Console.WriteLine($"Player {i} " + " Best Hand = " + lst_best_hands[i]);
+                Console.WriteLine($"Player {i} " + " Best Hand = " + lst_best_hands[i].DoSort() + " " + lst_best_hands[i].GetHandType());
             }
+            // Find Winners
+            List<int> winning_player_indices = Hand.Find_Best_Hand(lst_best_hands);
+            // Print out winners
+            Console.Write($"\n   Winners = ");
+            foreach (var ii in winning_player_indices)
+            {
+                Console.Write($" {ii} ");
+            }
+            Console.WriteLine(".");
         }
         static List<Hand> Build_List_21_Hands(Card hole1, Card hole2, Card c1, Card c2, Card c3, Card c4, Card c5)
         {
+            // Find individual players' best hand out of all possible
+            // combos of hole, flop, turn, and river cards
             // hole1, hole2 = hole cards
             // c1, c2, c3 = flop cards
             // c4, c5 = turn and river cards

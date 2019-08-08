@@ -25,10 +25,10 @@ namespace PokerConsoleApp
         {
             string ret_string;
             ret_string = "| " + flop_cards[0] + " " + flop_cards[1] + " " + flop_cards[2] + "   " + turn_card + " " + river_card + " |";
-            ret_string = ret_string + "\n";
+            ret_string += "\n\n";
             for (int i = 0; i < NUMBER_OF_PLAYERS; i++)
             {
-                ret_string += "Player " + i + ":" + "\n" + players[i] + "\n";
+                ret_string += "Player " + i + " - Hole Cards" + "\n" + players[i] + "\n\n";
             }
             return ret_string;
         }
