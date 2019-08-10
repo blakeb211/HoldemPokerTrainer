@@ -9,7 +9,7 @@ namespace PokerConsoleApp
         {
             SQLiteConnection sqlite_conn;
             // Create new database connection using number of players in the datasource name
-            string datasource = $"{player_count} cards-database.db";
+            string datasource = $"{player_count}-cards-database.db";
             sqlite_conn = new SQLiteConnection("Data Source=" + datasource + ";Version=3;New=True;Compress=True;");
             // Open the connection:
             try
@@ -27,29 +27,25 @@ namespace PokerConsoleApp
         {
 
             SQLiteCommand sqlite_cmd;
-            string Createsql = "CREATE TABLE IF NOT EXISTS SampleTable (Col1 VARCHAR(20), Col2 INT)";
-            string Createsql1 = "CREATE TABLE IF NOT EXISTS SampleTable1 (Col1 VARCHAR(20), Col2 INT)";
+            string Createsql = "CREATE TABLE IF NOT EXISTS PlayerHandsTable (Col1 VARCHAR(50), Col2 VARCHAR(50), Col3 VARCHAR(50), Col4 VARCHAR(50), Col5 VARCHAR(50), Col6 VARCHAR(50), Col7 VARCHAR(50), Col8 INT)";
             sqlite_cmd = conn.CreateCommand();
             sqlite_cmd.CommandText = Createsql;
             sqlite_cmd.ExecuteNonQuery();
-            sqlite_cmd.CommandText = Createsql1;
-            sqlite_cmd.ExecuteNonQuery();
+      
 
         }
 
-        public static void InsertData(SQLiteConnection conn, Card[] cards_to_insert, bool winner_flag)
+        public static void InsertData(SQLiteConnection conn, Card[] card_objects_to_insert, bool winner_flag)
         { 
             SQLiteCommand sqlite_cmd;
             sqlite_cmd = conn.CreateCommand();
-            sqlite_cmd.CommandText = "INSERT INTO SampleTable (Col1, Col2) VALUES('Test Text ', 1); ";
+            string [] card_values = new string[7];
+            for (int i = 0; i < 7; i++)
+                card_values[i] = card_objects_to_insert[i].ToString();
+            string command_string = $"INSERT INTO PlayerHandsTable (Col1, Col2, Col3, Col4, Col5, Col6, Col7, Col8) VALUES( '{card_values[0]}', '{card_values[1]}', '{card_values[2]}', '{card_values[3]}', '{card_values[4]}', '{card_values[5]}', '{card_values[6]}', '{winner_flag}');";
+            sqlite_cmd.CommandText = command_string;
             sqlite_cmd.ExecuteNonQuery();
-            sqlite_cmd.CommandText = "INSERT INTO SampleTable (Col1, Col2) VALUES('Test1 Text1 ', 2); ";
-            sqlite_cmd.ExecuteNonQuery();
-            sqlite_cmd.CommandText = "INSERT INTO SampleTable (Col1, Col2) VALUES('Test2 Text2 ', 3); ";
-            sqlite_cmd.ExecuteNonQuery();
-            sqlite_cmd.CommandText = "INSERT INTO SampleTable1 (Col1, Col2) VALUES('Test3 Text3 ', 3); ";
-            sqlite_cmd.ExecuteNonQuery();
-
+           
         }
 
         public static void ReadData(SQLiteConnection conn)
@@ -57,7 +53,7 @@ namespace PokerConsoleApp
             SQLiteDataReader sqlite_datareader;
             SQLiteCommand sqlite_cmd;
             sqlite_cmd = conn.CreateCommand();
-            sqlite_cmd.CommandText = "SELECT * FROM SampleTable";
+            sqlite_cmd.CommandText = "SELECT * FROM PlayerHandsTable";
 
             sqlite_datareader = sqlite_cmd.ExecuteReader();
             while (sqlite_datareader.Read())
