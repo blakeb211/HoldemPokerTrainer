@@ -1,22 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace PokerConsoleApp
+﻿namespace PokerConsoleApp
 {
-    
+
     public class Board
     {
+        // note that NUMBER_OF_PLAYERS IS IN BOTH PROGRAM.cs and 
+        // BOARD.cs and needs to be fixed so that it only appears once.
+        
         const int NUMBER_OF_PLAYERS = 4;
-        public Card [] flop_cards = new Card[3];
+        public Card[] flop_cards = new Card[3];
         public Card turn_card = new Card();
         public Card river_card = new Card();
         public Player[] players = new Player[NUMBER_OF_PLAYERS];
 
-        public Board()
+        public Board(int player_count)
         {
             // Board constructor
-            for (int i = 0; i < NUMBER_OF_PLAYERS; i++)
+            for (int i = 0; i < player_count; i++)
             {
                 this.players[i] = new Player();
             }
@@ -44,7 +43,7 @@ namespace PokerConsoleApp
                 {
                     // deal a card and remove it from the deck
                     this.players[player_index].hole[hole_card_index] = deck.RemoveCard();
-                    
+
                 }
             }
             // burn a card

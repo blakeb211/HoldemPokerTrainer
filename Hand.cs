@@ -140,7 +140,7 @@ namespace PokerConsoleApp
             bool ret_flag = false;
             bool has_a_set_of_three = false;
             bool has_a_pair = false;
-           
+
             for (int i = 2; i < 15; i++)
             {
                 if (rank_tally[i] == 3)
@@ -275,7 +275,7 @@ namespace PokerConsoleApp
             // COMPARING FOUR OF A KINDS
             if (ht_1 == Hand.HandType.FourOfAKind)
             {
-                
+
                 // first check quads rank
                 Card.Rank hand1_quads_rank = sorted_hand_1.cards[4].GetRank();
                 Card.Rank hand2_quads_rank = sorted_hand_2.cards[4].GetRank();
@@ -502,19 +502,19 @@ namespace PokerConsoleApp
             List<int> lst_winning_hand_indices = new List<int> { };
             //Console.WriteLine($"hand_count in FindBestHand ={hand_count}");
             List<Hand> lst_winning_hands = new List<Hand> { };
-                 
+
             for (int i = 0; i < hand_count; i++)
             {
                 int loss_counter = 0;
 
                 if (lst_hand_copy[i].GetHandType() == Hand.HandType.NotAssignedYet)
                     lst_hand_copy[i].EvaluateHandtype();
-                
+
                 for (int j = 0; j < hand_count; j++)
                 {
                     if (lst_hand_copy[j].GetHandType() == Hand.HandType.NotAssignedYet)
                         lst_hand_copy[j].EvaluateHandtype();
-                    
+
                     if (i == j)
                     {
                         continue;
@@ -535,7 +535,7 @@ namespace PokerConsoleApp
             }
             // Only thing left in lst_winning_hands should be tied winners or a single a winner
             //Console.WriteLine($"lst_winning_hands.Count = {lst_winning_hands.Count}");
-            for(int i = 0; i < lst_winning_hands.Count; i++)
+            for (int i = 0; i < lst_winning_hands.Count; i++)
             {
                 lst_winning_hand_indices.Add(lst_input_hands.IndexOf(lst_winning_hands[i]));
             }
@@ -553,7 +553,7 @@ namespace PokerConsoleApp
             // init to false
             for (int k = 0; k < 5; k++)
                 has_been_added[k] = false;
-                       
+
             bool has_pair_been_found = false;
             List<Card> lst_singles = new List<Card> { };
             List<Card> lst_doubles1 = new List<Card> { };
@@ -572,7 +572,7 @@ namespace PokerConsoleApp
                 {
                     case 4:
                         for (int k = 0; k < 5; k++)
-                        { 
+                        {
                             Card.Rank cr = cards[k].GetRank();
                             if ((int)cr == i && has_been_added[k] == false)
                             {
@@ -604,7 +604,7 @@ namespace PokerConsoleApp
                         {
                             has_pair_been_found = true;
 
-                            for(int k = 0; k < 5; k++)
+                            for (int k = 0; k < 5; k++)
                             {
                                 Card.Rank cr = cards[k].GetRank();
 
@@ -621,7 +621,7 @@ namespace PokerConsoleApp
                         if (has_pair_been_found == true)
                         {
                             for (int k = 0; k < 5; k++)
-                            { 
+                            {
                                 Card.Rank cr = cards[k].GetRank();
 
                                 if ((int)cr == i && has_been_added[k] == false)
@@ -636,7 +636,7 @@ namespace PokerConsoleApp
                         break;
 
                     case 1:
-                        for(int k = 0; k < 5; k++)
+                        for (int k = 0; k < 5; k++)
                         {
                             Card.Rank cr = cards[k].GetRank();
 
@@ -702,15 +702,15 @@ namespace PokerConsoleApp
             }
             //Console.WriteLine($"mylist.count = {mylist.Count}");
             Hand ret_hand = new Hand(mylist);
-            Copy_Hand_Info(this,ref ret_hand);
-        
+            Copy_Hand_Info(this, ref ret_hand);
+
             return ret_hand;
         }
 
         private void Copy_Hand_Info(Hand hand, ref Hand ret_hand)
         {
             ret_hand.SetHandtype(hand.GetHandType());
-            for(int i = 0; i < hand.rank_tally.Length; i++)
+            for (int i = 0; i < hand.rank_tally.Length; i++)
             {
                 ret_hand.rank_tally[i] = hand.rank_tally[i];
             }
@@ -764,22 +764,22 @@ namespace PokerConsoleApp
                 rank_tally[x]++;
             }
 
-                      
 
-             /* ALGORITHM TO IDENTIFY WHAT HAND WE HAVE
-             * 
-             * Start out by writing methods for flush and straight - done
-             * 
-             *  StraightFlush
-             *  FourOfAKind
-             *  FullHouse
-             *  Flush
-             *  Straight
-             *  ThreeOfAKind
-             *  TwoPair
-             *  OnePair
-             *  HighCard
-             */
+
+            /* ALGORITHM TO IDENTIFY WHAT HAND WE HAVE
+            * 
+            * Start out by writing methods for flush and straight - done
+            * 
+            *  StraightFlush
+            *  FourOfAKind
+            *  FullHouse
+            *  Flush
+            *  Straight
+            *  ThreeOfAKind
+            *  TwoPair
+            *  OnePair
+            *  HighCard
+            */
             bool straight_flag = false;
             bool flush_flag = false;
             straight_flag = this.IsThisAStraight(rank_tally);

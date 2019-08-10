@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace PokerConsoleApp
+﻿namespace PokerConsoleApp
 {
     public class Player
     {
         public Card[] hole = new Card[2];
-        
-        bool won_the_hand;
+
+        public bool won_the_hand { get; set; }
         Hand best_hand = new Hand();
         public Player()
         {
@@ -23,5 +19,5 @@ namespace PokerConsoleApp
             return ret_string;
         }
     }
-  
+
 }
