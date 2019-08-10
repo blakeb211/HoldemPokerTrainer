@@ -13,6 +13,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
+using System.Diagnostics;
 namespace PokerConsoleApp
 {
     class Program
@@ -20,8 +21,19 @@ namespace PokerConsoleApp
         const int NUMBER_OF_PLAYERS = 4;
         static void Main()
         {
-            Simulate_Game_and_Save_to_DB();
+            var watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
+            int games_to_simulate = 100000;
+            for (int game_count = 0; game_count < games_to_simulate; game_count++)
+            {
+                if (game_count % 5000 == 0)
+                    Console.WriteLine($"games simulated = {game_count}. time elapsed = {watch.ElapsedMilliseconds} ms");
+                Simulate_Game_and_Save_to_DB();
+            }
+            watch.Stop();
+            Console.WriteLine($"Total Execution Time: {watch.ElapsedMilliseconds} ms");
         }
+        
         static void Print_Board_And_Show_Winner()
         {
             Board b = new Board(NUMBER_OF_PLAYERS);
@@ -109,7 +121,7 @@ namespace PokerConsoleApp
         {
             Board b = new Board(NUMBER_OF_PLAYERS);
             b.Deal_Cards();
-            Console.WriteLine(b);
+            //Console.WriteLine(b);
             List<Hand> lst_best_hands = new List<Hand> { };
             for (int player_index = 0; player_index < 4; player_index++)
             {
@@ -129,22 +141,22 @@ namespace PokerConsoleApp
             }
             for (int i = 0; i < 4; i++)
             {
-                Console.WriteLine($"Player {i} " + " Best Hand = " + lst_best_hands[i].DoSort() + " " + lst_best_hands[i].GetHandType());
+                //Console.WriteLine($"Player {i} " + " Best Hand = " + lst_best_hands[i].DoSort() + " " + lst_best_hands[i].GetHandType());
             }
             // Find Winners
             List<int> winning_player_indices = Hand.Find_Best_Hand(lst_best_hands);
             // Set WON_THE_HAND boolean inside player class
-            foreach(var wi in winning_player_indices)
+            foreach (var wi in winning_player_indices)
             {
                 b.players[wi].won_the_hand = true;
             }
             // Print out winners
-            Console.Write($"\n   Winners = ");
+            //Console.Write($"\n   Winners = ");
             foreach (var ii in winning_player_indices)
             {
-                Console.Write($" {ii} ");
+                //Console.Write($" {ii} ");
             }
-            Console.WriteLine(".");
+            //Console.WriteLine(".");
             // GAME HAS BEEN SIMULATED, NOW WRITE IT TO DATABASE
             SQLiteConnection sqlite_conn;
             sqlite_conn = SQLite_Methods.CreateConnection(NUMBER_OF_PLAYERS);
@@ -153,17 +165,29 @@ namespace PokerConsoleApp
             // INSERT GAME DATA INTO DB - ONE ROW PER HAND
             for (int player_index = 0; player_index < 4; player_index++)
             {
+                
+                List<Card> lst_hole_cards = new List<Card> { };
+                List<Card> lst_flop_cards = new List<Card> { };
+                // SORT HOLE CARDS UNIQUELY
+                // SORT FLOP CARDS UNIQUELY
+                // INSERT HOLE + FLOP + TURN + RIVER TO DB
+                for (int i = 0; i < 2; i++)
+                    lst_hole_cards.Add(b.players[player_index].hole[i]);
+                for (int i = 0; i < 3; i++)
+                    lst_flop_cards.Add(b.flop_cards[i]);
+                SQLite_Methods.Reorder_Cards_Uniquely(ref lst_hole_cards);
+                SQLite_Methods.Reorder_Cards_Uniquely(ref lst_flop_cards);
                 Card[] cards_to_insert = new Card[7];
-                cards_to_insert[0] = b.players[player_index].hole[0];
-                cards_to_insert[1] = b.players[player_index].hole[1];
-                cards_to_insert[2] = b.flop_cards[0];
-                cards_to_insert[3] = b.flop_cards[1];
-                cards_to_insert[4] = b.flop_cards[2];
+                cards_to_insert[0] = lst_hole_cards[0];
+                cards_to_insert[1] = lst_hole_cards[1];
+                cards_to_insert[2] = lst_flop_cards[0];
+                cards_to_insert[3] = lst_flop_cards[1];
+                cards_to_insert[4] = lst_flop_cards[2];
                 cards_to_insert[5] = b.turn_card;
                 cards_to_insert[6] = b.river_card;
                 SQLite_Methods.InsertData(sqlite_conn, cards_to_insert, b.players[player_index].won_the_hand);
             }
-                SQLite_Methods.ReadData(sqlite_conn);
+            //SQLite_Methods.ReadData(sqlite_conn);
             return 0;
         }
         static int Play_Game_Showing_Statistics()

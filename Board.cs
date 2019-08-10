@@ -5,7 +5,7 @@
     {
         // note that NUMBER_OF_PLAYERS IS IN BOTH PROGRAM.cs and 
         // BOARD.cs and needs to be fixed so that it only appears once.
-        
+
         const int NUMBER_OF_PLAYERS = 4;
         public Card[] flop_cards = new Card[3];
         public Card turn_card = new Card();
