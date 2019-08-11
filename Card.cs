@@ -1,4 +1,6 @@
-﻿namespace PokerConsoleApp
+﻿using System;
+using System.Collections.Generic;
+namespace PokerConsoleApp
 {
     public class Card
     {
@@ -39,6 +41,28 @@
         public Suit GetSuit()
         {
             return this.suit;
+        }
+        public static void Reorder_Cards_Uniquely(ref List<Card> lst_input)
+        {
+            int MAX_COUNT = lst_input.Count;
+            // reorder list of cards by rank and suit, modifying the input list
+            List<Card> lst_output = new List<Card> { };
+            foreach (Card.Rank r in Enum.GetValues(typeof(Card.Rank)))
+            {
+                if (lst_output.Count == MAX_COUNT)
+                    break;
+                foreach (Card.Suit s in Enum.GetValues(typeof(Card.Suit)))
+                {
+                    for (int input_cards_index = 0; input_cards_index < lst_input.Count; input_cards_index++)
+                    {
+                        if (lst_input[input_cards_index].GetRank() == r && lst_input[input_cards_index].GetSuit() == s)
+                        {
+                            lst_output.Add(lst_input[input_cards_index]);
+                        }
+                    }
+                }
+            }
+            lst_input = lst_output;
         }
     }
 }

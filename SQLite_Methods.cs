@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.SQLite;
 namespace PokerConsoleApp
 {
@@ -35,28 +34,20 @@ namespace PokerConsoleApp
 
 
         }
-        public static void Reorder_Cards_Uniquely(ref List<Card> lst_input)
+
+        public static int InsertResultItem(string card1, string card2, string card3, string card4, string card5,string card6, string card7, string win_flag, SQLiteCommand command)
         {
-            int MAX_COUNT = lst_input.Count;
-            // reorder list of cards by rank and suit, modifying the input list
-            List<Card> lst_output = new List<Card> { };
-            foreach (Card.Rank r in Enum.GetValues(typeof(Card.Rank)))
-            {
-                if (lst_output.Count == MAX_COUNT)
-                    break;
-                foreach (Card.Suit s in Enum.GetValues(typeof(Card.Suit)))
-                {
-                    for (int input_cards_index = 0; input_cards_index < lst_input.Count; input_cards_index++)
-                    {
-                        if (lst_input[input_cards_index].GetRank() == r && lst_input[input_cards_index].GetSuit() == s)
-                        {
-                            lst_output.Add(lst_input[input_cards_index]);
-                        }
-                    }
-                }
-            }
-            lst_input = lst_output;
+            command.Parameters["@card1"].Value = card1;
+            command.Parameters["@card2"].Value = card2;
+            command.Parameters["@card3"].Value = card3;
+            command.Parameters["@card4"].Value = card4;
+            command.Parameters["@card5"].Value = card5;
+            command.Parameters["@card6"].Value = card6;
+            command.Parameters["@card7"].Value = card7;
+            command.Parameters["@win_flag"].Value = win_flag;
+            return command.ExecuteNonQuery();
         }
+
         public static void InsertData(SQLiteConnection conn, Card[] card_objects_to_insert, bool winner_flag)
         {
             SQLiteCommand sqlite_cmd;

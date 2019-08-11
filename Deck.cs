@@ -7,7 +7,7 @@ namespace PokerConsoleApp
 {
     public class Deck
     {
-        private readonly List<Card> deck;
+        private List<Card> deck;
         private int cardCount;
         public Deck()
         {
@@ -52,21 +52,22 @@ namespace PokerConsoleApp
 
         public void Shuffle()
         {
-            Card temp = new Card();
-            for (int i = 0; i < 7000; i++)
-            {
-                // shuffle deck by generating random numbers and exchanging the cards
-                Random random_number1 = new Random();
-                Random random_number2 = new Random();
-                int rand1 = random_number1.Next(0, 52);
-                int rand2 = random_number2.Next(0, 52);
-                temp.SetRank(this.deck[rand1].GetRank());
-                temp.SetSuit(this.deck[rand1].GetSuit());
-                this.deck[rand1].SetRank(this.deck[rand2].GetRank());
-                this.deck[rand1].SetSuit(this.deck[rand2].GetSuit());
-                this.deck[rand2].SetRank(temp.GetRank());
-                this.deck[rand2].SetSuit(temp.GetSuit());
-            }
+            this.deck = Blake_Utility_Methods.ShuffleList(this.deck);
+            //Card temp = new Card();
+            //for (int i = 0; i < 7000; i++)
+            //{
+            //    // shuffle deck by generating random numbers and exchanging the cards
+            //    Random random_number1 = new Random();
+            //    Random random_number2 = new Random();
+            //    int rand1 = random_number1.Next(0, 52);
+            //    int rand2 = random_number2.Next(0, 52);
+            //    temp.SetRank(this.deck[rand1].GetRank());
+            //    temp.SetSuit(this.deck[rand1].GetSuit());
+            //    this.deck[rand1].SetRank(this.deck[rand2].GetRank());
+            //    this.deck[rand1].SetSuit(this.deck[rand2].GetSuit());
+            //    this.deck[rand2].SetRank(temp.GetRank());
+            //    this.deck[rand2].SetSuit(temp.GetSuit());
+            //}
         }
         public void BuildDeck()
         {
