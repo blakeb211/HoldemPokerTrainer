@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 
-
-
 namespace PokerConsoleApp
 {
     public class Deck
@@ -29,27 +27,12 @@ namespace PokerConsoleApp
             this.cardCount--;
             return c;
         }
+        
         public int GetCount()
         {
             return this.cardCount;
         }
-        public void PrintDeck()
-        {
-            int count = 0;
-            foreach (var c in deck)
-            {
-                ++count;
-                String message = $"{c.GetRank()} of {c.GetSuit()}";
-                Console.Write($"{c.GetRank()} of {c.GetSuit()}");
-                // add spaces after printing card
-                for (int i = 0; i < 20 - message.Length; i++)
-                    Console.Write(" ");
-                if (count % 4 == 0)
-                    Console.Write("\n");
-            }
-            Console.Write("\n");
-        }
-
+        
         public void Shuffle()
         {
             this.deck = Blake_Utility_Methods.ShuffleList(this.deck);

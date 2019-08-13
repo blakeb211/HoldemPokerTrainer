@@ -18,7 +18,7 @@ namespace PokerConsoleApp
 {
     class Program
     {
-        static int NUMBER_OF_PLAYERS = 6;
+        static int NUMBER_OF_PLAYERS = 3;
         static void Main()
         {
             // ADD MAIN MENU
@@ -59,18 +59,18 @@ namespace PokerConsoleApp
             List<int> winning_player_indices = Hand.Find_Best_Hand(lst_best_hands);
             // Print out winners
             var table = new ConsoleTable("Player #", "Best Hand", "Hand Type");
-            for (int iii = 0; iii < NUMBER_OF_PLAYERS; iii++)
+            for (int player_index = 0; player_index < NUMBER_OF_PLAYERS; player_index++)
             {
                 bool is_winner_flag = false;
                 foreach (var i in winning_player_indices)
-                    if (iii == i)
+                    if (player_index == i)
                         is_winner_flag = true;
                 string winner_mark = "";
                 if (is_winner_flag == true && winning_player_indices.Count == 1)
                     winner_mark = " - winner";
                 else if (is_winner_flag == true && winning_player_indices.Count > 1)
                     winner_mark = " - tie";
-                table.AddRow(iii.ToString() + winner_mark, lst_best_hands[iii].DoSort().ToString(), lst_best_hands[iii].GetHandType().ToString());
+                table.AddRow(player_index.ToString() + winner_mark, lst_best_hands[player_index].DoSort().ToString(), lst_best_hands[player_index].GetHandType().ToString());
             }
             Console.WriteLine(table);
 

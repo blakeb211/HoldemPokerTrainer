@@ -2,10 +2,6 @@
 using System.Collections.Generic;
 
 /* TODO
- * add evaluateTypeOfHand(void) method
- * add doesItBeat(Hand h) method
- * 
- * This way both of these methods is separately testable
  * 
  * Also, if one hand has a higher rank than the other, it automatically beats it and we can
  * skip extra analysis steps.
@@ -75,14 +71,7 @@ namespace PokerConsoleApp
                 throw new Exception("Can't add a card to a hand that already has 5 cards!");
             cards.Add(c);
         }
-        public void PrintHand()
-        {
-            foreach (var c in this.cards)
-            {
-                Console.Write($"{c.GetRank()}-{c.GetSuit()} ");
-            }
-            Console.Write("\n");
-        }
+   
         private bool IsThisAStraight(int[] rank_tally)
         {
             if (rank_tally.Length != 15)
@@ -500,7 +489,6 @@ namespace PokerConsoleApp
             Hand[] lst_hand_copy = lst_input_hands.ToArray();
             int hand_count = lst_input_hands.Count;
             List<int> lst_winning_hand_indices = new List<int> { };
-            //Console.WriteLine($"hand_count in FindBestHand ={hand_count}");
             List<Hand> lst_winning_hands = new List<Hand> { };
 
             for (int i = 0; i < hand_count; i++)
@@ -534,7 +522,6 @@ namespace PokerConsoleApp
                 }
             }
             // Only thing left in lst_winning_hands should be tied winners or a single a winner
-            //Console.WriteLine($"lst_winning_hands.Count = {lst_winning_hands.Count}");
             for (int i = 0; i < lst_winning_hands.Count; i++)
             {
                 lst_winning_hand_indices.Add(lst_input_hands.IndexOf(lst_winning_hands[i]));
@@ -700,7 +687,6 @@ namespace PokerConsoleApp
             {
                 mylist.Add(lst_quads[i]);
             }
-            //Console.WriteLine($"mylist.count = {mylist.Count}");
             Hand ret_hand = new Hand(mylist);
             Copy_Hand_Info(this, ref ret_hand);
 
