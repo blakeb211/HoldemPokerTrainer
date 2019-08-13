@@ -35,7 +35,7 @@ namespace PokerConsoleApp
 
         }
 
-        public static int InsertResultItem(string card1, string card2, string card3, string card4, string card5,string card6, string card7, string win_flag, SQLiteCommand command)
+        public static int InsertResultItem(string card1, string card2, string card3, string card4, string card5, string card6, string card7, string win_flag, SQLiteCommand command)
         {
             command.Parameters["@card1"].Value = card1;
             command.Parameters["@card2"].Value = card2;

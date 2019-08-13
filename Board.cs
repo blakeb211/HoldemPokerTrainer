@@ -1,20 +1,23 @@
 ﻿namespace PokerConsoleApp
 {
-
     public class Board
     {
         // note that NUMBER_OF_PLAYERS IS IN BOTH PROGRAM.cs and 
         // BOARD.cs and needs to be fixed so that it only appears once.
 
-        const int NUMBER_OF_PLAYERS = 4;
+        int NUMBER_OF_PLAYERS;
         public Card[] flop_cards = new Card[3];
         public Card turn_card = new Card();
         public Card river_card = new Card();
-        public Player[] players = new Player[NUMBER_OF_PLAYERS];
-
+        public Player[] players;
+        public Deck deck;
         public Board(int player_count)
         {
             // Board constructor
+            deck = new Deck();
+            deck.Shuffle();
+            NUMBER_OF_PLAYERS = player_count;
+            players = new Player[player_count];
             for (int i = 0; i < player_count; i++)
             {
                 this.players[i] = new Player();
@@ -25,25 +28,22 @@
             string ret_string;
             ret_string = "| " + flop_cards[0] + " " + flop_cards[1] + " " + flop_cards[2] + "   " + turn_card + " " + river_card + " |";
             ret_string += "\n\n";
+
             for (int i = 0; i < NUMBER_OF_PLAYERS; i++)
             {
                 ret_string += "Player " + i + " - Hole Cards" + "\n" + players[i] + "\n\n";
             }
             return ret_string;
         }
-        public void Deal_Cards()
+        public void Deal_Cards(int player_count)
         {
-            // TODO - add in burn cards
-            Deck deck = new Deck();
-            deck.Shuffle();
             // deal players their hole cards
-            for (int player_index = 0; player_index < NUMBER_OF_PLAYERS; player_index++)
+            for (int player_index = 0; player_index < player_count; player_index++)
             {
                 for (int hole_card_index = 0; hole_card_index < 2; hole_card_index++)
                 {
                     // deal a card and remove it from the deck
                     this.players[player_index].hole[hole_card_index] = deck.RemoveCard();
-
                 }
             }
             // burn a card
@@ -61,6 +61,12 @@
             deck.RemoveCard();
             // deal river card
             this.river_card = deck.RemoveCard();
+        }
+        public void Get_New_Deck()
+        {
+            Deck deck2 = new Deck();
+            deck2.Shuffle();
+            this.deck = deck2;
         }
     }
 }

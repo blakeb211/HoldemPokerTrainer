@@ -56,7 +56,7 @@ namespace PokerConsoleApp
             for (int i = 0; i < 5; i++)
             {
                 ret_string += "( ";
-                ret_string = ret_string + this.cards[i].GetRank() + "-" + this.cards[i].GetSuit();
+                ret_string = ret_string + this.cards[i].ToString();
                 ret_string += " )";
             }
             return ret_string;

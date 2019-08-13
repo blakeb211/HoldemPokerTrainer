@@ -27,7 +27,66 @@ namespace PokerConsoleApp
         }
         public override string ToString()
         {
-            string ret_string = this.GetRank() + "-" + this.GetSuit();
+            string rank = "";
+            string suit = "";
+            switch ((int)this.GetRank())
+            {
+                case 2:
+                    rank = "2";
+                    break;
+                case (int)Card.Rank.THREE:
+                    rank = "3";
+                    break;
+                case 4:
+                    rank = "4";
+                    break;
+                case 5:
+                    rank = "5";
+                    break;
+                case (int)Card.Rank.SIX:
+                    rank = "6";
+                    break;
+                case 7:
+                    rank = "7";
+                    break;
+                case 8:
+                    rank = "8";
+                    break;
+                case 9:
+                    rank = "9";
+                    break;
+                case 10:
+                    rank = "10";
+                    break;
+                case 11:
+                    rank = "J";
+                    break;
+                case 12:
+                    rank = "Q";
+                    break;
+                case (int)Card.Rank.KING:
+                    rank = "K";
+                    break;
+                case (int)Card.Rank.ACE:
+                    rank = "A";
+                    break;
+            }
+            switch ((int)this.GetSuit())
+            {
+                case (int)Card.Suit.Heart:
+                    suit = "h";
+                    break;
+                case (int)Card.Suit.Diamond:
+                    suit = "d";
+                    break;
+                case (int)Card.Suit.Spade:
+                    suit = "s";
+                    break;
+                case (int)Card.Suit.Club:
+                    suit = "c";
+                    break;
+            }
+            string ret_string = rank + "-" + suit;
             return ret_string;
         }
         public Rank GetRank()
