@@ -71,7 +71,7 @@ namespace PokerConsoleApp
                 throw new Exception("Can't add a card to a hand that already has 5 cards!");
             cards.Add(c);
         }
-   
+
         private bool IsThisAStraight(int[] rank_tally)
         {
             if (rank_tally.Length != 15)

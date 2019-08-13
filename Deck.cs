@@ -27,12 +27,12 @@ namespace PokerConsoleApp
             this.cardCount--;
             return c;
         }
-        
+
         public int GetCount()
         {
             return this.cardCount;
         }
-        
+
         public void Shuffle()
         {
             this.deck = Blake_Utility_Methods.ShuffleList(this.deck);

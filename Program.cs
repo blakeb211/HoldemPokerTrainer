@@ -18,7 +18,7 @@ namespace PokerConsoleApp
 {
     class Program
     {
-        static int NUMBER_OF_PLAYERS = 3;
+        static int NUMBER_OF_PLAYERS = 4;
         static void Main()
         {
             // ADD MAIN MENU

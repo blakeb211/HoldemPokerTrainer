@@ -35,7 +35,7 @@ namespace PokerConsoleApp
                 table2.AddRow(i.ToString(), $"{this.players[i].hole[0].ToString()} {this.players[i].hole[1].ToString()}");
             }
             ret_string = table2.ToString() + "\n" + table.ToString();
-         
+
             return ret_string;
         }
         public void Deal_Cards(int player_count)
