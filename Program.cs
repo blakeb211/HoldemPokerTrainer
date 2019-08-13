@@ -18,17 +18,17 @@ namespace PokerConsoleApp
 {
     class Program
     {
-        static int NUMBER_OF_PLAYERS = 4;
+        static int NUMBER_OF_PLAYERS = 6;
         static void Main()
         {
             // ADD MAIN MENU
             var watch = new System.Diagnostics.Stopwatch();
             watch.Start();
-            int games_to_simulate = 10000;
+            int games_to_simulate = 10;
             Simulate_Game_and_Save_to_DB(games_to_simulate);
             watch.Stop();
             Console.WriteLine($"Total Execution Time: {watch.ElapsedMilliseconds} ms");
-            //Print_Board_And_Show_Winner();
+            Print_Board_And_Show_Winner();
         }
 
         static void Print_Board_And_Show_Winner()
@@ -66,18 +66,14 @@ namespace PokerConsoleApp
                     if (iii == i)
                         is_winner_flag = true;
                 string winner_mark = "";
-                if (is_winner_flag == true)
-                    winner_mark = " - wins";
-                table.AddRow(iii.ToString() + winner_mark, lst_best_hands[iii].ToString(), lst_best_hands[iii].GetHandType().ToString());
+                if (is_winner_flag == true && winning_player_indices.Count == 1)
+                    winner_mark = " - winner";
+                else if (is_winner_flag == true && winning_player_indices.Count > 1)
+                    winner_mark = " - tie";
+                table.AddRow(iii.ToString() + winner_mark, lst_best_hands[iii].DoSort().ToString(), lst_best_hands[iii].GetHandType().ToString());
             }
             Console.WriteLine(table);
 
-            //Console.Write($"\n   Winners = ");
-            foreach (var ii in winning_player_indices)
-            {
-                Console.Write($" {ii} ");
-            }
-            Console.WriteLine(".");
         }
         static List<Hand> Build_List_21_Hands(Card hole1, Card hole2, Card c1, Card c2, Card c3, Card c4, Card c5)
         {
@@ -179,7 +175,7 @@ namespace PokerConsoleApp
                     /**************************************************************
                     * GAME HAS BEEN SIMULATED, NOW WRITE IT TO DATABASE
                     ***************************************************************/
-                    
+
                     sqlite_cmd.CommandText = "INSERT INTO PlayerHandsTable "
                         + "(col1, col2, col3, col4, col5, col6 , col7, col8) "
                         + "VALUES (@card1, @card2, @card3, @card4, @card5, @card6, @card7, @win_flag)";
@@ -222,7 +218,7 @@ namespace PokerConsoleApp
                 } // end of loop to do 3 games in one transaction
                 transaction.Commit();
                 sqlite_cmd.Dispose();
-                
+
             }
             sqlite_conn.Dispose();
             return 0;

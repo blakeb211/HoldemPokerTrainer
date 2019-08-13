@@ -1,4 +1,5 @@
-﻿namespace PokerConsoleApp
+﻿using ConsoleTables;
+namespace PokerConsoleApp
 {
     public class Board
     {
@@ -26,13 +27,15 @@
         public override string ToString()
         {
             string ret_string;
-            ret_string = "| " + flop_cards[0] + " " + flop_cards[1] + " " + flop_cards[2] + "   " + turn_card + " " + river_card + " |";
-            ret_string += "\n\n";
-
+            var table = new ConsoleTable("flop", "turn", "river");
+            table.AddRow($"{flop_cards[0].ToString()} {flop_cards[1].ToString()} {flop_cards[2].ToString()}", turn_card.ToString(), river_card.ToString());
+            var table2 = new ConsoleTable("player", "hole cards");
             for (int i = 0; i < NUMBER_OF_PLAYERS; i++)
             {
-                ret_string += "Player " + i + " - Hole Cards" + "\n" + players[i] + "\n\n";
+                table2.AddRow(i.ToString(), $"{this.players[i].hole[0].ToString()} {this.players[i].hole[1].ToString()}");
             }
+            ret_string = table2.ToString() + "\n" + table.ToString();
+         
             return ret_string;
         }
         public void Deal_Cards(int player_count)
