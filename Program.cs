@@ -19,9 +19,12 @@ namespace PokerConsoleApp
     class Program
     {
         static int NUMBER_OF_PLAYERS = 4;
+        const int HEIGHT = 50;
+        const int WIDTH = 130;
         static void Main()
         {
             // ADD MAIN MENU
+            Set_Window_Size(130,50);
             var watch = new System.Diagnostics.Stopwatch();
             watch.Start();
             int games_to_simulate = 10;
@@ -30,7 +33,21 @@ namespace PokerConsoleApp
             Console.WriteLine($"Total Execution Time: {watch.ElapsedMilliseconds} ms");
             Print_Board_And_Show_Winner();
         }
+        static void Set_Window_Size(int w, int h)
+        {
 
+            if (h < Console.LargestWindowHeight && w < Console.LargestWindowWidth)
+            {
+                Console.SetBufferSize(w, h);
+                Console.SetWindowSize(w, h);
+            }
+            else
+            {
+                Console.SetBufferSize(Console.LargestWindowWidth, Console.LargestWindowHeight);
+                Console.SetWindowSize(Console.LargestWindowWidth, Console.LargestWindowHeight);
+            }
+            Console.SetWindowPosition(0, 0);
+        }
         static void Print_Board_And_Show_Winner()
         {
             // ADD TABLES TO PRINT THEM
