@@ -20,7 +20,7 @@ namespace PokerConsoleApp
     {
         static int NUMBER_OF_PLAYERS = 4;
         const int HEIGHT = 50;
-        const int WIDTH = 130;
+        const int WIDTH = 120;
         static void Main()
         {
             // ADD MAIN MENU
