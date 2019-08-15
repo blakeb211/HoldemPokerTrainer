@@ -14,6 +14,7 @@ using ConsoleTables;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
+using System.Threading;
 namespace PokerConsoleApp
 {
     class Program
@@ -23,18 +24,75 @@ namespace PokerConsoleApp
         const int WIDTH = 120;
         static void Main()
         {
-            // ADD MAIN MENU
             Set_Window_Size(130,50);
+            DisplayMenu();
+            
+        }
+        public static void Debug_Test_Simulation_Speed()
+        {
             var watch = new System.Diagnostics.Stopwatch();
             watch.Start();
-            int games_to_simulate = 10;
+            int games_to_simulate = 10000;
             Simulate_Game_and_Save_to_DB(games_to_simulate);
             watch.Stop();
-            Console.WriteLine($"Total Execution Time: {watch.ElapsedMilliseconds} ms");
-            Print_Board_And_Show_Winner();
+            Console.WriteLine($"Total Execution Time: {watch.ElapsedMilliseconds / 60000 } min");
         }
+        public static void DisplayMenu()
+        {
+            bool exit_flag = false;
+            do
+            {
+                Console.Clear();
+                int userChoice = 0;
+                string sInput = "";
+                Console.WriteLine("-------------------------------------------------------------------------");
+                Console.WriteLine("1 - Simulate games to build up database");
+                Console.WriteLine("2 - Enter poker training mode");
+                Console.WriteLine($"3 - Change number of players (currently set to {NUMBER_OF_PLAYERS})");
+                Console.WriteLine("4 - View database statistics");
+                Console.WriteLine("5 - Exit");
+                Console.WriteLine("Please make a selection:");
+                Console.WriteLine("-------------------------------------------------------------------------");
+                sInput = Console.ReadLine();
+                if (Int32.TryParse(sInput, out userChoice))
+                {
+                    switch (userChoice)
+                    {
+                        case 1:
+                            // get number of games to simulate
+                            //Simulate_games_and_add_to_DB();
+                            Console.WriteLine("Games simulated..");
+                            Thread.Sleep(1500);
+                            break;
+                        case 2:
+                            //Play_Game_Showing_Statistics();
+                            Console.WriteLine("Playing Game");
+                            Thread.Sleep(1500);
+                            break;
+                        case 3:
+                            // ask for number of players
+                            // and change value if b/w 2 and 8
+                            Console.WriteLine("Enter number of players (2 to 8):");
+                            Thread.Sleep(1500);
+                            break;
+                        case 4:
+                            Console.WriteLine("Here are the database statistics:");
+                            Thread.Sleep(1500);
+                            // Show_Database_Statistics();
+                            break;
+                        case 5:
+                            exit_flag = true;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            } while (exit_flag == false);
+        }
+
         static void Set_Window_Size(int w, int h)
         {
+            Console.SetWindowPosition(0, 0);
 
             if (h < Console.LargestWindowHeight && w < Console.LargestWindowWidth)
             {
@@ -46,7 +104,7 @@ namespace PokerConsoleApp
                 Console.SetBufferSize(Console.LargestWindowWidth, Console.LargestWindowHeight);
                 Console.SetWindowSize(Console.LargestWindowWidth, Console.LargestWindowHeight);
             }
-            Console.SetWindowPosition(0, 0);
+            
         }
         static void Print_Board_And_Show_Winner()
         {
@@ -177,13 +235,7 @@ namespace PokerConsoleApp
                         List<Hand> lst_hand = Build_List_21_Hands(hole1, hole2, flop1, flop2, flop3, turn, river);
                         List<int> winning_hand_indices = Hand.Find_Best_Hand(lst_hand);
                         lst_best_hands.Add(lst_hand[winning_hand_indices[0]]);
-
                     }
-                    //for (int i = 0; i < 4; i++)
-                    //{
-                    //    Console.WriteLine($"Player {i} " + " Best Hand = " + lst_best_hands[i].DoSort() + " " + lst_best_hands[i].GetHandType());
-                    //}
-                    // Find Winners
                     List<int> winning_player_indices = Hand.Find_Best_Hand(lst_best_hands);
                     // Set WON_THE_HAND boolean inside player class
                     foreach (var wi in winning_player_indices)
@@ -242,6 +294,46 @@ namespace PokerConsoleApp
         }
         static int Play_Game_Showing_Statistics()
         {
+            // ADD TABLES TO PRINT THEM
+            Board b = new Board(NUMBER_OF_PLAYERS);
+            b.Deal_Cards(NUMBER_OF_PLAYERS);
+            Console.WriteLine(b);
+            List<Hand> lst_best_hands = new List<Hand> { };
+
+            for (int player_index = 0; player_index < NUMBER_OF_PLAYERS; player_index++)
+            {
+                Card hole1 = b.players[player_index].hole[0];
+                Card hole2 = b.players[player_index].hole[1];
+                Card flop1 = b.flop_cards[0];
+                Card flop2 = b.flop_cards[1];
+                Card flop3 = b.flop_cards[2];
+                Card turn = b.turn_card;
+                Card river = b.river_card;
+                // Find individual players' best hand out of all possible
+                // combos of hole, flop, turn, and river cards
+                List<Hand> lst_hand = Build_List_21_Hands(hole1, hole2, flop1, flop2, flop3, turn, river);
+                List<int> winning_hand_indices = Hand.Find_Best_Hand(lst_hand);
+                lst_best_hands.Add(lst_hand[winning_hand_indices[0]]);
+
+            }
+            // Find Winners
+            List<int> winning_player_indices = Hand.Find_Best_Hand(lst_best_hands);
+            // Print out winners
+            var table = new ConsoleTable("Player #", "Best Hand", "Hand Type");
+            for (int player_index = 0; player_index < NUMBER_OF_PLAYERS; player_index++)
+            {
+                bool is_winner_flag = false;
+                foreach (var i in winning_player_indices)
+                    if (player_index == i)
+                        is_winner_flag = true;
+                string winner_mark = "";
+                if (is_winner_flag == true && winning_player_indices.Count == 1)
+                    winner_mark = " - winner";
+                else if (is_winner_flag == true && winning_player_indices.Count > 1)
+                    winner_mark = " - tie";
+                table.AddRow(player_index.ToString() + winner_mark, lst_best_hands[player_index].DoSort().ToString(), lst_best_hands[player_index].GetHandType().ToString());
+            }
+            Console.WriteLine(table);
             return 0;
         }
         static void Test_method()
