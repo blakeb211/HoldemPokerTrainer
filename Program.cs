@@ -1,13 +1,5 @@
 ﻿/*
- * Purpose: This program draws a random hand from the deck and displays the handtype. 
- *          Ultimately, it will use monte carlo to calculate the odds of winning for different hole cards. 
- * Input:   None. Player number is fixed at 4.
- * Output:  Print four hands, their hand types, and who wins           
  *
- *Todo: Add evaluator method
- *             Identify and print out correct hand type, e.g. four 5s and a queen kicker, full house, 3s over 2s. 
- *             
- *      Add testing 
  * 
  */
 using ConsoleTables;
@@ -32,7 +24,7 @@ namespace PokerConsoleApp
         {
             var watch = new System.Diagnostics.Stopwatch();
             watch.Start();
-            int games_to_simulate = 10000;
+            int games_to_simulate = 50000;
             Simulate_Game_and_Save_to_DB(games_to_simulate);
             watch.Stop();
             Console.WriteLine($"Total Execution Time: {watch.ElapsedMilliseconds / 60000 } min");
@@ -61,7 +53,8 @@ namespace PokerConsoleApp
                         case 1:
                             // get number of games to simulate
                             //Simulate_games_and_add_to_DB();
-                            Console.WriteLine("Games simulated..");
+                            Console.WriteLine("Games simulating..");
+                            Debug_Test_Simulation_Speed();
                             Thread.Sleep(1500);
                             break;
                         case 2:
@@ -77,8 +70,10 @@ namespace PokerConsoleApp
                             break;
                         case 4:
                             Console.WriteLine("Here are the database statistics:");
+                            Show_Database_Statistics();
                             Thread.Sleep(1500);
-                            // Show_Database_Statistics();
+                            Console.WriteLine("Press any key to continue...");
+                            Console.Read();
                             break;
                         case 5:
                             exit_flag = true;
@@ -88,6 +83,25 @@ namespace PokerConsoleApp
                     }
                 }
             } while (exit_flag == false);
+        }
+
+        private static void Show_Database_Statistics()
+        {
+            SQLiteConnection conn = SQLite_Methods.CreateConnection(NUMBER_OF_PLAYERS);
+            SQLiteDataReader sqlite_datareader;
+            
+            SQLiteCommand sqlite_cmd;
+            sqlite_cmd = conn.CreateCommand();
+            sqlite_cmd.CommandText = "SELECT COUNT(*) FROM PlayerHandsTable WHERE Col1 like 'A%' AND Col2 like 'A%';";
+            sqlite_datareader = sqlite_cmd.ExecuteReader();
+            while (sqlite_datareader.Read())
+            {
+               int myreader = sqlite_datareader.GetInt32(0);
+                Console.WriteLine(myreader);
+            }
+            sqlite_cmd.Dispose();
+            conn.Close();
+            
         }
 
         static void Set_Window_Size(int w, int h)
