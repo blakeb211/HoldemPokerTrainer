@@ -22,6 +22,11 @@ namespace PokerConsoleApp
 
             return randomList; //return the new random list
         }
+        public static void Get_User_To_Press_A_Key()
+        {
+            Console.WriteLine("Press a key to continue...");
+            Console.Read();
+        }
 
     }
 }

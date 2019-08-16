@@ -24,10 +24,10 @@ namespace PokerConsoleApp
         {
             var watch = new System.Diagnostics.Stopwatch();
             watch.Start();
-            int games_to_simulate = 50000;
+            int games_to_simulate = 10000;
             Simulate_Game_and_Save_to_DB(games_to_simulate);
             watch.Stop();
-            Console.WriteLine($"Total Execution Time: {watch.ElapsedMilliseconds / 60000 } min");
+            Console.WriteLine($"Total Execution Time: {watch.ElapsedMilliseconds / 60000.0 } min");
         }
         public static void DisplayMenu()
         {
@@ -72,8 +72,7 @@ namespace PokerConsoleApp
                             Console.WriteLine("Here are the database statistics:");
                             Show_Database_Statistics();
                             Thread.Sleep(1500);
-                            Console.WriteLine("Press any key to continue...");
-                            Console.Read();
+                            Blake_Utility_Methods.Get_User_To_Press_A_Key();
                             break;
                         case 5:
                             exit_flag = true;
@@ -85,19 +84,19 @@ namespace PokerConsoleApp
             } while (exit_flag == false);
         }
 
+       
         private static void Show_Database_Statistics()
         {
             SQLiteConnection conn = SQLite_Methods.CreateConnection(NUMBER_OF_PLAYERS);
             SQLiteDataReader sqlite_datareader;
-            
             SQLiteCommand sqlite_cmd;
             sqlite_cmd = conn.CreateCommand();
-            sqlite_cmd.CommandText = "SELECT COUNT(*) FROM PlayerHandsTable WHERE Col1 like 'A%' AND Col2 like 'A%';";
+            sqlite_cmd.CommandText = "SELECT COUNT(*) FROM PlayerHandsTable WHERE Hole1 like 'A%' AND Hole2 like 'A%';";
             sqlite_datareader = sqlite_cmd.ExecuteReader();
             while (sqlite_datareader.Read())
             {
                int myreader = sqlite_datareader.GetInt32(0);
-                Console.WriteLine(myreader);
+               Console.WriteLine(myreader);
             }
             sqlite_cmd.Dispose();
             conn.Close();
@@ -260,13 +259,11 @@ namespace PokerConsoleApp
                     ***************************************************************/
 
                     sqlite_cmd.CommandText = "INSERT INTO PlayerHandsTable "
-                        + "(col1, col2, col3, col4, col5, col6 , col7, col8) "
-                        + "VALUES (@card1, @card2, @card3, @card4, @card5, @card6, @card7, @win_flag)";
+                        + "(hole1, hole2, flop, turn, river, winflag) "
+                        + "VALUES (@card1, @card2, @flop, @card6, @card7, @win_flag)";
                     sqlite_cmd.Parameters.AddWithValue("@card1", "");
                     sqlite_cmd.Parameters.AddWithValue("@card2", "");
-                    sqlite_cmd.Parameters.AddWithValue("@card3", "");
-                    sqlite_cmd.Parameters.AddWithValue("@card4", "");
-                    sqlite_cmd.Parameters.AddWithValue("@card5", "");
+                    sqlite_cmd.Parameters.AddWithValue("@flop", "");
                     sqlite_cmd.Parameters.AddWithValue("@card6", "");
                     sqlite_cmd.Parameters.AddWithValue("@card7", "");
                     sqlite_cmd.Parameters.AddWithValue("@win_flag", "");
@@ -295,7 +292,7 @@ namespace PokerConsoleApp
                         /*************************************************************************
                          * SQLite Insert Data
                          * ***********************************************************************/
-                        SQLite_Methods.InsertResultItem(cards_to_insert[0].ToString(), cards_to_insert[1].ToString(), cards_to_insert[2].ToString(), cards_to_insert[3].ToString(), cards_to_insert[4].ToString(), cards_to_insert[5].ToString(), cards_to_insert[6].ToString(), b.players[player_index].won_the_hand.ToString(), sqlite_cmd);
+                        SQLite_Methods.InsertResultItem(cards_to_insert[0].ToString(), cards_to_insert[1].ToString(), cards_to_insert[2].ToString() + " " + cards_to_insert[3].ToString() + " " + cards_to_insert[4].ToString(), cards_to_insert[5].ToString(), cards_to_insert[6].ToString(), b.players[player_index].won_the_hand.ToString(), sqlite_cmd);
                     } // end of loop to insert row for each player
 
                 } // end of loop to do 3 games in one transaction

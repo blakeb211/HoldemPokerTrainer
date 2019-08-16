@@ -27,7 +27,7 @@ namespace PokerConsoleApp
         {
 
             SQLiteCommand sqlite_cmd;
-            string Createsql = "CREATE TABLE IF NOT EXISTS PlayerHandsTable (Col1 VARCHAR(50), Col2 VARCHAR(50), Col3 VARCHAR(50), Col4 VARCHAR(50), Col5 VARCHAR(50), Col6 VARCHAR(50), Col7 VARCHAR(50), Col8 INT)";
+            string Createsql = "CREATE TABLE IF NOT EXISTS PlayerHandsTable (Hole1 VARCHAR(50), Hole2 VARCHAR(50), Flop VARCHAR(50), Turn VARCHAR(50), River VARCHAR(50), Winflag INT)";
             sqlite_cmd = conn.CreateCommand();
             sqlite_cmd.CommandText = Createsql;
             sqlite_cmd.ExecuteNonQuery();
@@ -35,30 +35,15 @@ namespace PokerConsoleApp
 
         }
 
-        public static int InsertResultItem(string card1, string card2, string card3, string card4, string card5, string card6, string card7, string win_flag, SQLiteCommand command)
+        public static int InsertResultItem(string card1, string card2, string flop, string card6, string card7, string win_flag, SQLiteCommand command)
         {
             command.Parameters["@card1"].Value = card1;
             command.Parameters["@card2"].Value = card2;
-            command.Parameters["@card3"].Value = card3;
-            command.Parameters["@card4"].Value = card4;
-            command.Parameters["@card5"].Value = card5;
+            command.Parameters["@flop"].Value = flop;
             command.Parameters["@card6"].Value = card6;
             command.Parameters["@card7"].Value = card7;
             command.Parameters["@win_flag"].Value = win_flag;
             return command.ExecuteNonQuery();
-        }
-
-        public static void InsertData(SQLiteConnection conn, Card[] card_objects_to_insert, bool winner_flag)
-        {
-            SQLiteCommand sqlite_cmd;
-            sqlite_cmd = conn.CreateCommand();
-            string[] card_values = new string[7];
-            for (int i = 0; i < 7; i++)
-                card_values[i] = card_objects_to_insert[i].ToString();
-            string command_string = $"INSERT INTO PlayerHandsTable (Col1, Col2, Col3, Col4, Col5, Col6, Col7, Col8) VALUES( '{card_values[0]}', '{card_values[1]}', '{card_values[2]}', '{card_values[3]}', '{card_values[4]}', '{card_values[5]}', '{card_values[6]}', '{winner_flag}');";
-            sqlite_cmd.CommandText = command_string;
-            sqlite_cmd.ExecuteNonQuery();
-
         }
 
         public static void ReadData(SQLiteConnection conn)
