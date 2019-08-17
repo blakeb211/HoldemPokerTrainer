@@ -10,6 +10,55 @@ namespace PokerConsoleApp
             TWO = 2, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT,
             NINE, TEN, JACK, QUEEN, KING, ACE
         };
+        public static string Card_Rank_ToString(Card.Rank cr)
+        {
+            string str_ret = "";
+            switch ((int)cr)
+            {
+                case 2:
+                    str_ret = "2";
+                    break;
+                case 3:
+                    str_ret = "3";
+                    break;
+                case 4:
+                    str_ret = "4";
+                    break;
+                case 5:
+                    str_ret = "5";
+                    break;
+                case 6:
+                    str_ret = "6";
+                    break;
+                case 7:
+                    str_ret = "7";
+                    break;
+                case 8:
+                    str_ret = "8";
+                    break;
+                case 9:
+                    str_ret = "9";
+                    break;
+                case 10:
+                    str_ret = "10";
+                    break;
+                case 11:
+                    str_ret = "J";
+                    break;
+                case 12:
+                    str_ret = "Q";
+                    break;
+                case 13:
+                    str_ret = "K";
+                    break;
+                case 14:
+                    str_ret = "A";
+                    break;
+                default:
+                    break;
+            }
+            return str_ret;
+        }
         private Suit suit;
         private Rank rank;
         public Card(Card.Suit cs, Card.Rank cr)

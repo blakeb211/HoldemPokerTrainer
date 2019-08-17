@@ -16,15 +16,15 @@ namespace PokerConsoleApp
         const int WIDTH = 120;
         static void Main()
         {
-            Set_Window_Size(130,50);
+            Set_Window_Size(130, 50);
             DisplayMenu();
-            
+
         }
         public static void Debug_Test_Simulation_Speed()
         {
             var watch = new System.Diagnostics.Stopwatch();
             watch.Start();
-            int games_to_simulate = 10000;
+            int games_to_simulate = 50000;
             Simulate_Game_and_Save_to_DB(games_to_simulate);
             watch.Stop();
             Console.WriteLine($"Total Execution Time: {watch.ElapsedMilliseconds / 60000.0 } min");
@@ -38,13 +38,15 @@ namespace PokerConsoleApp
                 int userChoice = 0;
                 string sInput = "";
                 Console.WriteLine("-------------------------------------------------------------------------");
+                Console.WriteLine("                              MAIN MENU                                  ");
+                Console.WriteLine("-------------------------------------------------------------------------");
                 Console.WriteLine("1 - Simulate games to build up database");
                 Console.WriteLine("2 - Enter poker training mode");
                 Console.WriteLine($"3 - Change number of players (currently set to {NUMBER_OF_PLAYERS})");
                 Console.WriteLine("4 - View database statistics");
                 Console.WriteLine("5 - Exit");
-                Console.WriteLine("Please make a selection:");
                 Console.WriteLine("-------------------------------------------------------------------------");
+                Console.WriteLine("Please make a selection:");
                 sInput = Console.ReadLine();
                 if (Int32.TryParse(sInput, out userChoice))
                 {
@@ -69,7 +71,6 @@ namespace PokerConsoleApp
                             Thread.Sleep(1500);
                             break;
                         case 4:
-                            Console.WriteLine("Here are the database statistics:");
                             Show_Database_Statistics();
                             Thread.Sleep(1500);
                             Blake_Utility_Methods.Get_User_To_Press_A_Key();
@@ -84,23 +85,78 @@ namespace PokerConsoleApp
             } while (exit_flag == false);
         }
 
-       
+
         private static void Show_Database_Statistics()
         {
-            SQLiteConnection conn = SQLite_Methods.CreateConnection(NUMBER_OF_PLAYERS);
-            SQLiteDataReader sqlite_datareader;
-            SQLiteCommand sqlite_cmd;
-            sqlite_cmd = conn.CreateCommand();
-            sqlite_cmd.CommandText = "SELECT COUNT(*) FROM PlayerHandsTable WHERE Hole1 like 'A%' AND Hole2 like 'A%';";
-            sqlite_datareader = sqlite_cmd.ExecuteReader();
-            while (sqlite_datareader.Read())
+            Console.Clear();
+            Console.WriteLine("-------------------------------------------------------------------------");
+            Console.WriteLine("                        DATABASE STATISTICS                              ");
+            Console.WriteLine("-------------------------------------------------------------------------");
+            using (var conn = SQLite_Methods.CreateConnection(NUMBER_OF_PLAYERS))
             {
-               int myreader = sqlite_datareader.GetInt32(0);
-               Console.WriteLine(myreader);
-            }
-            sqlite_cmd.Dispose();
-            conn.Close();
-            
+                SQLite_Methods.CreateTableIfNotExists(conn);
+                SQLiteCommand sqlite_cmd;
+                sqlite_cmd = conn.CreateCommand();
+
+                // get total record count
+                int i_tot_records = 0;
+                sqlite_cmd.CommandText = "SELECT COUNT(*) FROM PlayerHandsTable;";
+                using (var myDataReader = sqlite_cmd.ExecuteReader())
+                {
+                    while (myDataReader.Read())
+                    {
+                        i_tot_records = myDataReader.GetInt32(0);
+                        Console.WriteLine($"Filename:\t\t\t{NUMBER_OF_PLAYERS}-cards-databse.db");
+                        Console.WriteLine($"Total number of records:\t{i_tot_records.ToString("N0")}");
+                    }
+                } // Reader will be Disposed/Closed here
+
+                // COUNT UP POCKET PAIR OCCURENCES AND WINS
+                int[] counts = new int[15];
+                int[] wins = new int[15];
+                // mark unused array elements
+                counts[0] = -1;     counts[1] = -1;
+                wins[0] = -1;       wins[1] = -1;
+                foreach (var cr in Enum.GetValues(typeof(Card.Rank)))   // count up pocket pair occurences
+                {
+                    string str_rank = Card.Card_Rank_ToString((Card.Rank)cr);
+                    sqlite_cmd.CommandText = $"SELECT COUNT(*) FROM PlayerHandsTable WHERE Hole1 like '{str_rank}%' AND Hole2 like '{str_rank}%';";
+                    using (var myReader = sqlite_cmd.ExecuteReader())
+                    {
+                        while (myReader.Read())
+                        {
+                            int i_count = myReader.GetInt32(0);
+                            int i_card_rank = (int)((Card.Rank)cr);
+                            counts[i_card_rank] = i_count;
+                        }
+                    } // Reader will be Disposed/Closed here
+                }
+                foreach (var cr in Enum.GetValues(typeof(Card.Rank))) // count up pocket pair wins
+                {
+                    string str_rank = Card.Card_Rank_ToString((Card.Rank)cr);
+                    sqlite_cmd.CommandText = $"SELECT COUNT(*) FROM PlayerHandsTable WHERE Hole1 like '{str_rank}%' AND Hole2 like '{str_rank}%' AND Winflag like '%True%';";
+                    using (var myReader = sqlite_cmd.ExecuteReader())
+                    {
+                        while (myReader.Read())
+                        {
+                            int i_count = myReader.GetInt32(0);
+                            int i_card_rank = (int)((Card.Rank)cr);
+                            wins[i_card_rank] = i_count;
+                        }
+                    } // Reader will be Disposed/Closed here
+                }
+                // PRINT OUT POCKET PAIR RESULTS TABLE
+                var table = new ConsoleTable("Rank", "Occurrences", "Wins", "Win %");
+                foreach (var cr in Enum.GetValues(typeof(Card.Rank))) // count up pocket pair wins
+                {
+                    string str_rank = Card.Card_Rank_ToString((Card.Rank)cr);
+                    int i_card_rank = (int)((Card.Rank)cr);
+                    double chance = (wins[i_card_rank] * 1.0) / counts[i_card_rank] * 100.0;
+                    string s_chance = string.Format("{0:F1}", chance);
+                    table.AddRow($"{cr.ToString()}", counts[i_card_rank].ToString(), wins[i_card_rank].ToString(), s_chance);
+                }
+                Console.Write(table.ToString());
+                }// Connection will be Disposed/Closed here
         }
 
         static void Set_Window_Size(int w, int h)
@@ -117,11 +173,10 @@ namespace PokerConsoleApp
                 Console.SetBufferSize(Console.LargestWindowWidth, Console.LargestWindowHeight);
                 Console.SetWindowSize(Console.LargestWindowWidth, Console.LargestWindowHeight);
             }
-            
+
         }
         static void Print_Board_And_Show_Winner()
         {
-            // ADD TABLES TO PRINT THEM
             Board b = new Board(NUMBER_OF_PLAYERS);
             b.Deal_Cards(NUMBER_OF_PLAYERS);
             Console.WriteLine(b);
