@@ -70,6 +70,7 @@ namespace PokerConsoleApp
                             // ask for number of players
                             // and change value if b/w 2 and 8
                             Console.WriteLine("Enter number of players (2 to 8):");
+                            NUMBER_OF_PLAYERS = Get_Number_Of_Players_From_User();
                             Thread.Sleep(1000);
                             break;
                         case 4:
@@ -85,8 +86,40 @@ namespace PokerConsoleApp
                     }
                 }
             } while (exit_flag == false);
+            
         }
 
+        private static int Get_Number_Of_Players_From_User()
+        {
+            string sInput = "";
+            bool exit_flag = false;
+            int userChoice;
+            do
+            {
+                Console.Clear();
+                Console.WriteLine("Please enter a number between 2 and 8: ");
+                sInput = Console.ReadLine();
+                if (Int32.TryParse(sInput, out userChoice))
+                {
+                    switch (userChoice)
+                    {
+                        case 2:
+                        case 3:
+                        case 4:
+                        case 5:
+                        case 6:
+                        case 7:
+                        case 8:
+                            exit_flag = true;
+                            return userChoice;
+                            
+                        default:
+                            break;
+                    }
+                }
+            } while (exit_flag == false);
+            return 4; // return default number of players
+        }
 
         private static void Show_Database_Statistics()
         {
@@ -108,7 +141,7 @@ namespace PokerConsoleApp
                     while (myDataReader.Read())
                     {
                         i_tot_records = myDataReader.GetInt32(0);
-                        Console.WriteLine($"Filename:\t\t\t{NUMBER_OF_PLAYERS}-cards-databse.db");
+                        Console.WriteLine($"Filename:\t\t\t{NUMBER_OF_PLAYERS}-player-database.db");
                         Console.WriteLine($"Total number of records:\t{i_tot_records.ToString("N0")}\n");
                     }
                 } // Reader will be Disposed/Closed here
