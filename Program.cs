@@ -65,8 +65,8 @@ namespace PokerConsoleApp
                             Blake_Utility_Methods.Get_User_To_Press_A_Key();
                             break;
                         case 2:
-                            //Play_Game_Showing_Statistics();
-                            Console.WriteLine("Playing Game");
+                            Play_Game_Showing_Statistics();
+                            Blake_Utility_Methods.Get_User_To_Press_A_Key();
                             Thread.Sleep(1000);
                             break;
                         case 3:
@@ -420,6 +420,7 @@ namespace PokerConsoleApp
         }
         static int Play_Game_Showing_Statistics()
         {
+            Console.Clear();
             // ADD TABLES TO PRINT THEM
             Board b = new Board(NUMBER_OF_PLAYERS);
             b.Deal_Cards(NUMBER_OF_PLAYERS);
@@ -445,7 +446,7 @@ namespace PokerConsoleApp
             // Find Winners
             List<int> winning_player_indices = Hand.Find_Best_Hand(lst_best_hands);
             // Print out winners
-            var table = new ConsoleTable("Player #", "Best Hand", "Hand Type");
+            var table = new ConsoleTable("Player #", "Hole Cards", "Best Hand", "Hand Type");
             for (int player_index = 0; player_index < NUMBER_OF_PLAYERS; player_index++)
             {
                 bool is_winner_flag = false;
@@ -457,7 +458,7 @@ namespace PokerConsoleApp
                     winner_mark = " - winner";
                 else if (is_winner_flag == true && winning_player_indices.Count > 1)
                     winner_mark = " - tie";
-                table.AddRow(player_index.ToString() + winner_mark, lst_best_hands[player_index].DoSort().ToString(), lst_best_hands[player_index].GetHandType().ToString());
+                table.AddRow(player_index.ToString() + winner_mark, b.players[player_index].hole[0].ToString() + " " + b.players[player_index].hole[1].ToString(), lst_best_hands[player_index].DoSort().ToString(), lst_best_hands[player_index].GetHandType().ToString());
             }
             Console.WriteLine(table);
             return 0;

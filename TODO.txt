@@ -1,12 +1,7 @@
 TODO PokerConsoleApp Project
 
 
-
-2.	Complete the method to simulate a certain number of games
-	2a.	In Simulate Games Method, Create an Index on the HoleCards column to speed up lookup times
-3.	Add the ability to change the number of players
 4.	Add the Play_Game method as a state machine between states Pre_Deal, Hole_Cards_Dealt, FLOP_DEALT, TURN_DEALT, RIVER_DEALT
-
 
 5.	add Hand() constructor that takes a string "A-c K-c J-d 8-s 9-c"
 

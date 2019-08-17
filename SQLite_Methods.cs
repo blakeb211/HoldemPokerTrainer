@@ -67,14 +67,13 @@ namespace PokerConsoleApp
              * This method creates an index so that queries on the database go much faster
              * ***********************************************************/
             SQLiteCommand sqlite_cmd;
-            string drop_sql = "DROP INDEX IF EXISTS holecards_idx";
+            
             sqlite_cmd = conn.CreateCommand();
-            sqlite_cmd.CommandText = drop_sql;
-            sqlite_cmd.ExecuteNonQuery();
-                       
-            string create_sql = "CREATE INDEX holecards_idx ON PlayerHandsTable(HoleCards)";
+                                  
+            string create_sql = "CREATE INDEX IF NOT EXISTS holecards_idx ON PlayerHandsTable(HoleCards)";
             sqlite_cmd.CommandText = create_sql;
             sqlite_cmd.ExecuteNonQuery();
+
         }
     }
 }
