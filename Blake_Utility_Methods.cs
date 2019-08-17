@@ -28,5 +28,13 @@ namespace PokerConsoleApp
             Console.Read();
         }
 
+        public static string Trim_To_End(string s_to_trim, string s_substr)
+        {
+            int i_substr = s_to_trim.LastIndexOf(s_substr);
+            string ret_string = s_to_trim.Substring(0, i_substr);
+            ret_string += "\n";
+            return ret_string;
+        }
+
     }
 }

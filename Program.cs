@@ -107,7 +107,7 @@ namespace PokerConsoleApp
                     {
                         i_tot_records = myDataReader.GetInt32(0);
                         Console.WriteLine($"Filename:\t\t\t{NUMBER_OF_PLAYERS}-cards-databse.db");
-                        Console.WriteLine($"Total number of records:\t{i_tot_records.ToString("N0")}");
+                        Console.WriteLine($"Total number of records:\t{i_tot_records.ToString("N0")}\n");
                     }
                 } // Reader will be Disposed/Closed here
 
@@ -155,7 +155,7 @@ namespace PokerConsoleApp
                     string str_cr = Card.Card_Rank_ToString((Card.Rank)cr);
                     table.AddRow($"{str_cr} {str_cr}", counts[i_card_rank].ToString(), wins[i_card_rank].ToString(), string.Format("{0:F1}", chance));
                 }
-                Console.WriteLine(table.ToString());
+                Console.WriteLine(Blake_Utility_Methods.Trim_To_End(table.ToString(), "Count:"));
             }// Connection will be Disposed/Closed here
             Blake_Utility_Methods.Get_User_To_Press_A_Key();
         }

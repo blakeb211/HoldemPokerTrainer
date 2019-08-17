@@ -34,7 +34,7 @@ namespace PokerConsoleApp
             {
                 table2.AddRow(i.ToString(), $"{this.players[i].hole[0].ToString()} {this.players[i].hole[1].ToString()}");
             }
-            ret_string = table2.ToString() + "\n" + table.ToString();
+            ret_string = Blake_Utility_Methods.Trim_To_End(table2.ToString(), "Count:") + "\n" + Blake_Utility_Methods.Trim_To_End(table.ToString(), "Count:");
 
             return ret_string;
         }
