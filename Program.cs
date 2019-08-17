@@ -12,8 +12,8 @@ namespace PokerConsoleApp
     class Program
     {
         static int NUMBER_OF_PLAYERS = 4;
-        const int HEIGHT = 50;
-        const int WIDTH = 120;
+        const int HEIGHT = 40;
+        const int WIDTH = 90;
         static void Main()
         {
             Set_Window_Size(130, 50);
@@ -56,10 +56,13 @@ namespace PokerConsoleApp
                         case 1:
                             // get number of games to simulate
                             //Simulate_games_and_add_to_DB();
-                            Console.WriteLine("Games simulating..");
-                            Debug_Test_Simulation_Speed();
-                            
-                            Thread.Sleep(1000);
+                            int num_games = Get_Number_Of_Games_To_Simulate_From_User();
+                            var watch = new System.Diagnostics.Stopwatch();
+                            watch.Start();
+                            Simulate_Game_and_Save_to_DB(num_games);
+                            watch.Stop();
+                            Console.WriteLine($"Total Execution Time: {(watch.ElapsedMilliseconds / 60000.0).ToString("0.##")} minutes");
+                            Blake_Utility_Methods.Get_User_To_Press_A_Key();
                             break;
                         case 2:
                             //Play_Game_Showing_Statistics();
@@ -75,7 +78,6 @@ namespace PokerConsoleApp
                             break;
                         case 4:
                             Show_Database_Statistics();
-                            Thread.Sleep(1000);
                             Blake_Utility_Methods.Get_User_To_Press_A_Key();
                             break;
                         case 5:
@@ -88,7 +90,27 @@ namespace PokerConsoleApp
             } while (exit_flag == false);
             
         }
-
+        private static int Get_Number_Of_Games_To_Simulate_From_User()
+        {
+            string sInput = "";
+            bool exit_flag = false;
+            int userChoice;
+            do
+            {
+                Console.Clear();
+                Console.WriteLine("Please enter a number between 10 and 10,000,000: ");
+                sInput = Console.ReadLine();
+                if (Int32.TryParse(sInput, out userChoice))
+                {
+                    if (userChoice >= 10 && userChoice <= 10000000)
+                    {
+                        exit_flag = true;
+                        return userChoice;
+                    }
+                }
+            } while (exit_flag == false);
+            return 0; // return default number of games to simulate
+        }
         private static int Get_Number_Of_Players_From_User()
         {
             string sInput = "";
