@@ -57,22 +57,22 @@ namespace PokerConsoleApp
                             //Simulate_games_and_add_to_DB();
                             Console.WriteLine("Games simulating..");
                             Debug_Test_Simulation_Speed();
-                            Thread.Sleep(1500);
+                            Thread.Sleep(1000);
                             break;
                         case 2:
                             //Play_Game_Showing_Statistics();
                             Console.WriteLine("Playing Game");
-                            Thread.Sleep(1500);
+                            Thread.Sleep(1000);
                             break;
                         case 3:
                             // ask for number of players
                             // and change value if b/w 2 and 8
                             Console.WriteLine("Enter number of players (2 to 8):");
-                            Thread.Sleep(1500);
+                            Thread.Sleep(1000);
                             break;
                         case 4:
                             Show_Database_Statistics();
-                            Thread.Sleep(1500);
+                            Thread.Sleep(1000);
                             Blake_Utility_Methods.Get_User_To_Press_A_Key();
                             break;
                         case 5:
@@ -115,8 +115,8 @@ namespace PokerConsoleApp
                 int[] counts = new int[15];
                 int[] wins = new int[15];
                 // mark unused array elements
-                counts[0] = -1;     counts[1] = -1;
-                wins[0] = -1;       wins[1] = -1;
+                counts[0] = -1; counts[1] = -1;
+                wins[0] = -1; wins[1] = -1;
                 foreach (var cr in Enum.GetValues(typeof(Card.Rank)))   // count up pocket pair occurences
                 {
                     string str_rank = Card.Card_Rank_ToString((Card.Rank)cr);
@@ -146,17 +146,18 @@ namespace PokerConsoleApp
                     } // Reader will be Disposed/Closed here
                 }
                 // PRINT OUT POCKET PAIR RESULTS TABLE
-                var table = new ConsoleTable("Rank", "Occurrences", "Wins", "Win %");
+                var table = new ConsoleTable("Hole Cards", "Occurrences", "Wins", "Win %");
                 foreach (var cr in Enum.GetValues(typeof(Card.Rank))) // count up pocket pair wins
                 {
                     string str_rank = Card.Card_Rank_ToString((Card.Rank)cr);
                     int i_card_rank = (int)((Card.Rank)cr);
                     double chance = (wins[i_card_rank] * 1.0) / counts[i_card_rank] * 100.0;
-                    string s_chance = string.Format("{0:F1}", chance);
-                    table.AddRow($"{cr.ToString()}", counts[i_card_rank].ToString(), wins[i_card_rank].ToString(), s_chance);
+                    string str_cr = Card.Card_Rank_ToString((Card.Rank)cr);
+                    table.AddRow($"{str_cr} {str_cr}", counts[i_card_rank].ToString(), wins[i_card_rank].ToString(), string.Format("{0:F1}", chance));
                 }
-                Console.Write(table.ToString());
-                }// Connection will be Disposed/Closed here
+                Console.WriteLine(table.ToString());
+            }// Connection will be Disposed/Closed here
+            Blake_Utility_Methods.Get_User_To_Press_A_Key();
         }
 
         static void Set_Window_Size(int w, int h)

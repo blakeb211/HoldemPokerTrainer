@@ -1,15 +1,19 @@
 TODO PokerConsoleApp Project
 
-add EasyConsole nuget package and use it to create main menu
+0. Strip last line from Table printout so it doesn't say "Count:"
 
-add Hand() constructor that takes a string "A-c K-c J-d 8-s 9-c"
+1.	Modify SQLite Schema so that Hole1 and Hole2 are a single Column (HoleCards)
+2.	Complete the method to simulate a certain number of games
+	2a.	In Simulate Games Method, Create an Index on the HoleCards column to speed up lookup times
+3.	Add the ability to change the number of players
+4.	Add the Play_Game method as a state machine between states Pre_Deal, Hole_Cards_Dealt, FLOP_DEALT, TURN_DEALT, RIVER_DEALT
 
-modify Print_Board... method to be Play_Game_With_Statistics and delete the unneeded method
-- use SQL LIKE keyword and wildcards %, - to pull statistics from the database
 
-add more tests and add unittest.cs to project if possible
+5.	add Hand() constructor that takes a string "A-c K-c J-d 8-s 9-c"
 
-go through project to refactor
+6.	add more tests and add unittest.cs to this project if possible
 
-add input and output notes to every method
+7.	go through project to refactor
+
+add input and output notes to every method??
 
