@@ -27,7 +27,7 @@ namespace PokerConsoleApp
         {
 
             SQLiteCommand sqlite_cmd;
-            string Createsql = "CREATE TABLE IF NOT EXISTS PlayerHandsTable (Hole1 VARCHAR(50), Hole2 VARCHAR(50), Flop VARCHAR(50), Turn VARCHAR(50), River VARCHAR(50), Winflag INT)";
+            string Createsql = "CREATE TABLE IF NOT EXISTS PlayerHandsTable (HoleCards VARCHAR(50), Flop VARCHAR(50), Turn VARCHAR(50), River VARCHAR(50), Winflag INT)";
             sqlite_cmd = conn.CreateCommand();
             sqlite_cmd.CommandText = Createsql;
             sqlite_cmd.ExecuteNonQuery();
@@ -35,13 +35,12 @@ namespace PokerConsoleApp
 
         }
 
-        public static int InsertResultItem(string card1, string card2, string flop, string card6, string card7, string win_flag, SQLiteCommand command)
+        public static int InsertResultItem(string holecards, string flop, string turn, string river, string win_flag, SQLiteCommand command)
         {
-            command.Parameters["@card1"].Value = card1;
-            command.Parameters["@card2"].Value = card2;
+            command.Parameters["@holecards"].Value = holecards;
             command.Parameters["@flop"].Value = flop;
-            command.Parameters["@card6"].Value = card6;
-            command.Parameters["@card7"].Value = card7;
+            command.Parameters["@turn"].Value = turn;
+            command.Parameters["@river"].Value = river;
             command.Parameters["@win_flag"].Value = win_flag;
             return command.ExecuteNonQuery();
         }
@@ -60,6 +59,22 @@ namespace PokerConsoleApp
                 Console.WriteLine(myreader);
             }
             conn.Close();
+        }
+
+        public static void Create_Fresh_Index_On_HoleCards(SQLiteConnection conn)
+        {
+            /**************************************************************
+             * This method creates an index so that queries on the database go much faster
+             * ***********************************************************/
+            SQLiteCommand sqlite_cmd;
+            string drop_sql = "DROP INDEX IF EXISTS holecards_idx";
+            sqlite_cmd = conn.CreateCommand();
+            sqlite_cmd.CommandText = drop_sql;
+            sqlite_cmd.ExecuteNonQuery();
+                       
+            string create_sql = "CREATE INDEX holecards_idx ON PlayerHandsTable(HoleCards)";
+            sqlite_cmd.CommandText = create_sql;
+            sqlite_cmd.ExecuteNonQuery();
         }
     }
 }

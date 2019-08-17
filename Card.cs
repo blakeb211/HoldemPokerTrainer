@@ -68,7 +68,7 @@ namespace PokerConsoleApp
         }
         public Card()
         {
-            throw new NotImplementedException();
+            
         }
         public void SetRank(Rank _rank)
         {

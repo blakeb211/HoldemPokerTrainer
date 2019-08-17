@@ -24,10 +24,11 @@ namespace PokerConsoleApp
         {
             var watch = new System.Diagnostics.Stopwatch();
             watch.Start();
-            int games_to_simulate = 50000;
+            int games_to_simulate = 5000;
             Simulate_Game_and_Save_to_DB(games_to_simulate);
             watch.Stop();
             Console.WriteLine($"Total Execution Time: {watch.ElapsedMilliseconds / 60000.0 } min");
+            
         }
         public static void DisplayMenu()
         {
@@ -57,6 +58,7 @@ namespace PokerConsoleApp
                             //Simulate_games_and_add_to_DB();
                             Console.WriteLine("Games simulating..");
                             Debug_Test_Simulation_Speed();
+                            
                             Thread.Sleep(1000);
                             break;
                         case 2:
@@ -120,7 +122,7 @@ namespace PokerConsoleApp
                 foreach (var cr in Enum.GetValues(typeof(Card.Rank)))   // count up pocket pair occurences
                 {
                     string str_rank = Card.Card_Rank_ToString((Card.Rank)cr);
-                    sqlite_cmd.CommandText = $"SELECT COUNT(*) FROM PlayerHandsTable WHERE Hole1 like '{str_rank}%' AND Hole2 like '{str_rank}%';";
+                    sqlite_cmd.CommandText = $"SELECT COUNT(*) FROM PlayerHandsTable WHERE HoleCards like '{str_rank}%{str_rank}%';";
                     using (var myReader = sqlite_cmd.ExecuteReader())
                     {
                         while (myReader.Read())
@@ -134,7 +136,7 @@ namespace PokerConsoleApp
                 foreach (var cr in Enum.GetValues(typeof(Card.Rank))) // count up pocket pair wins
                 {
                     string str_rank = Card.Card_Rank_ToString((Card.Rank)cr);
-                    sqlite_cmd.CommandText = $"SELECT COUNT(*) FROM PlayerHandsTable WHERE Hole1 like '{str_rank}%' AND Hole2 like '{str_rank}%' AND Winflag like '%True%';";
+                    sqlite_cmd.CommandText = $"SELECT COUNT(*) FROM PlayerHandsTable WHERE HoleCards like '{str_rank}%{str_rank}%' AND Winflag like '%True%';";
                     using (var myReader = sqlite_cmd.ExecuteReader())
                     {
                         while (myReader.Read())
@@ -315,13 +317,12 @@ namespace PokerConsoleApp
                     ***************************************************************/
 
                     sqlite_cmd.CommandText = "INSERT INTO PlayerHandsTable "
-                        + "(hole1, hole2, flop, turn, river, winflag) "
-                        + "VALUES (@card1, @card2, @flop, @card6, @card7, @win_flag)";
-                    sqlite_cmd.Parameters.AddWithValue("@card1", "");
-                    sqlite_cmd.Parameters.AddWithValue("@card2", "");
+                        + "(holecards, flop, turn, river, winflag) "
+                        + "VALUES (@holecards, @flop, @turn, @river, @win_flag)";
+                    sqlite_cmd.Parameters.AddWithValue("@holecards", "");
                     sqlite_cmd.Parameters.AddWithValue("@flop", "");
-                    sqlite_cmd.Parameters.AddWithValue("@card6", "");
-                    sqlite_cmd.Parameters.AddWithValue("@card7", "");
+                    sqlite_cmd.Parameters.AddWithValue("@turn", "");
+                    sqlite_cmd.Parameters.AddWithValue("@river", "");
                     sqlite_cmd.Parameters.AddWithValue("@win_flag", "");
                     // INSERT GAME DATA INTO DB - ONE ROW PER PLAYER
                     for (int player_index = 0; player_index < NUMBER_OF_PLAYERS; player_index++)
@@ -348,14 +349,17 @@ namespace PokerConsoleApp
                         /*************************************************************************
                          * SQLite Insert Data
                          * ***********************************************************************/
-                        SQLite_Methods.InsertResultItem(cards_to_insert[0].ToString(), cards_to_insert[1].ToString(), cards_to_insert[2].ToString() + " " + cards_to_insert[3].ToString() + " " + cards_to_insert[4].ToString(), cards_to_insert[5].ToString(), cards_to_insert[6].ToString(), b.players[player_index].won_the_hand.ToString(), sqlite_cmd);
+                        SQLite_Methods.InsertResultItem(cards_to_insert[0].ToString() + " " + cards_to_insert[1].ToString(), cards_to_insert[2].ToString() + " " + cards_to_insert[3].ToString() + " " + cards_to_insert[4].ToString(), cards_to_insert[5].ToString(), cards_to_insert[6].ToString(), b.players[player_index].won_the_hand.ToString(), sqlite_cmd);
                     } // end of loop to insert row for each player
 
                 } // end of loop to do 3 games in one transaction
                 transaction.Commit();
                 sqlite_cmd.Dispose();
+                
 
-            }
+            } // end of games loop
+              // Create index for fast querying of the database
+            SQLite_Methods.Create_Fresh_Index_On_HoleCards(sqlite_conn);
             sqlite_conn.Dispose();
             return 0;
         }

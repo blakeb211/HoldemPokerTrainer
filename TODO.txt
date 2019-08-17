@@ -1,8 +1,7 @@
 TODO PokerConsoleApp Project
 
-0. Strip last line from Table printout so it doesn't say "Count:"
 
-1.	Modify SQLite Schema so that Hole1 and Hole2 are a single Column (HoleCards)
+
 2.	Complete the method to simulate a certain number of games
 	2a.	In Simulate Games Method, Create an Index on the HoleCards column to speed up lookup times
 3.	Add the ability to change the number of players
