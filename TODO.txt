@@ -1,13 +1,11 @@
 TODO PokerConsoleApp Project
 
+UPDATE Get_Post_Flop_Percentage() Method to take the suit of the cards into account
+	Dramatically Speed up the Hand Evaluator, Simulate 4 billion hands, and 
+	let the Get_Post_Flop_Percentage() method search for records with the exact flop shown.
 
-4.	Add the Play_Game method as a state machine between states Pre_Deal, Hole_Cards_Dealt, FLOP_DEALT, TURN_DEALT, RIVER_DEALT
+ADD HAND() CONSTRUCTOR THAT TAKES A STRING LIKE ("A-c J-h 10-c 9-d A-s")
 
-5.	add Hand() constructor that takes a string "A-c K-c J-d 8-s 9-c"
+GO THROUGH PROJECT AND REFACTOR
 
-6.	add more tests and add unittest.cs to this project if possible
-
-7.	go through project to refactor
-
-add input and output notes to every method??
-
+ADD MORE UNIT TESTS AND ADD UNIT_TESTS.CS FILE TO GITHUB
