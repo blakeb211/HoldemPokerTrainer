@@ -14,6 +14,16 @@ ADD MORE UNIT TESTS AND ADD UNIT_TESTS.CS FILE TO GITHUB
 AT CURRENT CODE STATE, simulating and saving 4 billion hands will fill 252 GB and take 58 days!!
 That is way too long for this to be a reasonable way to do it.
 -------------------------------------------------------------------------------------------------
-Write tables in 2GB Chunks to Memory and then save all at once to disk.
-Do that 125 times.
+POSSIBLE FIXES TO THIS PROBLEM:
+		Write tables in 2GB Chunks to Memory and then save all at once to disk.
+		Do that 125 times.
+
+		Save each hole card combo to its own table for faster lookups
+
+		Compress data by encoding it as integers (1 - 52 for each card and 1 or 0 for true or false)
+
+		Speed up hand evaluator - 2598960 unique 5 cards
+
+		Speed up sorting algorithm
+
 
