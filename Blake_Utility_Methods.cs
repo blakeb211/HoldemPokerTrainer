@@ -21,7 +21,7 @@ namespace PokerConsoleApp
         public static void Get_User_To_Press_A_Key()
         {
             Console.WriteLine("Press a key to continue...");
-            Console.Read();
+            Console.ReadLine();
         }
 
         public static string Trim_To_End(string s_to_trim, string s_substr)

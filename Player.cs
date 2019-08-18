@@ -4,11 +4,11 @@
     {
         public Card[] hole = new Card[2];
 
-        public bool won_the_hand { get; set; }
-        Hand best_hand = new Hand();
+        public bool Won_The_Hand { get; set; }
+        public Hand best_hand = new Hand();
         public Player()
         {
-            this.won_the_hand = false;
+            this.Won_The_Hand = false;
             this.hole[0] = new Card();
             this.hole[1] = new Card();
         }

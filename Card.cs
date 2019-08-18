@@ -68,7 +68,7 @@ namespace PokerConsoleApp
         }
         public Card()
         {
-            
+
         }
         public void SetRank(Rank _rank)
         {

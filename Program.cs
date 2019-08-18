@@ -28,7 +28,7 @@ namespace PokerConsoleApp
             Simulate_Game_and_Save_to_DB(games_to_simulate);
             watch.Stop();
             Console.WriteLine($"Total Execution Time: {watch.ElapsedMilliseconds / 60000.0 } min");
-            
+
         }
         public static void DisplayMenu()
         {
@@ -88,7 +88,7 @@ namespace PokerConsoleApp
                     }
                 }
             } while (exit_flag == false);
-            
+
         }
         private static int Get_Number_Of_Games_To_Simulate_From_User()
         {
@@ -134,7 +134,7 @@ namespace PokerConsoleApp
                         case 8:
                             exit_flag = true;
                             return userChoice;
-                            
+
                         default:
                             break;
                     }
@@ -365,7 +365,7 @@ namespace PokerConsoleApp
                     List<int> winning_player_indices = Hand.Find_Best_Hand(lst_best_hands);
                     // Set WON_THE_HAND boolean inside player class
                     foreach (var wi in winning_player_indices)
-                        b.players[wi].won_the_hand = true;
+                        b.players[wi].Won_The_Hand = true;
 
                     /**************************************************************
                     * GAME HAS BEEN SIMULATED, NOW WRITE IT TO DATABASE
@@ -404,13 +404,13 @@ namespace PokerConsoleApp
                         /*************************************************************************
                          * SQLite Insert Data
                          * ***********************************************************************/
-                        SQLite_Methods.InsertResultItem(cards_to_insert[0].ToString() + " " + cards_to_insert[1].ToString(), cards_to_insert[2].ToString() + " " + cards_to_insert[3].ToString() + " " + cards_to_insert[4].ToString(), cards_to_insert[5].ToString(), cards_to_insert[6].ToString(), b.players[player_index].won_the_hand.ToString(), sqlite_cmd);
+                        SQLite_Methods.InsertResultItem(cards_to_insert[0].ToString() + " " + cards_to_insert[1].ToString(), cards_to_insert[2].ToString() + " " + cards_to_insert[3].ToString() + " " + cards_to_insert[4].ToString(), cards_to_insert[5].ToString(), cards_to_insert[6].ToString(), b.players[player_index].Won_The_Hand.ToString(), sqlite_cmd);
                     } // end of loop to insert row for each player
 
                 } // end of loop to do 3 games in one transaction
                 transaction.Commit();
                 sqlite_cmd.Dispose();
-                
+
 
             } // end of games loop
               // Create index for fast querying of the database
@@ -418,51 +418,213 @@ namespace PokerConsoleApp
             sqlite_conn.Dispose();
             return 0;
         }
+        enum State { hole_cards_dealt, flop_dealt, turn_dealt, river_dealt, game_over };
         static int Play_Game_Showing_Statistics()
         {
-            Console.Clear();
-            // ADD TABLES TO PRINT THEM
-            Board b = new Board(NUMBER_OF_PLAYERS);
-            b.Deal_Cards(NUMBER_OF_PLAYERS);
-            Console.WriteLine(b);
-            List<Hand> lst_best_hands = new List<Hand> { };
+            bool exit_flag = false;
+            do
+            { // begin outer game loop so user can keep playing
+                Console.Clear();
+                State state = new State();
+                state = State.hole_cards_dealt;
+                // DEAL A NEW GAME
+                Blake_Utility_Methods.Get_User_To_Press_A_Key();
+                Board b = new Board(NUMBER_OF_PLAYERS);
+                b.Deal_Cards(NUMBER_OF_PLAYERS);
+                // FIND WINNERS
+                List<Hand> lst_best_hands = new List<Hand> { }; // holds best hand of each player
+                for (int player_index = 0; player_index < NUMBER_OF_PLAYERS; player_index++)
+                {
+                    Card hole1 = b.players[player_index].hole[0];
+                    Card hole2 = b.players[player_index].hole[1];
+                    Card flop1 = b.flop_cards[0];
+                    Card flop2 = b.flop_cards[1];
+                    Card flop3 = b.flop_cards[2];
+                    Card turn = b.turn_card;
+                    Card river = b.river_card;
+                    // Find individual players' best hand out of all possible
+                    // combos of hole, flop, turn, and river cards
+                    List<Hand> lst_hand = Build_List_21_Hands(hole1, hole2, flop1, flop2, flop3, turn, river);
+                    List<int> winning_hand_indices = Hand.Find_Best_Hand(lst_hand);
+                    lst_best_hands.Add(lst_hand[winning_hand_indices[0]]);
+                    b.players[player_index].best_hand = lst_hand[winning_hand_indices[0]];
+                }
+                List<int> winning_player_indices = Hand.Find_Best_Hand(lst_best_hands);
+                foreach (var w_index in winning_player_indices)
+                    b.players[w_index].Won_The_Hand = true;
 
-            for (int player_index = 0; player_index < NUMBER_OF_PLAYERS; player_index++)
-            {
-                Card hole1 = b.players[player_index].hole[0];
-                Card hole2 = b.players[player_index].hole[1];
-                Card flop1 = b.flop_cards[0];
-                Card flop2 = b.flop_cards[1];
-                Card flop3 = b.flop_cards[2];
-                Card turn = b.turn_card;
-                Card river = b.river_card;
-                // Find individual players' best hand out of all possible
-                // combos of hole, flop, turn, and river cards
-                List<Hand> lst_hand = Build_List_21_Hands(hole1, hole2, flop1, flop2, flop3, turn, river);
-                List<int> winning_hand_indices = Hand.Find_Best_Hand(lst_hand);
-                lst_best_hands.Add(lst_hand[winning_hand_indices[0]]);
 
-            }
-            // Find Winners
-            List<int> winning_player_indices = Hand.Find_Best_Hand(lst_best_hands);
-            // Print out winners
-            var table = new ConsoleTable("Player #", "Hole Cards", "Best Hand", "Hand Type");
-            for (int player_index = 0; player_index < NUMBER_OF_PLAYERS; player_index++)
-            {
-                bool is_winner_flag = false;
-                foreach (var i in winning_player_indices)
-                    if (player_index == i)
-                        is_winner_flag = true;
-                string winner_mark = "";
-                if (is_winner_flag == true && winning_player_indices.Count == 1)
-                    winner_mark = " - winner";
-                else if (is_winner_flag == true && winning_player_indices.Count > 1)
-                    winner_mark = " - tie";
-                table.AddRow(player_index.ToString() + winner_mark, b.players[player_index].hole[0].ToString() + " " + b.players[player_index].hole[1].ToString(), lst_best_hands[player_index].DoSort().ToString(), lst_best_hands[player_index].GetHandType().ToString());
-            }
-            Console.WriteLine(table);
+                // CYCLE THROUGH STATES PRINTING BOARD OUT
+                do
+                {
+                    Console.Clear();
+                    String str_Board = Build_Game_Table(b, NUMBER_OF_PLAYERS, state);
+                    Console.WriteLine(str_Board);
+                    if (state < State.river_dealt)
+                    {
+                        Blake_Utility_Methods.Get_User_To_Press_A_Key();
+                        Thread.Sleep(300);
+                        state++;
+                    }
+                    else
+                    {
+                        Blake_Utility_Methods.Get_User_To_Press_A_Key();
+                        Thread.Sleep(300);
+                        state = State.flop_dealt;
+                        break;
+                    }
+                } while (1 == 1); // END STATE LOOP FOR INDIVIDUAL GAMES
+            } while (exit_flag == false);
             return 0;
         }
+
+        private static string Build_Game_Table(Board b, int num_players, State state)
+        {
+            // BUILD COMMUNITY CARD BOARD
+            var tbl_board = new ConsoleTable("flop", "turn", "river");
+            switch (state)
+            {
+                case State.hole_cards_dealt:
+                    tbl_board.AddRow("       ", "    ", "     ");
+                    break;
+                case State.flop_dealt:
+                    tbl_board.AddRow($"{b.flop_cards[0].ToString()} {b.flop_cards[1].ToString()} {b.flop_cards[2].ToString()}", "    ", "     ");
+                    break;
+                case State.turn_dealt:
+                    tbl_board.AddRow($"{b.flop_cards[0].ToString()} {b.flop_cards[1].ToString()} {b.flop_cards[2].ToString()}", b.turn_card.ToString(), "     ");
+                    break;
+                case State.river_dealt:
+                    tbl_board.AddRow($"{b.flop_cards[0].ToString()} {b.flop_cards[1].ToString()} {b.flop_cards[2].ToString()}", b.turn_card.ToString(), b.river_card.ToString());
+                    break;
+                case State.game_over:
+                    break;
+                default:
+                    break;
+            }
+            string str_board = Blake_Utility_Methods.Trim_To_End(tbl_board.ToString(), "Count:");
+
+            // BUILD PLAYER TABLE
+            ConsoleTable tbl_players = new ConsoleTable("Player", "Hole Cards", "Pre-flop %", "Post-flop %", "Best Hand", "HandType");
+            for (int player_index = 0; player_index < num_players; player_index++)
+            {
+                switch (state)
+                {
+                    case State.hole_cards_dealt:
+                        if (player_index == 0)
+                        {
+                            tbl_players.AddRow(player_index.ToString(), $"{b.players[player_index].hole[0].ToString()} {b.players[player_index].hole[1].ToString()}", Get_Pre_Flop_Percentage(b, player_index).ToString(), "  ", "   ", "   ");
+                        }
+                        else
+                            tbl_players.AddRow(player_index.ToString(), "hidden", "  ", "  ", "   ", "   ");
+                        break;
+                    case State.flop_dealt:
+                        if (player_index == 0)
+                        {
+                            tbl_players.AddRow(player_index.ToString(), $"{b.players[player_index].hole[0].ToString()} {b.players[player_index].hole[1].ToString()}", Get_Pre_Flop_Percentage(b, player_index).ToString(), Get_Post_Flop_Percentage(b, player_index).ToString(), "   ", "   ");
+                        }
+                        else
+                            tbl_players.AddRow(player_index.ToString(), "hidden", "  ", "  ", "   ", "   ");
+                        break;
+                    case State.turn_dealt:
+                        if (player_index == 0)
+                        {
+                            tbl_players.AddRow(player_index.ToString(), $"{b.players[player_index].hole[0].ToString()} {b.players[player_index].hole[1].ToString()}", Get_Pre_Flop_Percentage(b, player_index).ToString(), Get_Post_Flop_Percentage(b, player_index).ToString(), "   ", "   ");
+                        }
+                        else
+                            tbl_players.AddRow(player_index.ToString(), "hidden", "  ", "  ", "   ", "   ");
+                        break;
+                    case State.river_dealt:
+                        if (b.players[player_index].Won_The_Hand == true)
+                            tbl_players.AddRow(player_index.ToString() + " - win", $"{b.players[player_index].hole[0].ToString()} {b.players[player_index].hole[1].ToString()}", Get_Pre_Flop_Percentage(b, player_index).ToString(), Get_Post_Flop_Percentage(b, player_index).ToString(), b.players[player_index].best_hand.DoSort().ToString(), b.players[player_index].best_hand.GetHandType().ToString());
+                        else
+                            tbl_players.AddRow(player_index.ToString(), $"{b.players[player_index].hole[0].ToString()} {b.players[player_index].hole[1].ToString()}", Get_Pre_Flop_Percentage(b, player_index).ToString(), Get_Post_Flop_Percentage(b, player_index).ToString(), b.players[player_index].best_hand.DoSort().ToString(), b.players[player_index].best_hand.GetHandType().ToString());
+                        break;
+                    default:
+                        break;
+                }
+            }
+            string ret_string = Blake_Utility_Methods.Trim_To_End(tbl_players.ToString(), "Count:");
+            ret_string += str_board;
+            return ret_string;
+        }
+
+        private static int Get_Post_Flop_Percentage(Board b, int player_index)
+        {
+            double records_with_those_cards = 0;
+            double records_that_won = 0;
+            using (var conn = SQLite_Methods.CreateConnection(b.players.Length))
+            {
+                SQLite_Methods.CreateTableIfNotExists(conn);
+                SQLiteCommand sqlite_cmd;
+                sqlite_cmd = conn.CreateCommand();
+
+                // get total records with those hole cards
+                List<Card> holes = new List<Card> { };
+                holes.Add(b.players[player_index].hole[0]);
+                holes.Add(b.players[player_index].hole[1]);
+                Card.Reorder_Cards_Uniquely(ref holes);
+                List<Card> flop = new List<Card> { };
+                flop.Add(b.flop_cards[0]);
+                flop.Add(b.flop_cards[1]);
+                flop.Add(b.flop_cards[2]);
+                Card.Reorder_Cards_Uniquely(ref flop);
+                sqlite_cmd.CommandText = $"SELECT COUNT(*) FROM PlayerHandsTable WHERE HoleCards like '{Card.Card_Rank_ToString(holes[0].GetRank())}%{Card.Card_Rank_ToString(holes[1].GetRank())}%' AND Flop like '{Card.Card_Rank_ToString(flop[0].GetRank())}%{Card.Card_Rank_ToString(flop[1].GetRank())}%{Card.Card_Rank_ToString(flop[2].GetRank())}%';";
+                using (var myDataReader = sqlite_cmd.ExecuteReader())
+                {
+                    while (myDataReader.Read())
+                    {
+                        records_with_those_cards = myDataReader.GetInt32(0);
+                    }
+                } // Reader will be Disposed/Closed here
+                sqlite_cmd.CommandText = $"SELECT COUNT(*) FROM PlayerHandsTable WHERE HoleCards like '{Card.Card_Rank_ToString(holes[0].GetRank())}%{Card.Card_Rank_ToString(holes[1].GetRank())}%' AND Flop like '{Card.Card_Rank_ToString(flop[0].GetRank())}%{Card.Card_Rank_ToString(flop[1].GetRank())}%{Card.Card_Rank_ToString(flop[2].GetRank())}%' And WinFlag = 'True';";
+                using (var myDataReader = sqlite_cmd.ExecuteReader())
+                {
+                    while (myDataReader.Read())
+                    {
+                        records_that_won = myDataReader.GetInt32(0);
+                    }
+                } // Reader will be Disposed/Closed here
+            }
+            return (int)(records_that_won / records_with_those_cards * 100.0);
+        }
+
+        private static int Get_Pre_Flop_Percentage(Board b, int player_index)
+        {
+            double records_with_those_hole_cards = 0;
+            double records_that_won = 0;
+            using (var conn = SQLite_Methods.CreateConnection(b.players.Length))
+            {
+                SQLite_Methods.CreateTableIfNotExists(conn);
+                SQLiteCommand sqlite_cmd;
+                sqlite_cmd = conn.CreateCommand();
+
+                // get total records with those hole cards
+                List<Card> holes = new List<Card> { };
+                holes.Add(b.players[player_index].hole[0]);
+                holes.Add(b.players[player_index].hole[1]);
+                Card.Reorder_Cards_Uniquely(ref holes);
+
+                sqlite_cmd.CommandText = $"SELECT COUNT(*) FROM PlayerHandsTable WHERE HoleCards = '{holes[0].ToString()} {holes[1].ToString()}';";
+                using (var myDataReader = sqlite_cmd.ExecuteReader())
+                {
+                    while (myDataReader.Read())
+                    {
+                        records_with_those_hole_cards = myDataReader.GetInt32(0);
+                    }
+                } // Reader will be Disposed/Closed here
+                sqlite_cmd.CommandText = $"SELECT COUNT(*) FROM PlayerHandsTable WHERE HoleCards = '{holes[0].ToString()} {holes[1].ToString()}' AND WinFlag like '%True%' ;";
+                using (var myDataReader = sqlite_cmd.ExecuteReader())
+                {
+                    while (myDataReader.Read())
+                    {
+                        records_that_won = myDataReader.GetInt32(0);
+                    }
+                } // Reader will be Disposed/Closed here
+            }
+            return (int)(records_that_won / records_with_those_hole_cards * 100.0);
+
+        }
+
         static void Test_method()
         {
 
