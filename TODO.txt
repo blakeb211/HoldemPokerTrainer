@@ -9,3 +9,11 @@ ADD HAND() CONSTRUCTOR THAT TAKES A STRING LIKE ("A-c J-h 10-c 9-d A-s")
 GO THROUGH PROJECT AND REFACTOR
 
 ADD MORE UNIT TESTS AND ADD UNIT_TESTS.CS FILE TO GITHUB
+
+-------------------------------------------------------------------------------------------------
+AT CURRENT CODE STATE, simulating and saving 4 billion hands will fill 252 GB and take 58 days!!
+That is way too long for this to be a reasonable way to do it.
+-------------------------------------------------------------------------------------------------
+Write tables in 2GB Chunks to Memory and then save all at once to disk.
+Do that 125 times.
+
