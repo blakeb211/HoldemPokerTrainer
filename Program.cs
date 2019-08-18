@@ -18,7 +18,7 @@ namespace PokerConsoleApp
         {
             Set_Window_Size(130, 50);
             DisplayMenu();
-            //Test_method();
+            Test_method();
 
         }
         public static void Debug_Test_Simulation_Speed()
@@ -331,7 +331,7 @@ namespace PokerConsoleApp
             sqlite_conn = SQLite_Methods.CreateConnection(NUMBER_OF_PLAYERS);
             SQLite_Methods.CreateTableIfNotExists(sqlite_conn);
             SQLite_Methods.Drop_Index_On_HoleCards(sqlite_conn);
-            int GAMES_PER_TRANSACTION = 50;
+            int GAMES_PER_TRANSACTION = 500;
             for (int games_count = 0; games_count < games_to_simulate; games_count += 3*GAMES_PER_TRANSACTION)
             {
                 // BEGIN SQLITE SETUP CODE

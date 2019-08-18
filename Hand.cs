@@ -497,13 +497,15 @@ namespace PokerConsoleApp
 
                 if (lst_hand_copy[i].GetHandType() == Hand.HandType.NotAssignedYet)
                     lst_hand_copy[i].EvaluateHandtype();
-
+         
                 for (int j = 0; j < hand_count; j++)
                 {
                     if (lst_hand_copy[j].GetHandType() == Hand.HandType.NotAssignedYet)
                         lst_hand_copy[j].EvaluateHandtype();
-                    // ADD CONTINUE IF i is one of losing indices
+                    // Continue if i OR j are one of losing indices
                     if (lst_losing_hand_indices.Contains(i))
+                        break;
+                    if (lst_losing_hand_indices.Contains(j))
                         continue;
                     if (i == j)
                     {

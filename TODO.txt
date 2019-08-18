@@ -61,14 +61,12 @@ C2 = 73,394 records per minute
 
 4,000,000,000 / 73,394 / 60 / 24  = 37 days to simulate target
 
-BATCHED TO NOW DO 150 RECORDS PER TRANSACTION
-4,000,000,000 / 477,142 / 60 / 24  = 5.82 days to simulate target
+BATCHED TO NOW DO 1500 RECORDS PER TRANSACTION
+4,000,000,000 / 523,000 / 60 / 24  = 5.82 days to simulate target
 4,000,000,000 / 8728 / 1024 / 1024 = 166 Gigabytes to store target database
-
-200400 records = C2 * 0.42 minutes
-C2 = 477,142 records per minute == 5.82 DAYS TO TARGET
 
 200400 = C1 * 8748 kilobytes
 C1 = 22.91 records per kilobyte
 
+204000 records in 0.32 min = 637,500 records per minute == 4.35 DAYS TO TARGET
 
