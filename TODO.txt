@@ -27,3 +27,16 @@ POSSIBLE FIXES TO THIS PROBLEM:
 		Speed up sorting algorithm
 
 
+CHANGED WINFLAG TO INTEGER
+44016 records = C * 2316 kilobytes
+104016 records = C * 5544 kilobytes
+Solve for C, 
+		  C = 18.76
+4,000,000,000 / 18.76 / 1024 / 1024 = 200 Gigabytes for 4 billion records
+
+60,000 record took 1.21 minutes
+
+60,000 = C2 * 1.21 minutes
+    C2 = 49,586 records per minute
+
+4,000,000,000 / 49,586 = 80,667 minutes == 56 days

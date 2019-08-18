@@ -35,7 +35,7 @@ namespace PokerConsoleApp
 
         }
 
-        public static int InsertResultItem(string holecards, string flop, string turn, string river, string win_flag, SQLiteCommand command)
+        public static int InsertResultItem(string holecards, string flop, string turn, string river, int win_flag, SQLiteCommand command)
         {
             command.Parameters["@holecards"].Value = holecards;
             command.Parameters["@flop"].Value = flop;

@@ -12,6 +12,13 @@
             this.hole[0] = new Card();
             this.hole[1] = new Card();
         }
+        public int GetWinflag()
+        {
+            if (this.Won_The_Hand == true)
+                return 1;
+            else
+                return 0;
+        }
         public override string ToString()
         {
             string ret_string;

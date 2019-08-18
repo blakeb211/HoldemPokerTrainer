@@ -191,7 +191,7 @@ namespace PokerConsoleApp
                 foreach (var cr in Enum.GetValues(typeof(Card.Rank))) // count up pocket pair wins
                 {
                     string str_rank = Card.Card_Rank_ToString((Card.Rank)cr);
-                    sqlite_cmd.CommandText = $"SELECT COUNT(*) FROM PlayerHandsTable WHERE HoleCards like '{str_rank}%{str_rank}%' AND Winflag like '%True%';";
+                    sqlite_cmd.CommandText = $"SELECT COUNT(*) FROM PlayerHandsTable WHERE HoleCards like '{str_rank}%{str_rank}%' AND Winflag = 1;";
                     using (var myReader = sqlite_cmd.ExecuteReader())
                     {
                         while (myReader.Read())
@@ -404,7 +404,7 @@ namespace PokerConsoleApp
                         /*************************************************************************
                          * SQLite Insert Data
                          * ***********************************************************************/
-                        SQLite_Methods.InsertResultItem(cards_to_insert[0].ToString() + " " + cards_to_insert[1].ToString(), cards_to_insert[2].ToString() + " " + cards_to_insert[3].ToString() + " " + cards_to_insert[4].ToString(), cards_to_insert[5].ToString(), cards_to_insert[6].ToString(), b.players[player_index].Won_The_Hand.ToString(), sqlite_cmd);
+                        SQLite_Methods.InsertResultItem(cards_to_insert[0].ToString() + " " + cards_to_insert[1].ToString(), cards_to_insert[2].ToString() + " " + cards_to_insert[3].ToString() + " " + cards_to_insert[4].ToString(), cards_to_insert[5].ToString(), cards_to_insert[6].ToString(), b.players[player_index].GetWinflag(), sqlite_cmd);
                     } // end of loop to insert row for each player
 
                 } // end of loop to do 3 games in one transaction
@@ -576,7 +576,7 @@ namespace PokerConsoleApp
                         records_with_those_cards = myDataReader.GetInt32(0);
                     }
                 } // Reader will be Disposed/Closed here
-                sqlite_cmd.CommandText = $"SELECT COUNT(*) FROM PlayerHandsTable WHERE HoleCards like '{Card.Card_Rank_ToString(holes[0].GetRank())}%{Card.Card_Rank_ToString(holes[1].GetRank())}%' AND Flop like '{Card.Card_Rank_ToString(flop[0].GetRank())}%{Card.Card_Rank_ToString(flop[1].GetRank())}%{Card.Card_Rank_ToString(flop[2].GetRank())}%' And WinFlag = 'True';";
+                sqlite_cmd.CommandText = $"SELECT COUNT(*) FROM PlayerHandsTable WHERE HoleCards like '{Card.Card_Rank_ToString(holes[0].GetRank())}%{Card.Card_Rank_ToString(holes[1].GetRank())}%' AND Flop like '{Card.Card_Rank_ToString(flop[0].GetRank())}%{Card.Card_Rank_ToString(flop[1].GetRank())}%{Card.Card_Rank_ToString(flop[2].GetRank())}%' And WinFlag = 1;";
                 using (var myDataReader = sqlite_cmd.ExecuteReader())
                 {
                     while (myDataReader.Read())
@@ -612,7 +612,7 @@ namespace PokerConsoleApp
                         records_with_those_hole_cards = myDataReader.GetInt32(0);
                     }
                 } // Reader will be Disposed/Closed here
-                sqlite_cmd.CommandText = $"SELECT COUNT(*) FROM PlayerHandsTable WHERE HoleCards = '{holes[0].ToString()} {holes[1].ToString()}' AND WinFlag like '%True%' ;";
+                sqlite_cmd.CommandText = $"SELECT COUNT(*) FROM PlayerHandsTable WHERE HoleCards = '{holes[0].ToString()} {holes[1].ToString()}' AND WinFlag = 1 ;";
                 using (var myDataReader = sqlite_cmd.ExecuteReader())
                 {
                     while (myDataReader.Read())
