@@ -490,7 +490,7 @@ namespace PokerConsoleApp
             int hand_count = lst_input_hands.Count;
             List<int> lst_winning_hand_indices = new List<int> { };
             List<Hand> lst_winning_hands = new List<Hand> { };
-
+            List<int> lst_losing_hand_indices = new List<int> { };
             for (int i = 0; i < hand_count; i++)
             {
                 int loss_counter = 0;
@@ -502,17 +502,22 @@ namespace PokerConsoleApp
                 {
                     if (lst_hand_copy[j].GetHandType() == Hand.HandType.NotAssignedYet)
                         lst_hand_copy[j].EvaluateHandtype();
-
+                    // ADD CONTINUE IF i is one of losing indices
+                    if (lst_losing_hand_indices.Contains(i))
+                        continue;
                     if (i == j)
                     {
                         continue;
                     }
                     else
                     {
+                        //DEBUG LINE TO SEE NUMBER OF COMPARISONS BEING DONE
+                        //Console.WriteLine($"DoesThisHandBeatThatHand: Does i = {i} beat j = {j} being evaluated");
                         int comparison_result = Hand.DoesThisHandBeatThatHand(lst_hand_copy[i], lst_hand_copy[j]);
                         if (comparison_result == 0) // if i loses
                         {
                             loss_counter++;
+                            lst_losing_hand_indices.Add(i);
                         }
                     }
                 }

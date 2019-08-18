@@ -18,6 +18,7 @@ namespace PokerConsoleApp
         {
             Set_Window_Size(130, 50);
             DisplayMenu();
+            //Test_method();
 
         }
         public static void Debug_Test_Simulation_Speed()
@@ -329,85 +330,81 @@ namespace PokerConsoleApp
             SQLiteConnection sqlite_conn;
             sqlite_conn = SQLite_Methods.CreateConnection(NUMBER_OF_PLAYERS);
             SQLite_Methods.CreateTableIfNotExists(sqlite_conn);
-            for (int games_count = 0; games_count < games_to_simulate; games_count += 3)
+            SQLite_Methods.Drop_Index_On_HoleCards(sqlite_conn);
+            int GAMES_PER_TRANSACTION = 50;
+            for (int games_count = 0; games_count < games_to_simulate; games_count += 3*GAMES_PER_TRANSACTION)
             {
-                Board b = new Board(NUMBER_OF_PLAYERS);
                 // BEGIN SQLITE SETUP CODE
                 SQLiteCommand sqlite_cmd;
                 sqlite_cmd = sqlite_conn.CreateCommand();
                 SQLiteTransaction transaction = sqlite_conn.BeginTransaction();
-                // END SQLITE SETUP CODE
-                for (int deal_count = 0; deal_count < 3; deal_count++) // two deals per deck
+                for (int games_per_tran_index = 0; games_per_tran_index < GAMES_PER_TRANSACTION; games_per_tran_index++)
                 {
-                    if (games_to_simulate == 1)
-                        deal_count += 2;
-                    if (games_to_simulate == 2)
-                        deal_count += 1;
-                    b.Deal_Cards(NUMBER_OF_PLAYERS);
-                    if ((deal_count + 1) % 2 == 0)
-                        b.Get_New_Deck();
-                    List<Hand> lst_best_hands = new List<Hand> { };
-                    for (int player_index = 0; player_index < NUMBER_OF_PLAYERS; player_index++)
+                    Board b = new Board(NUMBER_OF_PLAYERS);
+                    
+                    // END SQLITE SETUP CODE
+                    for (int deal_count = 0; deal_count <= 2; deal_count++) // two deals per deck
                     {
-                        Card hole1 = b.players[player_index].hole[0];
-                        Card hole2 = b.players[player_index].hole[1];
-                        Card flop1 = b.flop_cards[0];
-                        Card flop2 = b.flop_cards[1];
-                        Card flop3 = b.flop_cards[2];
-                        Card turn = b.turn_card;
-                        Card river = b.river_card;
-                        // Find individual players' best hand out of all possible
-                        // combos of hole, flop, turn, and river cards
-                        List<Hand> lst_hand = Build_List_21_Hands(hole1, hole2, flop1, flop2, flop3, turn, river);
-                        List<int> winning_hand_indices = Hand.Find_Best_Hand(lst_hand);
-                        lst_best_hands.Add(lst_hand[winning_hand_indices[0]]);
-                    }
-                    List<int> winning_player_indices = Hand.Find_Best_Hand(lst_best_hands);
-                    // Set WON_THE_HAND boolean inside player class
-                    foreach (var wi in winning_player_indices)
-                        b.players[wi].Won_The_Hand = true;
+                        if (games_to_simulate == 1)
+                            deal_count += 2;
+                        if (games_to_simulate == 2)
+                            deal_count += 1;
+                        b.Deal_Cards(NUMBER_OF_PLAYERS);
+                        if ((deal_count + 1) % 2 == 0)
+                            b.Get_New_Deck();
+                        List<Hand> lst_best_hands = new List<Hand> { };
+                        for (int player_index = 0; player_index < NUMBER_OF_PLAYERS; player_index++)
+                        {
+                            Card hole1 = b.players[player_index].hole[0];
+                            Card hole2 = b.players[player_index].hole[1];
+                            Card flop1 = b.flop_cards[0];
+                            Card flop2 = b.flop_cards[1];
+                            Card flop3 = b.flop_cards[2];
+                            Card turn = b.turn_card;
+                            Card river = b.river_card;
+                            // Find individual players' best hand out of all possible
+                            // combos of hole, flop, turn, and river cards
+                            List<Hand> lst_hand = Build_List_21_Hands(hole1, hole2, flop1, flop2, flop3, turn, river);
+                            List<int> winning_hand_indices = Hand.Find_Best_Hand(lst_hand);
+                            lst_best_hands.Add(lst_hand[winning_hand_indices[0]]);
+                        }
+                        List<int> winning_player_indices = Hand.Find_Best_Hand(lst_best_hands);
+                        // Set WON_THE_HAND boolean inside player class
+                        foreach (var wi in winning_player_indices)
+                            b.players[wi].Won_The_Hand = true;
 
-                    /**************************************************************
-                    * GAME HAS BEEN SIMULATED, NOW WRITE IT TO DATABASE
-                    ***************************************************************/
+                        /**************************************************************
+                        * GAME HAS BEEN SIMULATED, NOW WRITE IT TO DATABASE
+                        ***************************************************************/
 
-                    sqlite_cmd.CommandText = "INSERT INTO PlayerHandsTable "
-                        + "(holecards, flop, turn, river, winflag) "
-                        + "VALUES (@holecards, @flop, @turn, @river, @win_flag)";
-                    sqlite_cmd.Parameters.AddWithValue("@holecards", "");
-                    sqlite_cmd.Parameters.AddWithValue("@flop", "");
-                    sqlite_cmd.Parameters.AddWithValue("@turn", "");
-                    sqlite_cmd.Parameters.AddWithValue("@river", "");
-                    sqlite_cmd.Parameters.AddWithValue("@win_flag", "");
-                    // INSERT GAME DATA INTO DB - ONE ROW PER PLAYER
-                    for (int player_index = 0; player_index < NUMBER_OF_PLAYERS; player_index++)
-                    {
-                        List<Card> lst_hole_cards = new List<Card> { };
-                        List<Card> lst_flop_cards = new List<Card> { };
-                        // SORT HOLE CARDS UNIQUELY
-                        // SORT FLOP CARDS UNIQUELY
-                        // INSERT HOLE + FLOP + TURN + RIVER TO DB
-                        for (int i = 0; i < 2; i++)
-                            lst_hole_cards.Add(b.players[player_index].hole[i]);
-                        for (int i = 0; i < 3; i++)
-                            lst_flop_cards.Add(b.flop_cards[i]);
-                        Card.Reorder_Cards_Uniquely(ref lst_hole_cards);
-                        Card.Reorder_Cards_Uniquely(ref lst_flop_cards);
-                        Card[] cards_to_insert = new Card[7];
-                        cards_to_insert[0] = lst_hole_cards[0];
-                        cards_to_insert[1] = lst_hole_cards[1];
-                        cards_to_insert[2] = lst_flop_cards[0];
-                        cards_to_insert[3] = lst_flop_cards[1];
-                        cards_to_insert[4] = lst_flop_cards[2];
-                        cards_to_insert[5] = b.turn_card;
-                        cards_to_insert[6] = b.river_card;
-                        /*************************************************************************
-                         * SQLite Insert Data
-                         * ***********************************************************************/
-                        SQLite_Methods.InsertResultItem(cards_to_insert[0].ToString() + " " + cards_to_insert[1].ToString(), cards_to_insert[2].ToString() + " " + cards_to_insert[3].ToString() + " " + cards_to_insert[4].ToString(), cards_to_insert[5].ToString(), cards_to_insert[6].ToString(), b.players[player_index].GetWinflag(), sqlite_cmd);
-                    } // end of loop to insert row for each player
+                        sqlite_cmd.CommandText = "INSERT INTO PlayerHandsTable "
+                            + "(holecards, flop, winflag) "
+                            + "VALUES (@holecards, @flop, @win_flag)";
+                        sqlite_cmd.Parameters.AddWithValue("@holecards", "");
+                        sqlite_cmd.Parameters.AddWithValue("@flop", "");
+                        sqlite_cmd.Parameters.AddWithValue("@win_flag", "");
+                        // INSERT GAME DATA INTO DB - ONE ROW PER PLAYER
+                        for (int player_index = 0; player_index < NUMBER_OF_PLAYERS; player_index++)
+                        {
+                            List<Card> lst_hole_cards = new List<Card> { };
+                            List<Card> lst_flop_cards = new List<Card> { };
+                            // SORT HOLE CARDS UNIQUELY
+                            // SORT FLOP CARDS UNIQUELY
+                            // INSERT HOLE + FLOP + DB
+                            for (int i = 0; i < 2; i++)
+                                lst_hole_cards.Add(b.players[player_index].hole[i]);
+                            for (int i = 0; i < 3; i++)
+                                lst_flop_cards.Add(b.flop_cards[i]);
+                            Card.Reorder_Cards_Uniquely(ref lst_hole_cards);
+                            Card.Reorder_Cards_Uniquely(ref lst_flop_cards);
+                            /*************************************************************************
+                            * SQLite Insert Data
+                            * ***********************************************************************/
+                            SQLite_Methods.InsertResultItem(lst_hole_cards[0].ToString() + " " + lst_hole_cards[1].ToString(), lst_flop_cards[0].ToString() + " " + lst_flop_cards[1].ToString() + " " + lst_flop_cards[2].ToString(), b.players[player_index].GetWinflag(), sqlite_cmd);
+                        } // end of loop to insert row for each player
 
-                } // end of loop to do 3 games in one transaction
+                    } // end of loop to do 3 games in one transaction
+                }
                 transaction.Commit();
                 sqlite_cmd.Dispose();
 
@@ -627,7 +624,61 @@ namespace PokerConsoleApp
 
         static void Test_method()
         {
+            // TEST FIVE HANDS, with two hands that tie and two that are same HandType
 
+            // first hand is flush with Jack High
+            Card c1 = new Card(Card.Suit.Diamond, Card.Rank.JACK);
+            Card c2 = new Card(Card.Suit.Diamond, Card.Rank.NINE);
+            Card c3 = new Card(Card.Suit.Diamond, Card.Rank.THREE);
+            Card c4 = new Card(Card.Suit.Diamond, Card.Rank.SEVEN);
+            Card c5 = new Card(Card.Suit.Diamond, Card.Rank.FIVE);
+            Hand h1 = new Hand(new List<Card> { c1, c2, c3, c4, c5 });
+
+            // second hand is flush with Queen High
+            c1 = new Card(Card.Suit.Heart, Card.Rank.QUEEN);
+            c2 = new Card(Card.Suit.Heart, Card.Rank.FOUR);
+            c3 = new Card(Card.Suit.Heart, Card.Rank.TEN);
+            c4 = new Card(Card.Suit.Heart, Card.Rank.SIX);
+            c5 = new Card(Card.Suit.Heart, Card.Rank.EIGHT);
+            Hand h2 = new Hand(new List<Card> { c1, c2, c3, c4, c5 });
+
+            // third hand is four of a kind, 9s with a two kicker
+            c1 = new Card(Card.Suit.Heart, Card.Rank.NINE);
+            c2 = new Card(Card.Suit.Club, Card.Rank.NINE);
+            c3 = new Card(Card.Suit.Spade, Card.Rank.NINE);
+            c4 = new Card(Card.Suit.Diamond, Card.Rank.NINE);
+            c5 = new Card(Card.Suit.Heart, Card.Rank.TWO);
+            Hand h3 = new Hand(new List<Card> { c1, c2, c3, c4, c5 });
+
+            // fourth hand is four of a kind, 9s with a four kicker
+            c1 = new Card(Card.Suit.Heart, Card.Rank.NINE);
+            c2 = new Card(Card.Suit.Club, Card.Rank.NINE);
+            c3 = new Card(Card.Suit.Spade, Card.Rank.NINE);
+            c4 = new Card(Card.Suit.Diamond, Card.Rank.NINE);
+            c5 = new Card(Card.Suit.Heart, Card.Rank.FOUR);
+            Hand h4 = new Hand(new List<Card> { c1, c2, c3, c4, c5 });
+
+            // fifth hand is a three of a kind, threes with a five and a two kicker
+            c1 = new Card(Card.Suit.Heart, Card.Rank.THREE);
+            c2 = new Card(Card.Suit.Club, Card.Rank.THREE);
+            c3 = new Card(Card.Suit.Spade, Card.Rank.THREE);
+            c4 = new Card(Card.Suit.Diamond, Card.Rank.FIVE);
+            c5 = new Card(Card.Suit.Heart, Card.Rank.TWO);
+            Hand h5 = new Hand(new List<Card> { c1, c2, c3, c4, c5 });
+            h1.EvaluateHandtype();
+            h2.EvaluateHandtype();
+            h3.EvaluateHandtype();
+            h4.EvaluateHandtype();
+            h5.EvaluateHandtype();
+            Hand hand1_sorted = h1.DoSort();
+            Hand hand2_sorted = h2.DoSort();
+            Hand hand3_sorted = h3.DoSort();
+            Hand hand4_sorted = h4.DoSort();
+            Hand hand5_sorted = h5.DoSort();
+            // hand3 is passed in twice so those will tie, hand4 is best hand
+            List<int> result = Hand.Find_Best_Hand(new List<Hand> { hand1_sorted, hand4_sorted, hand2_sorted, hand3_sorted, hand3_sorted, hand5_sorted });
+            // Hand4 is best so result should be 2
+            
         }
     }
 

@@ -61,6 +61,10 @@ namespace PokerConsoleApp
         }
         private Suit suit;
         private Rank rank;
+        public int ToInt()
+        {
+            return 0;
+        }
         public Card(Card.Suit cs, Card.Rank cr)
         {
             this.suit = cs;

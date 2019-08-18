@@ -11,7 +11,7 @@ GO THROUGH PROJECT AND REFACTOR
 ADD MORE UNIT TESTS AND ADD UNIT_TESTS.CS FILE TO GITHUB
 
 -------------------------------------------------------------------------------------------------
-AT CURRENT CODE STATE, simulating and saving 4 billion hands will fill 252 GB and take 58 days!!
+AT CURRENT CODE STATE, simulating and saving 4 billion hands will fill 166 GB and take 48 days!!
 That is way too long for this to be a reasonable way to do it.
 -------------------------------------------------------------------------------------------------
 POSSIBLE FIXES TO THIS PROBLEM:
@@ -28,10 +28,9 @@ POSSIBLE FIXES TO THIS PROBLEM:
 
 
 CHANGED WINFLAG TO INTEGER
-44016 records = C * 2316 kilobytes
 104016 records = C * 5544 kilobytes
-Solve for C, 
-		  C = 18.76
+C = 18.76 records per kilobyte
+
 4,000,000,000 / 18.76 / 1024 / 1024 = 200 Gigabytes for 4 billion records
 
 60,000 record took 1.21 minutes
@@ -40,3 +39,36 @@ Solve for C,
     C2 = 49,586 records per minute
 
 4,000,000,000 / 49,586 = 80,667 minutes == 56 days
+
+REMOVED TURN AND RIVER FROM DATABASE RECORDS
+DROP INDEX BEFORE SIMULATING GAMES
+
+200,004 = C2 * 3.5 minutes
+C2 = 57,142 records per minute
+
+200,004 = C1 * 8728 kilobytes
+C1 = 22.91 records per kilobyte
+
+4,000,000,000 / 57,142 / 60 / 24  = 48 days to simulate target
+4,000,000,000 / 8728 / 1024 / 1024 = 166 Gigabytes to store target database
+
+REMOVED REDUNDANT COMPARISONS BEING DONE IN FIND_BEST_HAND METHOD
+
+disk i/o appears to be the limiting factor??
+
+80000 records = C2 * 1.09 minutes
+C2 = 73,394 records per minute
+
+4,000,000,000 / 73,394 / 60 / 24  = 37 days to simulate target
+
+BATCHED TO NOW DO 150 RECORDS PER TRANSACTION
+4,000,000,000 / 477,142 / 60 / 24  = 5.82 days to simulate target
+4,000,000,000 / 8728 / 1024 / 1024 = 166 Gigabytes to store target database
+
+200400 records = C2 * 0.42 minutes
+C2 = 477,142 records per minute == 5.82 DAYS TO TARGET
+
+200400 = C1 * 8748 kilobytes
+C1 = 22.91 records per kilobyte
+
+
