@@ -14,12 +14,30 @@ namespace PokerConsoleApp
         static int NUMBER_OF_PLAYERS = 4;
         const int HEIGHT = 40;
         const int WIDTH = 90;
+        public static Dictionary<string, int> card_to_int_dict = new Dictionary<string, int> { };
         static void Main()
         {
             Set_Window_Size(130, 50);
+            Build_Card_To_Int_Table();
             DisplayMenu();
-            Test_method();
+            //Test_method();
 
+        }
+        public static void Build_Card_To_Int_Table()
+        {
+            int card_value_index = 0;
+            foreach (var r in Enum.GetValues(typeof(Card.Rank)))
+            {
+                foreach (var s in Enum.GetValues(typeof(Card.Suit)))
+                {
+                    Card tempcard = new Card((Card.Suit)s, (Card.Rank)r);
+                    String str_card = tempcard.ToString();
+                    card_to_int_dict.Add(str_card, card_value_index);
+                    card_value_index++;
+                }
+            }
+            if (card_value_index != 52)
+                throw new Exception("error card_value_index not equal to 51 at end of building table method");
         }
         public static void Debug_Test_Simulation_Speed()
         {
@@ -153,6 +171,7 @@ namespace PokerConsoleApp
             using (var conn = SQLite_Methods.CreateConnection(NUMBER_OF_PLAYERS))
             {
                 SQLite_Methods.CreateTableIfNotExists(conn);
+                SQLite_Methods.Create_Fresh_Index_On_HoleCards(conn);
                 SQLiteCommand sqlite_cmd;
                 sqlite_cmd = conn.CreateCommand();
 
@@ -178,7 +197,15 @@ namespace PokerConsoleApp
                 foreach (var cr in Enum.GetValues(typeof(Card.Rank)))   // count up pocket pair occurences
                 {
                     string str_rank = Card.Card_Rank_ToString((Card.Rank)cr);
-                    sqlite_cmd.CommandText = $"SELECT COUNT(*) FROM PlayerHandsTable WHERE HoleCards like '{str_rank}%{str_rank}%';";
+                    string card_poss_str1 = str_rank + "-c";
+                    string card_poss_str2 = str_rank + "-d";
+                    string card_poss_str3 = str_rank + "-h";
+                    string card_poss_str4 = str_rank + "-s";
+                    int card_poss_int1 = card_to_int_dict[card_poss_str1];
+                    int card_poss_int2 = card_to_int_dict[card_poss_str2];
+                    int card_poss_int3 = card_to_int_dict[card_poss_str3];
+                    int card_poss_int4 = card_to_int_dict[card_poss_str4];
+                    sqlite_cmd.CommandText = $"SELECT COUNT(*) FROM PlayerHandsTable WHERE (Hole1 = {card_poss_int1} OR Hole1 = {card_poss_int2} OR Hole1 = {card_poss_int3} OR Hole1 = {card_poss_int4}) AND (Hole2 = {card_poss_int1} OR Hole2 = {card_poss_int2} OR Hole2 = {card_poss_int3} OR Hole2 = {card_poss_int4});";
                     using (var myReader = sqlite_cmd.ExecuteReader())
                     {
                         while (myReader.Read())
@@ -192,7 +219,15 @@ namespace PokerConsoleApp
                 foreach (var cr in Enum.GetValues(typeof(Card.Rank))) // count up pocket pair wins
                 {
                     string str_rank = Card.Card_Rank_ToString((Card.Rank)cr);
-                    sqlite_cmd.CommandText = $"SELECT COUNT(*) FROM PlayerHandsTable WHERE HoleCards like '{str_rank}%{str_rank}%' AND Winflag = 1;";
+                    string card_poss_str1 = str_rank + "-c";
+                    string card_poss_str2 = str_rank + "-d";
+                    string card_poss_str3 = str_rank + "-h";
+                    string card_poss_str4 = str_rank + "-s";
+                    int card_poss_int1 = card_to_int_dict[card_poss_str1];
+                    int card_poss_int2 = card_to_int_dict[card_poss_str2];
+                    int card_poss_int3 = card_to_int_dict[card_poss_str3];
+                    int card_poss_int4 = card_to_int_dict[card_poss_str4];
+                    sqlite_cmd.CommandText = $"SELECT COUNT(*) FROM PlayerHandsTable WHERE (Hole1 = {card_poss_int1} OR Hole1 = {card_poss_int2} OR Hole1 = {card_poss_int3} OR Hole1 = {card_poss_int4}) AND (Hole2 = {card_poss_int1} OR Hole2 = {card_poss_int2} OR Hole2 = {card_poss_int3} OR Hole2 = {card_poss_int4}) AND Winflag = 1;";
                     using (var myReader = sqlite_cmd.ExecuteReader())
                     {
                         while (myReader.Read())
@@ -332,7 +367,7 @@ namespace PokerConsoleApp
             SQLite_Methods.CreateTableIfNotExists(sqlite_conn);
             SQLite_Methods.Drop_Index_On_HoleCards(sqlite_conn);
             int GAMES_PER_TRANSACTION = 500;
-            for (int games_count = 0; games_count < games_to_simulate; games_count += 3*GAMES_PER_TRANSACTION)
+            for (int games_count = 0; games_count < games_to_simulate; games_count += 3 * GAMES_PER_TRANSACTION)
             {
                 // BEGIN SQLITE SETUP CODE
                 SQLiteCommand sqlite_cmd;
@@ -341,7 +376,7 @@ namespace PokerConsoleApp
                 for (int games_per_tran_index = 0; games_per_tran_index < GAMES_PER_TRANSACTION; games_per_tran_index++)
                 {
                     Board b = new Board(NUMBER_OF_PLAYERS);
-                    
+
                     // END SQLITE SETUP CODE
                     for (int deal_count = 0; deal_count <= 2; deal_count++) // two deals per deck
                     {
@@ -378,10 +413,13 @@ namespace PokerConsoleApp
                         ***************************************************************/
 
                         sqlite_cmd.CommandText = "INSERT INTO PlayerHandsTable "
-                            + "(holecards, flop, winflag) "
-                            + "VALUES (@holecards, @flop, @win_flag)";
-                        sqlite_cmd.Parameters.AddWithValue("@holecards", "");
-                        sqlite_cmd.Parameters.AddWithValue("@flop", "");
+                            + "(Hole1, Hole2, Flop1, Flop2, Flop3, Winflag) "
+                            + "VALUES (@hole1, @hole2, @flop1,@flop2, @flop3, @win_flag)";
+                        sqlite_cmd.Parameters.AddWithValue("@hole1", "");
+                        sqlite_cmd.Parameters.AddWithValue("@hole2", "");
+                        sqlite_cmd.Parameters.AddWithValue("@flop1", "");
+                        sqlite_cmd.Parameters.AddWithValue("@flop2", "");
+                        sqlite_cmd.Parameters.AddWithValue("@flop3", "");
                         sqlite_cmd.Parameters.AddWithValue("@win_flag", "");
                         // INSERT GAME DATA INTO DB - ONE ROW PER PLAYER
                         for (int player_index = 0; player_index < NUMBER_OF_PLAYERS; player_index++)
@@ -400,7 +438,7 @@ namespace PokerConsoleApp
                             /*************************************************************************
                             * SQLite Insert Data
                             * ***********************************************************************/
-                            SQLite_Methods.InsertResultItem(lst_hole_cards[0].ToString() + " " + lst_hole_cards[1].ToString(), lst_flop_cards[0].ToString() + " " + lst_flop_cards[1].ToString() + " " + lst_flop_cards[2].ToString(), b.players[player_index].GetWinflag(), sqlite_cmd);
+                            SQLite_Methods.InsertResultItem(lst_hole_cards[0], lst_hole_cards[1], lst_flop_cards[0], lst_flop_cards[1], lst_flop_cards[2], b.players[player_index].GetWinflag(), sqlite_cmd);
                         } // end of loop to insert row for each player
 
                     } // end of loop to do 3 games in one transaction
@@ -411,7 +449,7 @@ namespace PokerConsoleApp
 
             } // end of games loop
               // Create index for fast querying of the database
-            SQLite_Methods.Create_Fresh_Index_On_HoleCards(sqlite_conn);
+            //SQLite_Methods.Create_Fresh_Index_On_HoleCards(sqlite_conn);
             sqlite_conn.Dispose();
             return 0;
         }
@@ -551,6 +589,7 @@ namespace PokerConsoleApp
             double records_that_won = 0;
             using (var conn = SQLite_Methods.CreateConnection(b.players.Length))
             {
+                SQLite_Methods.Create_Fresh_Index_On_HoleCards(conn);
                 SQLite_Methods.CreateTableIfNotExists(conn);
                 SQLiteCommand sqlite_cmd;
                 sqlite_cmd = conn.CreateCommand();
@@ -565,7 +604,15 @@ namespace PokerConsoleApp
                 flop.Add(b.flop_cards[1]);
                 flop.Add(b.flop_cards[2]);
                 Card.Reorder_Cards_Uniquely(ref flop);
-                sqlite_cmd.CommandText = $"SELECT COUNT(*) FROM PlayerHandsTable WHERE HoleCards like '{Card.Card_Rank_ToString(holes[0].GetRank())}%{Card.Card_Rank_ToString(holes[1].GetRank())}%' AND Flop like '{Card.Card_Rank_ToString(flop[0].GetRank())}%{Card.Card_Rank_ToString(flop[1].GetRank())}%{Card.Card_Rank_ToString(flop[2].GetRank())}%';";
+                // Convert cards to integers for fast reading and writing
+                int hole1_int = card_to_int_dict[holes[0].ToString()];
+                int hole2_int = card_to_int_dict[holes[1].ToString()];
+
+                int flop1_int = card_to_int_dict[flop[0].ToString()];
+                int flop2_int = card_to_int_dict[flop[1].ToString()];
+                int flop3_int = card_to_int_dict[flop[2].ToString()];
+                
+                sqlite_cmd.CommandText = $"SELECT COUNT(*) FROM PlayerHandsTable WHERE Hole1 = {hole1_int} AND Hole2 = {hole2_int} AND Flop1 ={flop1_int} AND Flop2 = {flop2_int} AND Flop3 = {flop3_int};";
                 using (var myDataReader = sqlite_cmd.ExecuteReader())
                 {
                     while (myDataReader.Read())
@@ -573,7 +620,7 @@ namespace PokerConsoleApp
                         records_with_those_cards = myDataReader.GetInt32(0);
                     }
                 } // Reader will be Disposed/Closed here
-                sqlite_cmd.CommandText = $"SELECT COUNT(*) FROM PlayerHandsTable WHERE HoleCards like '{Card.Card_Rank_ToString(holes[0].GetRank())}%{Card.Card_Rank_ToString(holes[1].GetRank())}%' AND Flop like '{Card.Card_Rank_ToString(flop[0].GetRank())}%{Card.Card_Rank_ToString(flop[1].GetRank())}%{Card.Card_Rank_ToString(flop[2].GetRank())}%' And WinFlag = 1;";
+                sqlite_cmd.CommandText = $"SELECT COUNT(*) FROM PlayerHandsTable WHERE Hole1 = {hole1_int} AND Hole2 = {hole2_int} AND Flop1 ={flop1_int} AND Flop2 = {flop2_int} AND Flop3 = {flop3_int} AND Winflag = 1;";
                 using (var myDataReader = sqlite_cmd.ExecuteReader())
                 {
                     while (myDataReader.Read())
@@ -600,8 +647,12 @@ namespace PokerConsoleApp
                 holes.Add(b.players[player_index].hole[0]);
                 holes.Add(b.players[player_index].hole[1]);
                 Card.Reorder_Cards_Uniquely(ref holes);
+                // Convert cards to integers for fast reading and writing
+                int hole1_int = card_to_int_dict[holes[0].ToString()];
+                int hole2_int = card_to_int_dict[holes[1].ToString()];
+            
 
-                sqlite_cmd.CommandText = $"SELECT COUNT(*) FROM PlayerHandsTable WHERE HoleCards = '{holes[0].ToString()} {holes[1].ToString()}';";
+                sqlite_cmd.CommandText = $"SELECT COUNT(*) FROM PlayerHandsTable WHERE Hole1 = {hole1_int} AND Hole2 = {hole2_int};";
                 using (var myDataReader = sqlite_cmd.ExecuteReader())
                 {
                     while (myDataReader.Read())
@@ -609,7 +660,7 @@ namespace PokerConsoleApp
                         records_with_those_hole_cards = myDataReader.GetInt32(0);
                     }
                 } // Reader will be Disposed/Closed here
-                sqlite_cmd.CommandText = $"SELECT COUNT(*) FROM PlayerHandsTable WHERE HoleCards = '{holes[0].ToString()} {holes[1].ToString()}' AND WinFlag = 1 ;";
+                sqlite_cmd.CommandText = $"SELECT COUNT(*) FROM PlayerHandsTable WHERE Hole1 = {hole1_int} AND hole2 = {hole2_int} AND Winflag = 1 ;";
                 using (var myDataReader = sqlite_cmd.ExecuteReader())
                 {
                     while (myDataReader.Read())
@@ -624,61 +675,17 @@ namespace PokerConsoleApp
 
         static void Test_method()
         {
-            // TEST FIVE HANDS, with two hands that tie and two that are same HandType
+            foreach (var r in Enum.GetValues(typeof(Card.Rank)))
+            {
+                foreach (var s in Enum.GetValues(typeof(Card.Suit)))
+                {
+                    Card tempcard = new Card((Card.Suit)s, (Card.Rank)r);
+                    String str_card = tempcard.ToString();
+                    Console.WriteLine($"{card_to_int_dict[str_card]}");
 
-            // first hand is flush with Jack High
-            Card c1 = new Card(Card.Suit.Diamond, Card.Rank.JACK);
-            Card c2 = new Card(Card.Suit.Diamond, Card.Rank.NINE);
-            Card c3 = new Card(Card.Suit.Diamond, Card.Rank.THREE);
-            Card c4 = new Card(Card.Suit.Diamond, Card.Rank.SEVEN);
-            Card c5 = new Card(Card.Suit.Diamond, Card.Rank.FIVE);
-            Hand h1 = new Hand(new List<Card> { c1, c2, c3, c4, c5 });
+                }
+            }
 
-            // second hand is flush with Queen High
-            c1 = new Card(Card.Suit.Heart, Card.Rank.QUEEN);
-            c2 = new Card(Card.Suit.Heart, Card.Rank.FOUR);
-            c3 = new Card(Card.Suit.Heart, Card.Rank.TEN);
-            c4 = new Card(Card.Suit.Heart, Card.Rank.SIX);
-            c5 = new Card(Card.Suit.Heart, Card.Rank.EIGHT);
-            Hand h2 = new Hand(new List<Card> { c1, c2, c3, c4, c5 });
-
-            // third hand is four of a kind, 9s with a two kicker
-            c1 = new Card(Card.Suit.Heart, Card.Rank.NINE);
-            c2 = new Card(Card.Suit.Club, Card.Rank.NINE);
-            c3 = new Card(Card.Suit.Spade, Card.Rank.NINE);
-            c4 = new Card(Card.Suit.Diamond, Card.Rank.NINE);
-            c5 = new Card(Card.Suit.Heart, Card.Rank.TWO);
-            Hand h3 = new Hand(new List<Card> { c1, c2, c3, c4, c5 });
-
-            // fourth hand is four of a kind, 9s with a four kicker
-            c1 = new Card(Card.Suit.Heart, Card.Rank.NINE);
-            c2 = new Card(Card.Suit.Club, Card.Rank.NINE);
-            c3 = new Card(Card.Suit.Spade, Card.Rank.NINE);
-            c4 = new Card(Card.Suit.Diamond, Card.Rank.NINE);
-            c5 = new Card(Card.Suit.Heart, Card.Rank.FOUR);
-            Hand h4 = new Hand(new List<Card> { c1, c2, c3, c4, c5 });
-
-            // fifth hand is a three of a kind, threes with a five and a two kicker
-            c1 = new Card(Card.Suit.Heart, Card.Rank.THREE);
-            c2 = new Card(Card.Suit.Club, Card.Rank.THREE);
-            c3 = new Card(Card.Suit.Spade, Card.Rank.THREE);
-            c4 = new Card(Card.Suit.Diamond, Card.Rank.FIVE);
-            c5 = new Card(Card.Suit.Heart, Card.Rank.TWO);
-            Hand h5 = new Hand(new List<Card> { c1, c2, c3, c4, c5 });
-            h1.EvaluateHandtype();
-            h2.EvaluateHandtype();
-            h3.EvaluateHandtype();
-            h4.EvaluateHandtype();
-            h5.EvaluateHandtype();
-            Hand hand1_sorted = h1.DoSort();
-            Hand hand2_sorted = h2.DoSort();
-            Hand hand3_sorted = h3.DoSort();
-            Hand hand4_sorted = h4.DoSort();
-            Hand hand5_sorted = h5.DoSort();
-            // hand3 is passed in twice so those will tie, hand4 is best hand
-            List<int> result = Hand.Find_Best_Hand(new List<Hand> { hand1_sorted, hand4_sorted, hand2_sorted, hand3_sorted, hand3_sorted, hand5_sorted });
-            // Hand4 is best so result should be 2
-            
         }
     }
 

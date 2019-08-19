@@ -497,7 +497,7 @@ namespace PokerConsoleApp
 
                 if (lst_hand_copy[i].GetHandType() == Hand.HandType.NotAssignedYet)
                     lst_hand_copy[i].EvaluateHandtype();
-         
+
                 for (int j = 0; j < hand_count; j++)
                 {
                     if (lst_hand_copy[j].GetHandType() == Hand.HandType.NotAssignedYet)

@@ -10,7 +10,7 @@ namespace PokerConsoleApp
             SQLiteConnection sqlite_conn;
             // Create new database connection using number of players in the datasource name
             string datasource = $"{player_count}-player-database.db";
-            sqlite_conn = new SQLiteConnection("Data Source=" + datasource + ";Version=3;New=True;Compress=True;");
+            sqlite_conn = new SQLiteConnection("Data Source=" + datasource + ";Version=3;New=True;Compress=True;journal mode=Off;");
             // Open the connection:
             try
             {
@@ -27,7 +27,7 @@ namespace PokerConsoleApp
         {
 
             SQLiteCommand sqlite_cmd;
-            string Createsql = "CREATE TABLE IF NOT EXISTS PlayerHandsTable (HoleCards VARCHAR(50), Flop VARCHAR(50), Winflag INT)";
+            string Createsql = "CREATE TABLE IF NOT EXISTS PlayerHandsTable (Hole1 INT, Hole2 INT, Flop1 INT, Flop2 INT, Flop3 INT, Winflag INT)";
             sqlite_cmd = conn.CreateCommand();
             sqlite_cmd.CommandText = Createsql;
             sqlite_cmd.ExecuteNonQuery();
@@ -35,10 +35,13 @@ namespace PokerConsoleApp
 
         }
 
-        public static int InsertResultItem(string holecards, string flop, int win_flag, SQLiteCommand command)
+        public static int InsertResultItem(Card hole1, Card hole2, Card flop1, Card flop2, Card flop3, int win_flag, SQLiteCommand command)
         {
-            command.Parameters["@holecards"].Value = holecards;
-            command.Parameters["@flop"].Value = flop;
+            command.Parameters["@hole1"].Value = Program.card_to_int_dict[hole1.ToString()];
+            command.Parameters["@hole2"].Value = Program.card_to_int_dict[hole2.ToString()];
+            command.Parameters["@flop1"].Value = Program.card_to_int_dict[flop1.ToString()];
+            command.Parameters["@flop2"].Value = Program.card_to_int_dict[flop2.ToString()];
+            command.Parameters["@flop3"].Value = Program.card_to_int_dict[flop3.ToString()];
             command.Parameters["@win_flag"].Value = win_flag;
             return command.ExecuteNonQuery();
         }
@@ -68,7 +71,7 @@ namespace PokerConsoleApp
 
             sqlite_cmd = conn.CreateCommand();
 
-            string create_sql = "CREATE INDEX IF NOT EXISTS holecards_idx ON PlayerHandsTable(HoleCards)";
+            string create_sql = "CREATE INDEX IF NOT EXISTS hole1_idx ON PlayerHandsTable(Hole1)";
             sqlite_cmd.CommandText = create_sql;
             sqlite_cmd.ExecuteNonQuery();
 
@@ -77,7 +80,7 @@ namespace PokerConsoleApp
         internal static void Drop_Index_On_HoleCards(SQLiteConnection sqlite_conn)
         {
             SQLiteCommand sqlite_cmd;
-            string dropsql = "DROP INDEX IF EXISTS holecards_idx";
+            string dropsql = "DROP INDEX IF EXISTS hole1_idx";
             sqlite_cmd = sqlite_conn.CreateCommand();
             sqlite_cmd.CommandText = dropsql;
             sqlite_cmd.ExecuteNonQuery();

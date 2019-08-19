@@ -70,3 +70,10 @@ C1 = 22.91 records per kilobyte
 
 204000 records in 0.32 min = 637,500 records per minute == 4.35 DAYS TO TARGET
 
+TURNED JOURNAL MODE OFF, CHANGED HOLE CARDS AND FLOP CARDS TO INTEGERS, DONT CREATE INDEX
+
+2,004,000 records in 3.12 minutes are 35,072KB
+
+records per minute = 642,307 records per minute == 103 hours to target
+records per kilobyte = 57.139 == 67 Gigabytes for target file size
+
