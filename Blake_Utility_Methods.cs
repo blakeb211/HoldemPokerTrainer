@@ -23,6 +23,20 @@ namespace PokerConsoleApp
             Console.WriteLine("Press a key to continue...");
             Console.ReadLine();
         }
+        public static bool Ask_User_For_Quit_Signal()
+        {
+            Console.WriteLine("Press \"Q\" to quit...");
+            string sInput = Console.ReadLine();
+            if (sInput == "q" || sInput == "Q")
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+    
+        }
 
         public static string Trim_To_End(string s_to_trim, string s_substr)
         {

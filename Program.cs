@@ -503,9 +503,12 @@ namespace PokerConsoleApp
                     }
                     else
                     {
-                        Blake_Utility_Methods.Get_User_To_Press_A_Key();
-                        Thread.Sleep(300);
-                        state = State.flop_dealt;
+                        Thread.Sleep(100);
+                        exit_flag = Blake_Utility_Methods.Ask_User_For_Quit_Signal();
+                        if (exit_flag == true)
+                            return 0;
+                        else
+                            state = State.flop_dealt;
                         break;
                     }
                 } while (1 == 1); // END STATE LOOP FOR INDIVIDUAL GAMES
