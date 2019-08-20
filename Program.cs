@@ -307,7 +307,7 @@ namespace PokerConsoleApp
                     winner_mark = " - winner";
                 else if (is_winner_flag == true && winning_player_indices.Count > 1)
                     winner_mark = " - tie";
-                table.AddRow(player_index.ToString() + winner_mark, lst_best_hands[player_index].DoSort().ToString(), lst_best_hands[player_index].GetHandType().ToString());
+                table.AddRow(player_index.ToString() + winner_mark, lst_best_hands[player_index].ToString(), lst_best_hands[player_index].GetHandType().ToString());
             }
             Console.WriteLine(table);
 
@@ -573,9 +573,9 @@ namespace PokerConsoleApp
                         break;
                     case State.river_dealt:
                         if (b.players[player_index].Won_The_Hand == true)
-                            tbl_players.AddRow(player_index.ToString() + " - win", $"{b.players[player_index].hole[0].ToString()} {b.players[player_index].hole[1].ToString()}", Get_Pre_Flop_Percentage(b, player_index).ToString(), Get_Post_Flop_Percentage(b, player_index).ToString(), b.players[player_index].best_hand.DoSort().ToString(), b.players[player_index].best_hand.GetHandType().ToString());
+                            tbl_players.AddRow(player_index.ToString() + " - win", $"{b.players[player_index].hole[0].ToString()} {b.players[player_index].hole[1].ToString()}", Get_Pre_Flop_Percentage(b, player_index).ToString(), Get_Post_Flop_Percentage(b, player_index).ToString(), b.players[player_index].best_hand.ToString(), b.players[player_index].best_hand.GetHandType().ToString());
                         else
-                            tbl_players.AddRow(player_index.ToString(), $"{b.players[player_index].hole[0].ToString()} {b.players[player_index].hole[1].ToString()}", Get_Pre_Flop_Percentage(b, player_index).ToString(), Get_Post_Flop_Percentage(b, player_index).ToString(), b.players[player_index].best_hand.DoSort().ToString(), b.players[player_index].best_hand.GetHandType().ToString());
+                            tbl_players.AddRow(player_index.ToString(), $"{b.players[player_index].hole[0].ToString()} {b.players[player_index].hole[1].ToString()}", Get_Pre_Flop_Percentage(b, player_index).ToString(), Get_Post_Flop_Percentage(b, player_index).ToString(), b.players[player_index].best_hand.ToString(), b.players[player_index].best_hand.GetHandType().ToString());
                         break;
                     default:
                         break;

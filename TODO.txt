@@ -77,3 +77,7 @@ TURNED JOURNAL MODE OFF, CHANGED HOLE CARDS AND FLOP CARDS TO INTEGERS, DONT CRE
 records per minute = 642,307 records per minute == 103 hours to target
 records per kilobyte = 57.139 == 67 Gigabytes for target file size
 
+// UPDATED SORTING METHOD TO SORT THE HAND ITS CALLED ON SO THAT NOTHING GETS SORTED TWICE
+
+204000 records in 0.24 minutes
+804000 records in 0.98 minutes = 820,408 records per minute
