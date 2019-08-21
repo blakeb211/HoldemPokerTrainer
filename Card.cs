@@ -10,6 +10,41 @@ namespace PokerConsoleApp
             TWO = 2, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT,
             NINE, TEN, JACK, QUEEN, KING, ACE
         };
+        public int GetPrimeId()
+        {
+            switch ((int)this.GetRank())
+            {
+                case 2:
+                    return 2;
+                case 3:
+                    return 3;
+                case 4:
+                    return 5;
+                case 5:
+                    return 7;
+                case 6:
+                    return 11;
+                case 7:
+                    return 13;
+                case 8:
+                    return 17;
+                case 9:
+                    return 19;
+                case 10:
+                    return 23;
+                case 11:
+                    return 29;
+                case 12:
+                    return 31;
+                case 13:
+                    return 37;
+                case 14:
+                    return 41;
+                default:
+                    break;
+            }
+            return 0;
+        }
         public static string Card_Rank_ToString(Card.Rank cr)
         {
             string str_ret = "";
@@ -61,10 +96,7 @@ namespace PokerConsoleApp
         }
         private Suit suit;
         private Rank rank;
-        public int ToInt()
-        {
-            return 0;
-        }
+
         public Card(Card.Suit cs, Card.Rank cr)
         {
             this.suit = cs;

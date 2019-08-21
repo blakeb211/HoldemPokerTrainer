@@ -35,7 +35,7 @@ namespace PokerConsoleApp
             {
                 return false;
             }
-    
+
         }
 
         public static string Trim_To_End(string s_to_trim, string s_substr)

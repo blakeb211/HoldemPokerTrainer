@@ -23,9 +23,32 @@ namespace PokerConsoleApp
             OnePair = 1,
             HighCard = 0
         };
+
+        public void AddCard(Card.Suit cs, Card.Rank cr)
+        {
+            Card c = new Card(cs, cr);
+            this.cards.Add(c);
+
+        }
+        public void AddCard(Card.Suit cs1, Card.Rank cr1, Card.Suit cs2, Card.Rank cr2, Card.Suit cs3, Card.Rank cr3, Card.Suit cs4, Card.Rank cr4, Card.Suit cs5, Card.Rank cr5)
+        {
+            Card c1 = new Card(cs1, cr1);
+            Card c2 = new Card(cs2, cr2);
+            Card c3 = new Card(cs3, cr3);
+            Card c4 = new Card(cs4, cr4);
+            Card c5 = new Card(cs5, cr5);
+            this.AddCard(c1);
+            this.AddCard(c2);
+            this.AddCard(c3);
+            this.AddCard(c4);
+            this.AddCard(c5);
+            if (this.GetCount() != 5)
+                throw new Exception("card count unequal to 5 for newly built hand");
+        }
         private readonly List<Card> cards = new List<Card> { };
         private HandType hand_type = new HandType();
         private bool is_sorted = false;
+        private int prime_rank = -1;
         readonly int[] rank_tally = new int[15];  // let 0 and 1 indices be a waste to make code more clear. 
         readonly int[] suit_tally = new int[5];   // let 0 be waste, 1 = hearts, 2 = diamonds, 3 = spade, 4 = club
         public Hand(List<Card> c)
@@ -38,6 +61,24 @@ namespace PokerConsoleApp
                 cards.Add(ci);
 
         }
+        public Card this[int index]
+        {
+           // The get accessor.
+            get
+            {
+                if (index >= 5 || index < 0)
+                    throw new Exception("index of card indexer out of range");
+                    return this.cards[index];
+            }
+
+            // The set accessor.
+            set
+            {
+                if (index >= 5 || index < 0)
+                    throw new Exception("index of card indexer out of range");
+                this.cards[index] = value;
+            }
+        }
         public Hand()
         {
             hand_type = HandType.NotAssignedYet;
@@ -47,6 +88,24 @@ namespace PokerConsoleApp
                 rank_tally[i] = 0;
         }
 
+        public int GetPrimeRank()
+        {
+            int ret_val = 1;
+            // if prime_rank hasn't been calculated, we need to calculate it
+            if (this.prime_rank == -1)
+            {
+                for (int i = 0; i < cards.Count; i++)
+                {
+                    ret_val *= cards[i].GetPrimeId();
+                }
+                return ret_val;
+            }
+            else
+            {
+                // if prime_rank has been calculated, just return it
+                return this.prime_rank;
+            }
+        }
         public override string ToString()
         {
             string ret_string = "";
@@ -82,6 +141,15 @@ namespace PokerConsoleApp
                 throw new Exception("Can't remove cards of a hand that already has 0 cards!");
             this.cards.RemoveRange(0, this.cards.Count);
         }
+        public void RemoveLastThreeCards()
+        {
+            if (cards.Count != 5)
+                throw new Exception("Can't remove last 3 cards from a hand unless it has 5 cards!");
+            this.cards.RemoveRange(2, 3);
+            if (cards.Count != 2)
+                throw new Exception("Should be 2 cards left after removing 3 cards");
+        }
+
         private bool IsThisAStraight(int[] rank_tally)
         {
             if (rank_tally.Length != 15)
@@ -234,10 +302,14 @@ namespace PokerConsoleApp
                 throw new Exception("ht_1 != ht_2 in the DoesThisHandBeatThatHand() and that shouldn't happen");
 
             // if hands are of the same rank, we need to compare them card by card
-            if (!hand_1.Is_Sorted())
+            if (hand_1.Is_Sorted() == false)
+            {
                 hand_1.DoSort();
-            if (!hand_2.Is_Sorted())
+            }
+            if (hand_2.Is_Sorted() == false)
+            {
                 hand_2.DoSort();
+            }
             // COMPARING STRAIGHT FLUSHES
             if (ht_1 == Hand.HandType.StraightFlush)
             {

@@ -18,8 +18,10 @@ namespace PokerConsoleApp
         static void Main()
         {
             Set_Window_Size(130, 50);
-            Build_Card_To_Int_Table();
-            DisplayMenu();
+      
+            //TB.SortPairHandsListByStrength();
+            //Build_Card_To_Int_Table();
+            //DisplayMenu();
             //Test_method();
 
         }
@@ -449,7 +451,7 @@ namespace PokerConsoleApp
 
             } // end of games loop
               // Create index for fast querying of the database
-            //SQLite_Methods.Create_Fresh_Index_On_HoleCards(sqlite_conn);
+              //SQLite_Methods.Create_Fresh_Index_On_HoleCards(sqlite_conn);
             sqlite_conn.Dispose();
             return 0;
         }
@@ -614,7 +616,7 @@ namespace PokerConsoleApp
                 int flop1_int = card_to_int_dict[flop[0].ToString()];
                 int flop2_int = card_to_int_dict[flop[1].ToString()];
                 int flop3_int = card_to_int_dict[flop[2].ToString()];
-                
+
                 sqlite_cmd.CommandText = $"SELECT COUNT(*) FROM PlayerHandsTable WHERE Hole1 = {hole1_int} AND Hole2 = {hole2_int} AND Flop1 ={flop1_int} AND Flop2 = {flop2_int} AND Flop3 = {flop3_int};";
                 using (var myDataReader = sqlite_cmd.ExecuteReader())
                 {
@@ -653,7 +655,7 @@ namespace PokerConsoleApp
                 // Convert cards to integers for fast reading and writing
                 int hole1_int = card_to_int_dict[holes[0].ToString()];
                 int hole2_int = card_to_int_dict[holes[1].ToString()];
-            
+
 
                 sqlite_cmd.CommandText = $"SELECT COUNT(*) FROM PlayerHandsTable WHERE Hole1 = {hole1_int} AND Hole2 = {hole2_int};";
                 using (var myDataReader = sqlite_cmd.ExecuteReader())
