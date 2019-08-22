@@ -96,7 +96,7 @@ namespace PokerConsoleApp
             {
                 for (int i = 0; i < cards.Count; i++)
                 {
-                    ret_val *= cards[i].GetPrimeId();
+                    ret_val *= this.cards[i].GetPrimeId();
                 }
                 return ret_val;
             }
@@ -302,11 +302,11 @@ namespace PokerConsoleApp
                 throw new Exception("ht_1 != ht_2 in the DoesThisHandBeatThatHand() and that shouldn't happen");
 
             // if hands are of the same rank, we need to compare them card by card
-            if (hand_1.Is_Sorted() == false)
+            if (ht_1 != HandType.OnePair && hand_1.Is_Sorted() == false)
             {
                 hand_1.DoSort();
             }
-            if (hand_2.Is_Sorted() == false)
+            if (ht_2 != HandType.OnePair && hand_2.Is_Sorted() == false)
             {
                 hand_2.DoSort();
             }
@@ -486,37 +486,44 @@ namespace PokerConsoleApp
             // COMPARING ONE PAIRS
             if (ht_1 == Hand.HandType.OnePair)
             {
-                // first check big pair rank
-                Card.Rank pair_rank1 = hand_1.cards[4].GetRank();
-                Card.Rank pair_rank2 = hand_2.cards[4].GetRank();
-                if (pair_rank1 > pair_rank2)
+                //// first check big pair rank
+                //Card.Rank pair_rank1 = hand_1.cards[4].GetRank();
+                //Card.Rank pair_rank2 = hand_2.cards[4].GetRank();
+                //if (pair_rank1 > pair_rank2)
+                //    return 1;
+                //if (pair_rank2 > pair_rank1)
+                //    return 0;
+                //// second check - first kicker
+                //Card.Rank kicker_rank1 = hand_1.cards[2].GetRank();
+                //Card.Rank kicker_rank2 = hand_2.cards[2].GetRank();
+                //if (kicker_rank1 > kicker_rank2)
+                //    return 1;
+                //if (kicker_rank2 > kicker_rank1)
+                //    return 0;
+                //// third check - second kicker
+                //kicker_rank1 = hand_1.cards[1].GetRank();
+                //kicker_rank2 = hand_2.cards[1].GetRank();
+                //if (kicker_rank1 > kicker_rank2)
+                //    return 1;
+                //if (kicker_rank2 > kicker_rank1)
+                //    return 0;
+                //// fourth check - third kicker
+                //kicker_rank1 = hand_1.cards[0].GetRank();
+                //kicker_rank2 = hand_2.cards[0].GetRank();
+                //if (kicker_rank1 > kicker_rank2)
+                //    return 1;
+                //if (kicker_rank2 > kicker_rank1)
+                //    return 0;
+                //// if nothing has been returned yet then its a tie
+                //return -1;
+                int hand1_pair_rank = Program.pairRankDict[hand_1.GetPrimeRank()];
+                int hand2_pair_rank = Program.pairRankDict[hand_2.GetPrimeRank()];
+                if (hand1_pair_rank == hand2_pair_rank)
+                    return -1;
+                else if (hand1_pair_rank < hand2_pair_rank)
                     return 1;
-                if (pair_rank2 > pair_rank1)
+                else if (hand1_pair_rank > hand2_pair_rank)
                     return 0;
-                // second check - first kicker
-                Card.Rank kicker_rank1 = hand_1.cards[2].GetRank();
-                Card.Rank kicker_rank2 = hand_2.cards[2].GetRank();
-                if (kicker_rank1 > kicker_rank2)
-                    return 1;
-                if (kicker_rank2 > kicker_rank1)
-                    return 0;
-                // third check - second kicker
-                kicker_rank1 = hand_1.cards[1].GetRank();
-                kicker_rank2 = hand_2.cards[1].GetRank();
-                if (kicker_rank1 > kicker_rank2)
-                    return 1;
-                if (kicker_rank2 > kicker_rank1)
-                    return 0;
-                // fourth check - third kicker
-                kicker_rank1 = hand_1.cards[0].GetRank();
-                kicker_rank2 = hand_2.cards[0].GetRank();
-                if (kicker_rank1 > kicker_rank2)
-                    return 1;
-                if (kicker_rank2 > kicker_rank1)
-                    return 0;
-                // if nothing has been returned yet then its a tie
-                return -1;
-
             }
             //COMPARING FULL HOUSE
             if (ht_1 == Hand.HandType.FullHouse)

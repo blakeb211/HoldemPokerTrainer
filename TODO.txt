@@ -81,3 +81,8 @@ records per kilobyte = 57.139 == 67 Gigabytes for target file size
 
 204000 records in 0.24 minutes
 804000 records in 0.98 minutes = 820,408 records per minute
+
+
+// UPDATED ONE PAIR COMPARISON SECTION IN DoesThisHandBeatThatHand TO USE THE 
+// CACTUS KEV PRIME NUMBER RANKING AND A HASH
+240000 records in 0.29 min  = 827,586 records per minute
