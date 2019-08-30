@@ -322,6 +322,10 @@ namespace PokerConsoleApp
                     transaction = conn.BeginTransaction();
                 }
             } while (gamesWritten < games_to_simulate); // end of main loop
+            
+            // commit transaction since inevitably we broke out of simulation loop with a partial transaction
+            transaction.Commit();
+            // clean up
             command.Dispose();
             transaction.Dispose();
             conn.Dispose();
