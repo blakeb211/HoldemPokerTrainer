@@ -54,6 +54,25 @@ namespace PokerConsoleApp
             command.Parameters["@win_flag"].Value = win_flag;
             return command.ExecuteNonQuery();
         }
+        public static int InsertResultItem(Simulation.GameRecord record, SQLiteCommand command)
+        {
+            command.Parameters.AddWithValue("@hole1", "");
+            command.Parameters.AddWithValue("@hole2", "");
+            command.Parameters.AddWithValue("@flop1", "");
+            command.Parameters.AddWithValue("@flop2", "");
+            command.Parameters.AddWithValue("@flop3", "");
+            command.Parameters.AddWithValue("@win_flag", "");
+            command.CommandText = "INSERT INTO PlayerHandsTable "
+                            + "(Hole1, Hole2, Flop1, Flop2, Flop3, Winflag) "
+                            + "VALUES (@hole1, @hole2, @flop1,@flop2, @flop3, @win_flag)";
+            command.Parameters["@hole1"].Value = Program.card_to_int_dict[record.hole1.ToString()];
+            command.Parameters["@hole2"].Value = Program.card_to_int_dict[record.hole2.ToString()];
+            command.Parameters["@flop1"].Value = Program.card_to_int_dict[record.flop1.ToString()];
+            command.Parameters["@flop2"].Value = Program.card_to_int_dict[record.flop2.ToString()];
+            command.Parameters["@flop3"].Value = Program.card_to_int_dict[record.flop3.ToString()];
+            command.Parameters["@win_flag"].Value = record.winFlag;
+            return command.ExecuteNonQuery();
+        }
 
         public static void ReadData(SQLiteConnection conn)
         {
@@ -86,7 +105,7 @@ namespace PokerConsoleApp
 
         }
 
-        internal static void Drop_Index_On_HoleCards(SQLiteConnection sqlite_conn)
+        internal static void DropIndexIfExists(SQLiteConnection sqlite_conn)
         {
             SQLiteCommand sqlite_cmd;
             string dropsql = "DROP INDEX IF EXISTS hole1_idx";

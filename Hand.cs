@@ -10,6 +10,7 @@ namespace PokerConsoleApp
 {
     public class Hand
     {
+        // Enum for the general rank of a five-card hand
         public enum HandType
         {
             NotAssignedYet = 9,
@@ -24,6 +25,7 @@ namespace PokerConsoleApp
             HighCard = 0
         };
 
+        // Data members that each hand object has
         private readonly List<Card> cards = new List<Card> { };
         private HandType hand_type = new HandType();
         private bool is_sorted = false;
@@ -71,6 +73,7 @@ namespace PokerConsoleApp
         }
 
 
+        // Get data From Hand
         public int GetPrimeRank()
         {
             int ret_val = 1;
@@ -106,6 +109,7 @@ namespace PokerConsoleApp
             return this.cards.Count;
         }
 
+        // Build hand
         public void AddCard(Card c)
         {
             if (cards.Count == 5)
@@ -124,6 +128,8 @@ namespace PokerConsoleApp
                 throw new Exception("Can't remove cards of a hand that already has 0 cards!");
             this.cards.RemoveRange(0, this.cards.Count);
         }
+
+        // Sort hand
         public void Sort()
         {
             //put doubles triples and quads at end
@@ -294,6 +300,57 @@ namespace PokerConsoleApp
             return this.is_sorted;
         }
 
+        // Generate 21 combinations possible for each player. Each player has 2 personal hole cards and all players share 5 other cards
+        public static List<Hand> Build_List_21_Hands(Card hole1, Card hole2, Card c1, Card c2, Card c3, Card c4, Card c5)
+        {
+            // Find individual players' best hand out of all possible
+            // combos of hole, flop, turn, and river cards
+            // hole1, hole2 = hole cards
+            // c1, c2, c3 = flop cards
+            // c4, c5 = turn and river cards
+            List<Hand> ret_list = new List<Hand> { };
+            Hand[] h = new Hand[21];
+            // UNIQUE HAND COMBINATIONS USING BOTH HOLE CARDS + COMBINATIONS OF 3 FROM THE REST
+            h[0] = new Hand(new List<Card> { hole1, hole2, c1, c2, c3 });
+            h[1] = new Hand(new List<Card> { hole1, hole2, c1, c3, c4 });
+            h[2] = new Hand(new List<Card> { hole1, hole2, c1, c3, c5 });
+
+            h[3] = new Hand(new List<Card> { hole1, hole2, c1, c2, c4 });
+            h[4] = new Hand(new List<Card> { hole1, hole2, c1, c2, c5 });
+            h[5] = new Hand(new List<Card> { hole1, hole2, c1, c4, c5 });
+
+            h[6] = new Hand(new List<Card> { hole1, hole2, c2, c3, c4 });
+            h[7] = new Hand(new List<Card> { hole1, hole2, c2, c3, c5 });
+            h[7] = new Hand(new List<Card> { hole1, hole2, c2, c3, c5 });
+            h[8] = new Hand(new List<Card> { hole1, hole2, c2, c4, c5 });
+
+            h[9] = new Hand(new List<Card> { hole1, hole2, c3, c4, c5 });
+            // UNIQUE HAND COMBINATIONS USING ONE HOLE CARD + COMBINATIONS OF 4 FROM REST
+            // hole card 1 
+            h[10] = new Hand(new List<Card> { hole1, c1, c2, c3, c4 });
+            h[11] = new Hand(new List<Card> { hole1, c1, c2, c3, c5 });
+            h[12] = new Hand(new List<Card> { hole1, c1, c2, c4, c5 });
+
+            h[13] = new Hand(new List<Card> { hole1, c1, c3, c4, c5 });
+            h[14] = new Hand(new List<Card> { hole1, c2, c3, c4, c5 });
+            // hole card 2 
+            h[15] = new Hand(new List<Card> { hole2, c1, c2, c3, c4 });
+            h[16] = new Hand(new List<Card> { hole2, c1, c2, c3, c5 });
+            h[17] = new Hand(new List<Card> { hole2, c1, c2, c4, c5 });
+
+            h[18] = new Hand(new List<Card> { hole2, c1, c3, c4, c5 });
+            h[19] = new Hand(new List<Card> { hole2, c2, c3, c4, c5 });
+            // hand with 0 hole cards
+            h[20] = new Hand(new List<Card> { c1, c2, c3, c4, c5 });
+
+            // build List<hand> to return from method
+            for (int i = 0; i < 21; i++)
+                ret_list.Add(h[i]);
+
+            return ret_list;
+        }
+
+        // Methods to evaluate the hand that a player has
         public void EvaluateHandtype()
         {
             // This method sets the general Handtype of the hand.
@@ -413,7 +470,7 @@ namespace PokerConsoleApp
         {
             return this.hand_type;
         }
-        private bool IsStraight(int[] rank_tally)
+        public bool IsStraight(int[] rank_tally)
         {
             if (rank_tally.Length != 15)
                 throw new Exception("The array passed to IsStraight doesn't have 15 elements!");
@@ -440,7 +497,7 @@ namespace PokerConsoleApp
             else
                 return false;
         }
-        private bool IsFlush(int[] suit_tally)
+        public bool IsFlush(int[] suit_tally)
         {
             if (suit_tally.Length != 5)
                 throw new Exception("The array passed to IsFlush doesn't have 5 elements!");
@@ -455,7 +512,7 @@ namespace PokerConsoleApp
 
             return flush_flag;
         }
-        private bool IsFourOfAKind(int[] rank_tally)
+        public bool IsFourOfAKind(int[] rank_tally)
         {
             bool ret_flag = false;
             for (int i = 2; i < 15; i++)
@@ -465,7 +522,7 @@ namespace PokerConsoleApp
             }
             return ret_flag;
         }
-        private bool IsFullHouse(int[] rank_tally)
+        public bool IsFullHouse(int[] rank_tally)
         {
             bool ret_flag = false;
             bool has_a_set_of_three = false;
@@ -487,7 +544,7 @@ namespace PokerConsoleApp
 
             return ret_flag;
         }
-        private bool IsThreeOfAKind(int[] rank_tally)
+        public bool IsThreeOfAKind(int[] rank_tally)
         {
             // note that this method would return false positive on a FourOfAKind hand or FullHouse 
             // if run by itself outside of the evaluate hand method
@@ -499,7 +556,7 @@ namespace PokerConsoleApp
             }
             return ret_flag;
         }
-        private bool IsTwoPair(int[] rank_tally)
+        public bool IsTwoPair(int[] rank_tally)
         {
             bool ret_flag = false;
             int rank_of_first_pair = -1;
@@ -521,7 +578,7 @@ namespace PokerConsoleApp
                 ret_flag = true;
             return ret_flag;
         }
-        private bool IsOnePair(int[] rank_tally)
+        public bool IsOnePair(int[] rank_tally)
         {
             bool ret_flag = false;
             int rank_of_pair = -1;
@@ -537,7 +594,7 @@ namespace PokerConsoleApp
             return ret_flag;
         }
 
-
+        // Methods to compare hands and determine there strength
         public static int CompareTo(Hand hand_1, Hand hand_2)
         {
             // This method compares two hands.

@@ -11,7 +11,7 @@ namespace PokerConsoleApp
 {
     public class Program
     {
-        static int NUMBER_OF_PLAYERS = 4;
+        public static int NUMBER_OF_PLAYERS = 4;
         const int HEIGHT = 120;
         const int WIDTH = 60;
         public static Dictionary<int, int> pairRankDict = new Dictionary<int, int> { };
@@ -48,7 +48,7 @@ namespace PokerConsoleApp
             var watch = new System.Diagnostics.Stopwatch();
             watch.Start();
             int games_to_simulate = 5000;
-            Simulate_Games(games_to_simulate);
+            Simulation.Simulate_Games(games_to_simulate, NUMBER_OF_PLAYERS);
             watch.Stop();
             Console.WriteLine($"Total Execution Time: {watch.ElapsedMilliseconds / 60000.0 } min");
 
@@ -81,7 +81,7 @@ namespace PokerConsoleApp
                             int num_games = Utility_Methods.GetIntegerFromUser(3000, 2000000000);
                             var watch = new System.Diagnostics.Stopwatch();
                             watch.Start();
-                            Simulate_Games(num_games);
+                            Simulation.Simulate_Games(num_games, NUMBER_OF_PLAYERS);
                             watch.Stop();
                             Console.WriteLine($"Total Execution Time: {(watch.ElapsedMilliseconds / 60000.0).ToString("0.##")} minutes");
                             Utility_Methods.GetKeyPress();
@@ -204,133 +204,8 @@ namespace PokerConsoleApp
 
         }
 
-        static List<Hand> Build_List_21_Hands(Card hole1, Card hole2, Card c1, Card c2, Card c3, Card c4, Card c5)
-        {
-            // Find individual players' best hand out of all possible
-            // combos of hole, flop, turn, and river cards
-            // hole1, hole2 = hole cards
-            // c1, c2, c3 = flop cards
-            // c4, c5 = turn and river cards
-            List<Hand> ret_list = new List<Hand> { };
-            Hand[] h = new Hand[21];
-            // UNIQUE HAND COMBINATIONS USING BOTH HOLE CARDS + COMBINATIONS OF 3 FROM THE REST
-            h[0] = new Hand(new List<Card> { hole1, hole2, c1, c2, c3 });
-            h[1] = new Hand(new List<Card> { hole1, hole2, c1, c3, c4 });
-            h[2] = new Hand(new List<Card> { hole1, hole2, c1, c3, c5 });
 
-            h[3] = new Hand(new List<Card> { hole1, hole2, c1, c2, c4 });
-            h[4] = new Hand(new List<Card> { hole1, hole2, c1, c2, c5 });
-            h[5] = new Hand(new List<Card> { hole1, hole2, c1, c4, c5 });
 
-            h[6] = new Hand(new List<Card> { hole1, hole2, c2, c3, c4 });
-            h[7] = new Hand(new List<Card> { hole1, hole2, c2, c3, c5 });
-            h[7] = new Hand(new List<Card> { hole1, hole2, c2, c3, c5 });
-            h[8] = new Hand(new List<Card> { hole1, hole2, c2, c4, c5 });
-
-            h[9] = new Hand(new List<Card> { hole1, hole2, c3, c4, c5 });
-            // UNIQUE HAND COMBINATIONS USING ONE HOLE CARD + COMBINATIONS OF 4 FROM REST
-            // hole card 1 
-            h[10] = new Hand(new List<Card> { hole1, c1, c2, c3, c4 });
-            h[11] = new Hand(new List<Card> { hole1, c1, c2, c3, c5 });
-            h[12] = new Hand(new List<Card> { hole1, c1, c2, c4, c5 });
-
-            h[13] = new Hand(new List<Card> { hole1, c1, c3, c4, c5 });
-            h[14] = new Hand(new List<Card> { hole1, c2, c3, c4, c5 });
-            // hole card 2 
-            h[15] = new Hand(new List<Card> { hole2, c1, c2, c3, c4 });
-            h[16] = new Hand(new List<Card> { hole2, c1, c2, c3, c5 });
-            h[17] = new Hand(new List<Card> { hole2, c1, c2, c4, c5 });
-
-            h[18] = new Hand(new List<Card> { hole2, c1, c3, c4, c5 });
-            h[19] = new Hand(new List<Card> { hole2, c2, c3, c4, c5 });
-            // hand with 0 hole cards
-            h[20] = new Hand(new List<Card> { c1, c2, c3, c4, c5 });
-
-            // build List<hand> to return from method
-            for (int i = 0; i < 21; i++)
-                ret_list.Add(h[i]);
-
-            return ret_list;
-        }
-        static int Simulate_Games(int games_to_simulate)
-        {
-            // Database writing setup code
-            SQLiteConnection conn;
-            conn = SQLite_Methods.CreateConnection(NUMBER_OF_PLAYERS);
-            SQLite_Methods.CreateTableIfNotExists(conn);
-            SQLite_Methods.Drop_Index_On_HoleCards(conn);
-            SQLiteCommand command;
-            command = conn.CreateCommand();
-            SQLiteTransaction transaction = conn.BeginTransaction();
-            int gamesPerTransaction = 500;
-            int gamesWritten = 0;
-            do
-            {
-                Board b = new Board(NUMBER_OF_PLAYERS);
-                for (int deal_count = 0; deal_count <= 2; deal_count++) // two deals per deck
-                {
-                    if (games_to_simulate == 1)
-                        deal_count += 2;
-                    if (games_to_simulate == 2)
-                        deal_count += 1;
-                    b.Deal_Cards(NUMBER_OF_PLAYERS);
-                    if ((deal_count + 1) % 2 == 0)
-                        b.Get_New_Deck();
-                    List<Hand> lst_best_hands = new List<Hand> { };
-                    for (int player_index = 0; player_index < NUMBER_OF_PLAYERS; player_index++)
-                    {
-                        Card hole1 = b.players[player_index].hole[0];
-                        Card hole2 = b.players[player_index].hole[1];
-                        Card flop1 = b.flop_cards[0];
-                        Card flop2 = b.flop_cards[1];
-                        Card flop3 = b.flop_cards[2];
-                        Card turn = b.turn_card;
-                        Card river = b.river_card;
-                        // Find individual players' best hand out of all possible
-                        // combos of hole, flop, turn, and river cards
-                        List<Hand> lst_hand = Build_List_21_Hands(hole1, hole2, flop1, flop2, flop3, turn, river);
-                        List<int> winning_hand_indices = Hand.FindBestHand(lst_hand);
-                        lst_best_hands.Add(lst_hand[winning_hand_indices[0]]);
-                    }
-                    List<int> winning_player_indices = Hand.FindBestHand(lst_best_hands);
-                    // Set WON_THE_HAND boolean inside player class
-                    foreach (var wi in winning_player_indices)
-                        b.players[wi].Won_The_Hand = true;
-
-                    /**************************************************************
-                    * GAME HAS BEEN SIMULATED, NOW WRITE IT TO DATABASE
-                    ***************************************************************/
-                    for (int player_index = 0; player_index < NUMBER_OF_PLAYERS; player_index++)
-                    {
-                        // Sort hole and flop cards uniquely 
-                        List<Card> lst_hole_cards = new List<Card> { };
-                        List<Card> lst_flop_cards = new List<Card> { };
-                        for (int i = 0; i < 2; i++)
-                            lst_hole_cards.Add(b.players[player_index].hole[i]);
-                        for (int i = 0; i < 3; i++)
-                            lst_flop_cards.Add(b.flop_cards[i]);
-                        Card.Reorder_Cards_Uniquely(ref lst_hole_cards);
-                        Card.Reorder_Cards_Uniquely(ref lst_flop_cards);
-                        // Execute Insert command on database, one row per player
-                        SQLite_Methods.InsertResultItem(lst_hole_cards[0], lst_hole_cards[1], lst_flop_cards[0], lst_flop_cards[1], lst_flop_cards[2], b.players[player_index].GetWinflag(), command);
-                    }
-                    gamesWritten++;
-                } // end of deck loop
-                if (gamesWritten % gamesPerTransaction == 0)
-                {
-                    transaction.Commit();
-                    transaction = conn.BeginTransaction();
-                }
-            } while (gamesWritten < games_to_simulate); // end of main loop
-            
-            // commit transaction since inevitably we broke out of simulation loop with a partial transaction
-            transaction.Commit();
-            // clean up
-            command.Dispose();
-            transaction.Dispose();
-            conn.Dispose();
-            return 0;
-        }
         enum State { HOLE_CARDS_DEALT, FLOP_DEALT, TURN_DEALT, RIVER_DEALT, GAME_OVER };
         static int Play_Game()
         {
@@ -357,7 +232,7 @@ namespace PokerConsoleApp
                     Card river = b.river_card;
                     // Find individual players' best hand out of all possible
                     // combos of hole, flop, turn, and river cards
-                    List<Hand> lst_hand = Build_List_21_Hands(hole1, hole2, flop1, flop2, flop3, turn, river);
+                    List<Hand> lst_hand = Hand.Build_List_21_Hands(hole1, hole2, flop1, flop2, flop3, turn, river);
                     List<int> winning_hand_indices = Hand.FindBestHand(lst_hand);
                     lst_best_hands.Add(lst_hand[winning_hand_indices[0]]);
                     b.players[player_index].best_hand = lst_hand[winning_hand_indices[0]];
@@ -3440,6 +3315,7 @@ namespace PokerConsoleApp
             pairRankDict.Add(660, 2859);
             pairRankDict.Add(420, 2860);
         }
+
     }
 
 }
