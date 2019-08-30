@@ -1,12 +1,15 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.SQLite;
+using System.Threading;
+using System;
+
 namespace PokerConsoleApp
 {
     class Simulation
     {
         // Variables that need to be accessible by producer and consumer methods
-        private static BlockingCollection<GameRecord> collection;
+        private static BlockingCollection<GameRecord> collection = new BlockingCollection<GameRecord>();
         private static SQLiteConnection conn;
         private static SQLiteCommand command;
         private static SQLiteTransaction transaction;
@@ -23,7 +26,28 @@ namespace PokerConsoleApp
             SQLite_Methods.DropIndexIfExists(conn);
 
             // CALL PRODUCERS AND CONSUMER HERE
-       
+            ThreadStart tProd = new ThreadStart(RecordProducer);
+            ThreadStart tCons = new ThreadStart(RecordConsumer);
+            Thread producerThread = new Thread(tProd);
+            Thread producerThread2 = new Thread(tProd);
+            Thread producerThread3 = new Thread(tProd);
+            Thread consumerThread = new Thread(tCons);
+            Timing timer = new Timing();
+            timer.StartTime();
+            producerThread.Start();
+            producerThread2.Start();
+            //producerThread3.Start();
+            consumerThread.Start();
+            while (true)
+            {
+                if (consumerThread.ThreadState == ThreadState.Stopped)
+                {
+                    timer.StopTime();
+                    break;
+                }
+            }
+           
+            Console.WriteLine($"Timer duration: {timer.Result().TotalMinutes} minutes");
             return 0;
         }
 
@@ -61,9 +85,7 @@ namespace PokerConsoleApp
                     foreach (var wi in winning_player_indices)
                         b.players[wi].Won_The_Hand = true;
 
-                    /**************************************************************
-                    * GAME HAS BEEN SIMULATED, NOW WRITE IT TO DATABASE
-                    ***************************************************************/
+                    // Sort the cards uniquely and add GameRecord to the BlockingCollection
                     for (int player_index = 0; player_index < Program.NUMBER_OF_PLAYERS; player_index++)
                     {
                         // Sort hole and flop cards uniquely 
@@ -97,7 +119,7 @@ namespace PokerConsoleApp
                 GameRecord record;
                 while (true)
                 {
-                    if (collection.TryTake(out record, 1))
+                    if (collection.TryTake(out record))
                         break;
                 }
                 SQLite_Methods.InsertResultItem(record, command);
@@ -108,9 +130,9 @@ namespace PokerConsoleApp
                     transaction = conn.BeginTransaction();
                 }
             } while (recordsWritten < recordsTotal);
-            // inevitably we broke out of loop with a partial transaction. flush it to disk.
+            // Inevitably we broke out of loop with a partial transaction. Flush it to disk.
             transaction.Commit();
-            // clean up
+            // Clean up
             command.Dispose();
             transaction.Dispose();
             conn.Dispose();
