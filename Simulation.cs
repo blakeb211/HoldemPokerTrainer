@@ -5,52 +5,25 @@ namespace PokerConsoleApp
 {
     class Simulation
     {
-        // variables that need to be accessible by producer and consumer methods
+        // Variables that need to be accessible by producer and consumer methods
         private static BlockingCollection<GameRecord> collection;
         private static SQLiteConnection conn;
         private static SQLiteCommand command;
         private static SQLiteTransaction transaction;
-        private static int gamesTotal;
-        private static int gamesWritten;
+        private static int recordsTotal;
+        private static int recordsWritten;
+        private static int gamesPerTransaction = 500;
         public static int Simulate_Games(int games_to_simulate)
         {
-            gamesTotal = games_to_simulate;
-            gamesWritten = 0;
+            recordsTotal = games_to_simulate;
+            recordsWritten = 0;
             // Database writing setup code
             conn = SQLite_Methods.CreateConnection(Program.NUMBER_OF_PLAYERS);
             SQLite_Methods.CreateTableIfNotExists(conn);
             SQLite_Methods.DropIndexIfExists(conn);
-            command = conn.CreateCommand();
-            transaction = conn.BeginTransaction();
-            int gamesPerTransaction = 500;
-        
-            do
-            {
 
-                // Execute Insert command on database, one row per player
-                GameRecord record;
-                while (true)
-                {
-                    if (collection.TryTake(out record, 1))
-                        break;
-                }
-                SQLite_Methods.InsertResultItem(record, command);
-
-                gamesWritten++;
-                // end of deck loop
-                if (gamesWritten % gamesPerTransaction == 0)
-                {
-                    transaction.Commit();
-                    transaction = conn.BeginTransaction();
-                }
-            } while (gamesWritten < games_to_simulate); // end of main loop
-
-            // inevitably we broke out of loop with a partial transaction. flush it to disk.
-            transaction.Commit();
-            // clean up
-            command.Dispose();
-            transaction.Dispose();
-            conn.Dispose();
+            // CALL PRODUCERS AND CONSUMER HERE
+       
             return 0;
         }
 
@@ -110,13 +83,37 @@ namespace PokerConsoleApp
                         }
                     }
                 }
-            } while (gamesWritten < gamesTotal);
+            } while (recordsWritten < recordsTotal);
         }
 
         // Record consumer writes records to the sqlite database
         public static void RecordConsumer()
         {
-
+            command = conn.CreateCommand();
+            transaction = conn.BeginTransaction();
+            do
+            {
+                // Execute Insert command on database, one row per player
+                GameRecord record;
+                while (true)
+                {
+                    if (collection.TryTake(out record, 1))
+                        break;
+                }
+                SQLite_Methods.InsertResultItem(record, command);
+                recordsWritten++;    
+                if (recordsWritten % gamesPerTransaction == 0)
+                {
+                    transaction.Commit();
+                    transaction = conn.BeginTransaction();
+                }
+            } while (recordsWritten < recordsTotal);
+            // inevitably we broke out of loop with a partial transaction. flush it to disk.
+            transaction.Commit();
+            // clean up
+            command.Dispose();
+            transaction.Dispose();
+            conn.Dispose();
         }
 
 
