@@ -10,7 +10,7 @@ namespace PokerConsoleApp
             SQLiteConnection sqlite_conn;
             // Create new database connection using number of players in the datasource name
             string datasource = $"{player_count}-player-database.db";
-            sqlite_conn = new SQLiteConnection("Data Source=" + datasource + ";Version=3;New=True;Compress=True;journal mode=Off;");
+            sqlite_conn = new SQLiteConnection("Data Source=" + datasource + ";Version=3;New=True;Compress=True;journal mode=Off;Synchronous=Off");
             // Open the connection:
             try
             {

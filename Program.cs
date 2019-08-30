@@ -87,7 +87,7 @@ namespace PokerConsoleApp
                             Utility_Methods.GetKeyPress();
                             break;
                         case 2:
-                            Play_Game_Showing_Statistics();
+                            Play_Game();
                             Utility_Methods.GetKeyPress();
                             Thread.Sleep(1000);
                             break;
@@ -95,7 +95,7 @@ namespace PokerConsoleApp
                             // ask for number of players
                             // and change value if b/w 2 and 8
                             Console.WriteLine("Enter number of players (2 to 8):");
-                            NUMBER_OF_PLAYERS = Utility_Methods.GetIntegerFromUser(2,8);
+                            NUMBER_OF_PLAYERS = Utility_Methods.GetIntegerFromUser(2, 8);
                             Thread.Sleep(1000);
                             break;
                         case 4:
@@ -112,7 +112,7 @@ namespace PokerConsoleApp
             } while (exit_flag == false);
 
         }
-       
+
         private static void Show_Database_Statistics()
         {
             Console.Clear();
@@ -203,7 +203,7 @@ namespace PokerConsoleApp
             }// Connection will be Disposed/Closed here
 
         }
-  
+
         static List<Hand> Build_List_21_Hands(Card hole1, Card hole2, Card c1, Card c2, Card c3, Card c4, Card c5)
         {
             // Find individual players' best hand out of all possible
@@ -289,10 +289,10 @@ namespace PokerConsoleApp
                         // Find individual players' best hand out of all possible
                         // combos of hole, flop, turn, and river cards
                         List<Hand> lst_hand = Build_List_21_Hands(hole1, hole2, flop1, flop2, flop3, turn, river);
-                        List<int> winning_hand_indices = Hand.Find_Best_Hand(lst_hand);
+                        List<int> winning_hand_indices = Hand.FindBestHand(lst_hand);
                         lst_best_hands.Add(lst_hand[winning_hand_indices[0]]);
                     }
-                    List<int> winning_player_indices = Hand.Find_Best_Hand(lst_best_hands);
+                    List<int> winning_player_indices = Hand.FindBestHand(lst_best_hands);
                     // Set WON_THE_HAND boolean inside player class
                     foreach (var wi in winning_player_indices)
                         b.players[wi].Won_The_Hand = true;
@@ -327,15 +327,15 @@ namespace PokerConsoleApp
             conn.Dispose();
             return 0;
         }
-        enum State { hole_cards_dealt, flop_dealt, turn_dealt, river_dealt, game_over };
-        static int Play_Game_Showing_Statistics()
+        enum State { HOLE_CARDS_DEALT, FLOP_DEALT, TURN_DEALT, RIVER_DEALT, GAME_OVER };
+        static int Play_Game()
         {
             bool exit_flag = false;
             do
             { // begin outer game loop so user can keep playing
                 Console.Clear();
                 State state = new State();
-                state = State.hole_cards_dealt;
+                state = State.HOLE_CARDS_DEALT;
                 // DEAL A NEW GAME
                 Utility_Methods.GetKeyPress();
                 Board b = new Board(NUMBER_OF_PLAYERS);
@@ -354,11 +354,11 @@ namespace PokerConsoleApp
                     // Find individual players' best hand out of all possible
                     // combos of hole, flop, turn, and river cards
                     List<Hand> lst_hand = Build_List_21_Hands(hole1, hole2, flop1, flop2, flop3, turn, river);
-                    List<int> winning_hand_indices = Hand.Find_Best_Hand(lst_hand);
+                    List<int> winning_hand_indices = Hand.FindBestHand(lst_hand);
                     lst_best_hands.Add(lst_hand[winning_hand_indices[0]]);
                     b.players[player_index].best_hand = lst_hand[winning_hand_indices[0]];
                 }
-                List<int> winning_player_indices = Hand.Find_Best_Hand(lst_best_hands);
+                List<int> winning_player_indices = Hand.FindBestHand(lst_best_hands);
                 foreach (var w_index in winning_player_indices)
                     b.players[w_index].Won_The_Hand = true;
 
@@ -369,7 +369,7 @@ namespace PokerConsoleApp
                     Console.Clear();
                     String str_Board = Build_Game_Table(b, NUMBER_OF_PLAYERS, state);
                     Console.WriteLine(str_Board);
-                    if (state < State.river_dealt)
+                    if (state < State.RIVER_DEALT)
                     {
                         Utility_Methods.GetKeyPress();
                         Thread.Sleep(300);
@@ -382,7 +382,7 @@ namespace PokerConsoleApp
                         if (exit_flag == true)
                             return 0;
                         else
-                            state = State.flop_dealt;
+                            state = State.FLOP_DEALT;
                         break;
                     }
                 } while (true); // END STATE LOOP FOR INDIVIDUAL GAMES
@@ -396,19 +396,19 @@ namespace PokerConsoleApp
             var tbl_board = new ConsoleTable("flop", "turn", "river");
             switch (state)
             {
-                case State.hole_cards_dealt:
+                case State.HOLE_CARDS_DEALT:
                     tbl_board.AddRow("       ", "    ", "     ");
                     break;
-                case State.flop_dealt:
+                case State.FLOP_DEALT:
                     tbl_board.AddRow($"{b.flop_cards[0].ToString()} {b.flop_cards[1].ToString()} {b.flop_cards[2].ToString()}", "    ", "     ");
                     break;
-                case State.turn_dealt:
+                case State.TURN_DEALT:
                     tbl_board.AddRow($"{b.flop_cards[0].ToString()} {b.flop_cards[1].ToString()} {b.flop_cards[2].ToString()}", b.turn_card.ToString(), "     ");
                     break;
-                case State.river_dealt:
+                case State.RIVER_DEALT:
                     tbl_board.AddRow($"{b.flop_cards[0].ToString()} {b.flop_cards[1].ToString()} {b.flop_cards[2].ToString()}", b.turn_card.ToString(), b.river_card.ToString());
                     break;
-                case State.game_over:
+                case State.GAME_OVER:
                     break;
                 default:
                     break;
@@ -421,7 +421,7 @@ namespace PokerConsoleApp
             {
                 switch (state)
                 {
-                    case State.hole_cards_dealt:
+                    case State.HOLE_CARDS_DEALT:
                         if (player_index == 0)
                         {
                             tbl_players.AddRow(player_index.ToString(), $"{b.players[player_index].hole[0].ToString()} {b.players[player_index].hole[1].ToString()}", Get_Pre_Flop_Percentage(b, player_index).ToString(), "  ", "   ", "   ");
@@ -429,7 +429,7 @@ namespace PokerConsoleApp
                         else
                             tbl_players.AddRow(player_index.ToString(), "hidden", "  ", "  ", "   ", "   ");
                         break;
-                    case State.flop_dealt:
+                    case State.FLOP_DEALT:
                         if (player_index == 0)
                         {
                             tbl_players.AddRow(player_index.ToString(), $"{b.players[player_index].hole[0].ToString()} {b.players[player_index].hole[1].ToString()}", Get_Pre_Flop_Percentage(b, player_index).ToString(), Get_Post_Flop_Percentage(b, player_index).ToString(), "   ", "   ");
@@ -437,7 +437,7 @@ namespace PokerConsoleApp
                         else
                             tbl_players.AddRow(player_index.ToString(), "hidden", "  ", "  ", "   ", "   ");
                         break;
-                    case State.turn_dealt:
+                    case State.TURN_DEALT:
                         if (player_index == 0)
                         {
                             tbl_players.AddRow(player_index.ToString(), $"{b.players[player_index].hole[0].ToString()} {b.players[player_index].hole[1].ToString()}", Get_Pre_Flop_Percentage(b, player_index).ToString(), Get_Post_Flop_Percentage(b, player_index).ToString(), "   ", "   ");
@@ -445,9 +445,9 @@ namespace PokerConsoleApp
                         else
                             tbl_players.AddRow(player_index.ToString(), "hidden", "  ", "  ", "   ", "   ");
                         break;
-                    case State.river_dealt:
-                        if (b.players[player_index].best_hand.Is_Sorted() == false)
-                            b.players[player_index].best_hand.DoSort();
+                    case State.RIVER_DEALT:
+                        if (b.players[player_index].best_hand.IsSorted() == false)
+                            b.players[player_index].best_hand.Sort();
                         if (b.players[player_index].Won_The_Hand == true)
                             tbl_players.AddRow(player_index.ToString() + " - win", $"{b.players[player_index].hole[0].ToString()} {b.players[player_index].hole[1].ToString()}", Get_Pre_Flop_Percentage(b, player_index).ToString(), Get_Post_Flop_Percentage(b, player_index).ToString(), b.players[player_index].best_hand.ToString(), b.players[player_index].best_hand.GetHandType().ToString());
                         else
@@ -569,7 +569,7 @@ namespace PokerConsoleApp
             Hand h2 = new Hand(new List<Card> { c1, c2, c3, c4, c5 });
             h1.EvaluateHandtype();
             h2.EvaluateHandtype();
-            int ret_val = Hand.DoesThisHandBeatThatHand(h1, h2);
+            int ret_val = Hand.CompareTo(h1, h2);
             Console.WriteLine($"Return Value : {ret_val}");
 
         }
