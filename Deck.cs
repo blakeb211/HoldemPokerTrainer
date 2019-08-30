@@ -35,7 +35,7 @@ namespace PokerConsoleApp
 
         public void Shuffle()
         {
-            this.deck = Blake_Utility_Methods.ShuffleList(this.deck);
+            this.deck = Utility_Methods.ShuffleList(this.deck);
         }
         public void BuildDeck()
         {

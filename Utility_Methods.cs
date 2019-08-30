@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace PokerConsoleApp
 {
-    class Blake_Utility_Methods
+    class Utility_Methods
     {
         public static List<E> ShuffleList<E>(List<E> inputList)
         {
@@ -21,7 +21,25 @@ namespace PokerConsoleApp
         public static void GetKeyPress()
         {
             Console.WriteLine("Press a key to continue...");
-            Console.ReadLine();
+            Console.Read();
+        }
+        public static int GetIntegerFromUser(int low, int high)
+        {
+            string sInput = "";
+            int userChoice;
+            do
+            {
+                Console.Clear();
+                Console.WriteLine($"Please enter a number between {low} and {high}: ");
+                sInput = Console.ReadLine();
+                if (Int32.TryParse(sInput, out userChoice))
+                {
+                    if (userChoice >= low && userChoice <= high)
+                    {
+                        return userChoice;
+                    }
+                }
+            } while (true);
         }
         public static bool Ask_User_For_Quit_Signal()
         {
@@ -37,7 +55,22 @@ namespace PokerConsoleApp
             }
 
         }
+        public static void Set_Window_Size(int w, int h)
+        {
+            Console.SetWindowPosition(0, 0);
 
+            if (h < Console.LargestWindowHeight && w < Console.LargestWindowWidth)
+            {
+                Console.SetBufferSize(w, h);
+                Console.SetWindowSize(w, h);
+            }
+            else
+            {
+                Console.SetBufferSize(Console.LargestWindowWidth, Console.LargestWindowHeight);
+                Console.SetWindowSize(Console.LargestWindowWidth, Console.LargestWindowHeight);
+            }
+
+        }
         public static string Trim_To_End(string s_to_trim, string s_substr)
         {
             int i_substr = s_to_trim.LastIndexOf(s_substr);

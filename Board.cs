@@ -30,7 +30,7 @@ namespace PokerConsoleApp
             var table = new ConsoleTable("flop", "turn", "river");
             table.AddRow($"{flop_cards[0].ToString()} {flop_cards[1].ToString()} {flop_cards[2].ToString()}", turn_card.ToString(), river_card.ToString());
 
-            ret_string = Blake_Utility_Methods.Trim_To_End(table.ToString(), "Count:");
+            ret_string = Utility_Methods.Trim_To_End(table.ToString(), "Count:");
 
             return ret_string;
         }

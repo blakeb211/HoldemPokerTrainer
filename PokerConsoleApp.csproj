@@ -20,7 +20,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="desktop.ini" />
     <None Remove="poker-hand-rankings.pdf" />
+    <None Remove="Report20190817-1820_performance report on simulating games.vsp" />
   </ItemGroup>
 
   <ItemGroup>

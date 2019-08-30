@@ -12,14 +12,14 @@ namespace PokerConsoleApp
     public class Program
     {
         static int NUMBER_OF_PLAYERS = 4;
-        const int HEIGHT = 40;
-        const int WIDTH = 90;
+        const int HEIGHT = 120;
+        const int WIDTH = 60;
         public static Dictionary<int, int> pairRankDict = new Dictionary<int, int> { };
         public static Dictionary<string, int> card_to_int_dict = new Dictionary<string, int> { };
         static void Main()
         {
             Build_Pair_Rank_Dict();
-            Set_Window_Size(130, 50);
+            Utility_Methods.Set_Window_Size(HEIGHT, WIDTH);
             Build_Card_To_Int_Table();
             DisplayMenu();
             //Test_method();
@@ -43,7 +43,7 @@ namespace PokerConsoleApp
             if (card_value_index != 52)
                 throw new Exception("error card_value_index not equal to 51 at end of building table method");
         }
-        public static void Debug_Test_Simulation_Speed()
+        public static void DebugSimulation()
         {
             var watch = new System.Diagnostics.Stopwatch();
             watch.Start();
@@ -78,29 +78,29 @@ namespace PokerConsoleApp
                     {
                         case 1:
                             // get number of games to simulate
-                            int num_games = GetNumberOfGamesFromUser();
+                            int num_games = Utility_Methods.GetIntegerFromUser(3000, 2000000000);
                             var watch = new System.Diagnostics.Stopwatch();
                             watch.Start();
                             Simulate_Games(num_games);
                             watch.Stop();
                             Console.WriteLine($"Total Execution Time: {(watch.ElapsedMilliseconds / 60000.0).ToString("0.##")} minutes");
-                            Blake_Utility_Methods.GetKeyPress();
+                            Utility_Methods.GetKeyPress();
                             break;
                         case 2:
                             Play_Game_Showing_Statistics();
-                            Blake_Utility_Methods.GetKeyPress();
+                            Utility_Methods.GetKeyPress();
                             Thread.Sleep(1000);
                             break;
                         case 3:
                             // ask for number of players
                             // and change value if b/w 2 and 8
                             Console.WriteLine("Enter number of players (2 to 8):");
-                            NUMBER_OF_PLAYERS = Get_Number_Of_Players_From_User();
+                            NUMBER_OF_PLAYERS = Utility_Methods.GetIntegerFromUser(2,8);
                             Thread.Sleep(1000);
                             break;
                         case 4:
                             Show_Database_Statistics();
-                            Blake_Utility_Methods.GetKeyPress();
+                            Utility_Methods.GetKeyPress();
                             break;
                         case 5:
                             exit_flag = true;
@@ -112,59 +112,7 @@ namespace PokerConsoleApp
             } while (exit_flag == false);
 
         }
-        private static int GetNumberOfGamesFromUser()
-        {
-            string sInput = "";
-            bool exit_flag = false;
-            int userChoice;
-            do
-            {
-                Console.Clear();
-                Console.WriteLine("Please enter a number between 10 and 10,000,000: ");
-                sInput = Console.ReadLine();
-                if (Int32.TryParse(sInput, out userChoice))
-                {
-                    if (userChoice >= 10 && userChoice <= 10000000)
-                    {
-                        exit_flag = true;
-                        return userChoice;
-                    }
-                }
-            } while (exit_flag == false);
-            return 0; // return default number of games to simulate
-        }
-        private static int Get_Number_Of_Players_From_User()
-        {
-            string sInput = "";
-            bool exit_flag = false;
-            int userChoice;
-            do
-            {
-                Console.Clear();
-                Console.WriteLine("Please enter a number between 2 and 8: ");
-                sInput = Console.ReadLine();
-                if (Int32.TryParse(sInput, out userChoice))
-                {
-                    switch (userChoice)
-                    {
-                        case 2:
-                        case 3:
-                        case 4:
-                        case 5:
-                        case 6:
-                        case 7:
-                        case 8:
-                            exit_flag = true;
-                            return userChoice;
-
-                        default:
-                            break;
-                    }
-                }
-            } while (exit_flag == false);
-            return 4; // return default number of players
-        }
-
+       
         private static void Show_Database_Statistics()
         {
             Console.Clear();
@@ -251,70 +199,11 @@ namespace PokerConsoleApp
                     string str_cr = Card.Card_Rank_ToString((Card.Rank)cr);
                     table.AddRow($"{str_cr} {str_cr}", counts[i_card_rank].ToString(), wins[i_card_rank].ToString(), string.Format("{0:F1}", chance));
                 }
-                Console.WriteLine(Blake_Utility_Methods.Trim_To_End(table.ToString(), "Count:"));
+                Console.WriteLine(Utility_Methods.Trim_To_End(table.ToString(), "Count:"));
             }// Connection will be Disposed/Closed here
 
         }
-
-        static void Set_Window_Size(int w, int h)
-        {
-            Console.SetWindowPosition(0, 0);
-
-            if (h < Console.LargestWindowHeight && w < Console.LargestWindowWidth)
-            {
-                Console.SetBufferSize(w, h);
-                Console.SetWindowSize(w, h);
-            }
-            else
-            {
-                Console.SetBufferSize(Console.LargestWindowWidth, Console.LargestWindowHeight);
-                Console.SetWindowSize(Console.LargestWindowWidth, Console.LargestWindowHeight);
-            }
-
-        }
-        static void Print_Board_And_Show_Winner()
-        {
-            Board b = new Board(NUMBER_OF_PLAYERS);
-            b.Deal_Cards(NUMBER_OF_PLAYERS);
-            Console.WriteLine(b);
-            List<Hand> lst_best_hands = new List<Hand> { };
-
-            for (int player_index = 0; player_index < NUMBER_OF_PLAYERS; player_index++)
-            {
-                Card hole1 = b.players[player_index].hole[0];
-                Card hole2 = b.players[player_index].hole[1];
-                Card flop1 = b.flop_cards[0];
-                Card flop2 = b.flop_cards[1];
-                Card flop3 = b.flop_cards[2];
-                Card turn = b.turn_card;
-                Card river = b.river_card;
-                // Find individual players' best hand out of all possible
-                // combos of hole, flop, turn, and river cards
-                List<Hand> lst_hand = Build_List_21_Hands(hole1, hole2, flop1, flop2, flop3, turn, river);
-                List<int> winning_hand_indices = Hand.Find_Best_Hand(lst_hand);
-                lst_best_hands.Add(lst_hand[winning_hand_indices[0]]);
-
-            }
-            // Find Winners
-            List<int> winning_player_indices = Hand.Find_Best_Hand(lst_best_hands);
-            // Print out winners
-            var table = new ConsoleTable("Player #", "Best Hand", "Hand Type");
-            for (int player_index = 0; player_index < NUMBER_OF_PLAYERS; player_index++)
-            {
-                bool is_winner_flag = false;
-                foreach (var i in winning_player_indices)
-                    if (player_index == i)
-                        is_winner_flag = true;
-                string winner_mark = "";
-                if (is_winner_flag == true && winning_player_indices.Count == 1)
-                    winner_mark = " - winner";
-                else if (is_winner_flag == true && winning_player_indices.Count > 1)
-                    winner_mark = " - tie";
-                table.AddRow(player_index.ToString() + winner_mark, lst_best_hands[player_index].ToString(), lst_best_hands[player_index].GetHandType().ToString());
-            }
-            Console.WriteLine(table);
-
-        }
+  
         static List<Hand> Build_List_21_Hands(Card hole1, Card hole2, Card c1, Card c2, Card c3, Card c4, Card c5)
         {
             // Find individual players' best hand out of all possible
@@ -448,7 +337,7 @@ namespace PokerConsoleApp
                 State state = new State();
                 state = State.hole_cards_dealt;
                 // DEAL A NEW GAME
-                Blake_Utility_Methods.GetKeyPress();
+                Utility_Methods.GetKeyPress();
                 Board b = new Board(NUMBER_OF_PLAYERS);
                 b.Deal_Cards(NUMBER_OF_PLAYERS);
                 // FIND WINNERS
@@ -482,21 +371,21 @@ namespace PokerConsoleApp
                     Console.WriteLine(str_Board);
                     if (state < State.river_dealt)
                     {
-                        Blake_Utility_Methods.GetKeyPress();
+                        Utility_Methods.GetKeyPress();
                         Thread.Sleep(300);
                         state++;
                     }
                     else
                     {
                         Thread.Sleep(100);
-                        exit_flag = Blake_Utility_Methods.Ask_User_For_Quit_Signal();
+                        exit_flag = Utility_Methods.Ask_User_For_Quit_Signal();
                         if (exit_flag == true)
                             return 0;
                         else
                             state = State.flop_dealt;
                         break;
                     }
-                } while (1 == 1); // END STATE LOOP FOR INDIVIDUAL GAMES
+                } while (true); // END STATE LOOP FOR INDIVIDUAL GAMES
             } while (exit_flag == false);
             return 0;
         }
@@ -524,7 +413,7 @@ namespace PokerConsoleApp
                 default:
                     break;
             }
-            string str_board = Blake_Utility_Methods.Trim_To_End(tbl_board.ToString(), "Count:");
+            string str_board = Utility_Methods.Trim_To_End(tbl_board.ToString(), "Count:");
 
             // BUILD PLAYER TABLE
             ConsoleTable tbl_players = new ConsoleTable("Player", "Hole Cards", "Pre-flop %", "Post-flop %", "Best Hand", "HandType");
@@ -568,7 +457,7 @@ namespace PokerConsoleApp
                         break;
                 }
             }
-            string ret_string = Blake_Utility_Methods.Trim_To_End(tbl_players.ToString(), "Count:");
+            string ret_string = Utility_Methods.Trim_To_End(tbl_players.ToString(), "Count:");
             ret_string += str_board;
             return ret_string;
         }
