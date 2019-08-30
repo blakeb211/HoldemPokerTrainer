@@ -37,6 +37,15 @@ namespace PokerConsoleApp
 
         public static int InsertResultItem(Card hole1, Card hole2, Card flop1, Card flop2, Card flop3, int win_flag, SQLiteCommand command)
         {
+            command.Parameters.AddWithValue("@hole1", "");
+            command.Parameters.AddWithValue("@hole2", "");
+            command.Parameters.AddWithValue("@flop1", "");
+            command.Parameters.AddWithValue("@flop2", "");
+            command.Parameters.AddWithValue("@flop3", "");
+            command.Parameters.AddWithValue("@win_flag", "");
+            command.CommandText = "INSERT INTO PlayerHandsTable "
+                            + "(Hole1, Hole2, Flop1, Flop2, Flop3, Winflag) "
+                            + "VALUES (@hole1, @hole2, @flop1,@flop2, @flop3, @win_flag)";
             command.Parameters["@hole1"].Value = Program.card_to_int_dict[hole1.ToString()];
             command.Parameters["@hole2"].Value = Program.card_to_int_dict[hole2.ToString()];
             command.Parameters["@flop1"].Value = Program.card_to_int_dict[flop1.ToString()];

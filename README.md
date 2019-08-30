@@ -12,13 +12,16 @@ of winning a game with 4 other players? This program teaches you that.
 
 The probabilities are calculated by running SQLite queries on the database of simulated games.
 
-TOOLS USED:
+TECHNOLOGIES USED:
 Visual Studio Community 2019
 Github Extension
 Github.com
-
-NUGET PACKAGES:
-ConsoleTables - for making pretty tables in console
+SQLite
+Test Driven Development
+MSTest
+ConsoleTables package
 
 PROJECT STATUS:
+August 22 2019. Program works. It takes a few hours of simulating games to get a big enough database to see decent post-flop statistics
+
 August 15 2019. This program is still in development and only parts of it are working.

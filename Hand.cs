@@ -63,12 +63,12 @@ namespace PokerConsoleApp
         }
         public Card this[int index]
         {
-           // The get accessor.
+            // The get accessor.
             get
             {
                 if (index >= 5 || index < 0)
                     throw new Exception("index of card indexer out of range");
-                    return this.cards[index];
+                return this.cards[index];
             }
 
             // The set accessor.
@@ -111,9 +111,9 @@ namespace PokerConsoleApp
             string ret_string = "";
             for (int i = 0; i < 5; i++)
             {
-                ret_string += "( ";
+                ret_string += " ";
                 ret_string = ret_string + this.cards[i].ToString();
-                ret_string += " )";
+                ret_string += " ";
             }
             return ret_string;
         }

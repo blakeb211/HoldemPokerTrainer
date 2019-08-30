@@ -1,30 +1,8 @@
-TODO PokerConsoleApp Project
-
-UPDATE Get_Post_Flop_Percentage() Method to take the suit of the cards into account
-	Dramatically Speed up the Hand Evaluator, Simulate 4 billion hands, and 
-	let the Get_Post_Flop_Percentage() method search for records with the exact flop shown.
-
-ADD HAND() CONSTRUCTOR THAT TAKES A STRING LIKE ("A-c J-h 10-c 9-d A-s")
-
-GO THROUGH PROJECT AND REFACTOR
-
-ADD MORE UNIT TESTS AND ADD UNIT_TESTS.CS FILE TO GITHUB
-
--------------------------------------------------------------------------------------------------
-AT CURRENT CODE STATE, simulating and saving 4 billion hands will fill 166 GB and take 48 days!!
-That is way too long for this to be a reasonable way to do it.
--------------------------------------------------------------------------------------------------
-POSSIBLE FIXES TO THIS PROBLEM:
-		Write tables in 2GB Chunks to Memory and then save all at once to disk.
-		Do that 125 times.
-
-		Save each hole card combo to its own table for faster lookups
+L;p hole card combo to its own table for faster lookups
 
 		Compress data by encoding it as integers (1 - 52 for each card and 1 or 0 for true or false)
 
 		Speed up hand evaluator - 2598960 unique 5 cards
-
-		Speed up sorting algorithm
 
 
 CHANGED WINFLAG TO INTEGER
@@ -45,7 +23,7 @@ DROP INDEX BEFORE SIMULATING GAMES
 
 200,004 = C2 * 3.5 minutes
 C2 = 57,142 records per minute
-
+hg9i
 200,004 = C1 * 8728 kilobytes
 C1 = 22.91 records per kilobyte
 
