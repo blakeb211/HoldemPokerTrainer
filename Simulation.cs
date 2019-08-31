@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Threading;
+using System.Diagnostics.Tracing;
 using System;
 
 namespace PokerConsoleApp
@@ -14,12 +15,14 @@ namespace PokerConsoleApp
         private static SQLiteCommand command;
         private static SQLiteTransaction transaction;
         private static int recordsTotal;
-        private static int recordsWritten;
-        private static int gamesPerTransaction = 500;
+        private static int recordsWritten = 0;
+        private static int gamesPerTransaction = 1000;
+        private static int recordsAdded = 0;
+        private static object recordsAddedlock = new object();
+   
         public static int Simulate_Games(int games_to_simulate)
         {
             recordsTotal = games_to_simulate;
-            recordsWritten = 0;
             // Database writing setup code
             conn = SQLite_Methods.CreateConnection(Program.NUMBER_OF_PLAYERS);
             SQLite_Methods.CreateTableIfNotExists(conn);
@@ -43,11 +46,12 @@ namespace PokerConsoleApp
                 if (consumerThread.ThreadState == ThreadState.Stopped)
                 {
                     timer.StopTime();
+                    Thread.Sleep(1000);
                     break;
                 }
             }
            
-            Console.WriteLine($"Timer duration: {timer.Result().TotalMinutes} minutes");
+            Console.WriteLine($"Runtime duration: {timer.Result().TotalMinutes} minutes");
             return 0;
         }
 
@@ -101,7 +105,9 @@ namespace PokerConsoleApp
                         while (true)
                         {
                             if (collection.TryAdd(record, 1) == true)
-                                break;
+                            {
+                                     break;
+                            }
                         }
                     }
                 }
@@ -119,7 +125,7 @@ namespace PokerConsoleApp
                 GameRecord record;
                 while (true)
                 {
-                    if (collection.TryTake(out record))
+                    if (collection.TryTake(out record, 1))
                         break;
                 }
                 SQLite_Methods.InsertResultItem(record, command);
