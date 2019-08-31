@@ -46,6 +46,7 @@ namespace PokerConsoleApp
         }
         public Hand()
         {
+            this.cards.Capacity = 5;
             hand_type = HandType.NotAssignedYet;
             for (int i = 0; i < 4; i++)
                 suit_tally[i] = 0;
@@ -148,6 +149,7 @@ namespace PokerConsoleApp
             List<Card> lst_triples = new List<Card> { };
             List<Card> lst_quads = new List<Card> { };
             List<Card> mylist = new List<Card> { };
+            mylist.Capacity = 5;
             for (int i = 2; i < 15; i++)
             {
                 //1) decompose hand into singles, doubles, triples, etc lists
@@ -309,6 +311,7 @@ namespace PokerConsoleApp
             // c1, c2, c3 = flop cards
             // c4, c5 = turn and river cards
             List<Hand> ret_list = new List<Hand> { };
+            ret_list.Capacity = 21;
             Hand[] h = new Hand[21];
             // UNIQUE HAND COMBINATIONS USING BOTH HOLE CARDS + COMBINATIONS OF 3 FROM THE REST
             h[0] = new Hand(new List<Card> { hole1, hole2, c1, c2, c3 });

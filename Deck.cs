@@ -11,6 +11,7 @@ namespace PokerConsoleApp
         {
             this.cardCount = 0;
             this.deck = new List<Card> { };
+            this.deck.Capacity = 52;
             this.BuildDeck();
         }
         public void AddCard(Card c)
