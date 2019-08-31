@@ -66,7 +66,11 @@ records per kilobyte = 57.139 == 67 Gigabytes for target file size
 240000 records in 0.29 min  = 827,586 records per minute
 
 
+// August 31, 2019
 // Added 2nd Record Producer thread using Producer-Consumer Model
 // Turned SYNCHRONOUS=Off for SQLite database
 // 1000 records per transaction
 800000 in 0.83 minutes (Wall time) = 963, 855 records per minute
+
+// Next up: Replaces lists with arrays where possible
+//			Repalce foreach with for loops where possible
