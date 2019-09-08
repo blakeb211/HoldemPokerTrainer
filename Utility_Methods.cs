@@ -20,8 +20,8 @@ namespace PokerConsoleApp
         }
         public static void GetKeyPress()
         {
-            Console.WriteLine("Press a key to continue...");
-            Console.Read();
+            Console.WriteLine("Press a key and hit enter to continue...");
+            Console.ReadLine();
         }
         public static int GetIntegerFromUser(int low, int high)
         {

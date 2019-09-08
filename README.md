@@ -1,5 +1,15 @@
 # HoldemPokerTrainer
 Train yourself for live Texas Holdem games by seeing the probability of winning change as more cards are dealt.
+PROJECT STATUS:
+Sept 7 2019.	Program works. Uses multi-threading and BlockingCollection to simulate games quickly and save them to a SQLite database.
+				You need around 300 million games simulated (takes a few hours) to get good statistics for the post flop winning percentage.
+				The SQLite queries that calculate the probabilities is slow as hell once you have 10 million or so records. I believe I could 
+				fix this by using a separate Table to hold all the hands for each pair of Hole Cards and add a Table Index.
+
+August 22 2019. Program works. It takes a few hours of simulating games to get a big enough database to see decent post-flop statistics
+
+August 15 2019. This is my first C# program. Not currently working.
+
 
 This program "simulates" thousands of Texas Holdem Hands by shuffling the deck, 
 dealing the game, and saving the results to a SQLite database. 
@@ -12,6 +22,7 @@ of winning a game with 4 other players? This program teaches you that.
 
 The probabilities are calculated by running SQLite queries on the database of simulated games.
 
+
 TECHNOLOGIES USED:
 Visual Studio Community 2019
 Github Extension
@@ -19,9 +30,6 @@ Github.com
 SQLite
 Test Driven Development
 MSTest
-ConsoleTables package
+ConsoleTables nuget package
 
-PROJECT STATUS:
-August 22 2019. Program works. It takes a few hours of simulating games to get a big enough database to see decent post-flop statistics
 
-August 15 2019. This program is still in development and only parts of it are working.

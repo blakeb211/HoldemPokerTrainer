@@ -311,7 +311,7 @@ namespace PokerConsoleApp
                     case State.FLOP_DEALT:
                         if (player_index == 0)
                         {
-                            tbl_players.AddRow(player_index.ToString(), $"{b.players[player_index].hole[0].ToString()} {b.players[player_index].hole[1].ToString()}", Get_Pre_Flop_Percentage(b, player_index).ToString(), Get_Post_Flop_Percentage(b, player_index).ToString(), "   ", "   ");
+                            tbl_players.AddRow(player_index.ToString(), $"{b.players[player_index].hole[0].ToString()} {b.players[player_index].hole[1].ToString()}", Get_Pre_Flop_Percentage(b, player_index).ToString(), Get_Post_Flop_Percentage(b, player_index), "   ", "   ");
                         }
                         else
                             tbl_players.AddRow(player_index.ToString(), "hidden", "  ", "  ", "   ", "   ");
@@ -319,7 +319,7 @@ namespace PokerConsoleApp
                     case State.TURN_DEALT:
                         if (player_index == 0)
                         {
-                            tbl_players.AddRow(player_index.ToString(), $"{b.players[player_index].hole[0].ToString()} {b.players[player_index].hole[1].ToString()}", Get_Pre_Flop_Percentage(b, player_index).ToString(), Get_Post_Flop_Percentage(b, player_index).ToString(), "   ", "   ");
+                            tbl_players.AddRow(player_index.ToString(), $"{b.players[player_index].hole[0].ToString()} {b.players[player_index].hole[1].ToString()}", Get_Pre_Flop_Percentage(b, player_index).ToString(), Get_Post_Flop_Percentage(b, player_index), "   ", "   ");
                         }
                         else
                             tbl_players.AddRow(player_index.ToString(), "hidden", "  ", "  ", "   ", "   ");
@@ -328,9 +328,9 @@ namespace PokerConsoleApp
                         if (b.players[player_index].best_hand.IsSorted() == false)
                             b.players[player_index].best_hand.Sort();
                         if (b.players[player_index].Won_The_Hand == true)
-                            tbl_players.AddRow(player_index.ToString() + " - win", $"{b.players[player_index].hole[0].ToString()} {b.players[player_index].hole[1].ToString()}", Get_Pre_Flop_Percentage(b, player_index).ToString(), Get_Post_Flop_Percentage(b, player_index).ToString(), b.players[player_index].best_hand.ToString(), b.players[player_index].best_hand.GetHandType().ToString());
+                            tbl_players.AddRow(player_index.ToString() + " - win", $"{b.players[player_index].hole[0].ToString()} {b.players[player_index].hole[1].ToString()}", Get_Pre_Flop_Percentage(b, player_index).ToString(), Get_Post_Flop_Percentage(b, player_index), b.players[player_index].best_hand.ToString(), b.players[player_index].best_hand.GetHandType().ToString());
                         else
-                            tbl_players.AddRow(player_index.ToString(), $"{b.players[player_index].hole[0].ToString()} {b.players[player_index].hole[1].ToString()}", Get_Pre_Flop_Percentage(b, player_index).ToString(), Get_Post_Flop_Percentage(b, player_index).ToString(), b.players[player_index].best_hand.ToString(), b.players[player_index].best_hand.GetHandType().ToString());
+                            tbl_players.AddRow(player_index.ToString(), $"{b.players[player_index].hole[0].ToString()} {b.players[player_index].hole[1].ToString()}", Get_Pre_Flop_Percentage(b, player_index).ToString(), Get_Post_Flop_Percentage(b, player_index), b.players[player_index].best_hand.ToString(), b.players[player_index].best_hand.GetHandType().ToString());
                         break;
                     default:
                         break;
@@ -341,7 +341,7 @@ namespace PokerConsoleApp
             return ret_string;
         }
 
-        private static int Get_Post_Flop_Percentage(Board b, int player_index)
+        private static string Get_Post_Flop_Percentage(Board b, int player_index)
         {
             double records_with_those_cards = 0;
             double records_that_won = 0;
@@ -387,7 +387,11 @@ namespace PokerConsoleApp
                     }
                 } // Reader will be Disposed/Closed here
             }
-            return (int)(records_that_won / records_with_those_cards * 100.0);
+            int percentage = (int)(records_that_won / records_with_those_cards * 100.0);
+            if (percentage > 100 || percentage < 0)
+                return "n/a - database too small";
+            else
+                return percentage.ToString();
         }
 
         private static int Get_Pre_Flop_Percentage(Board b, int player_index)
