@@ -1,6 +1,10 @@
 # HoldemPokerTrainer
 Train yourself for live Texas Holdem games by seeing the probability of winning change as more cards are dealt.
 PROJECT STATUS:
+Oct 7 2019.		Idea. Can make this faster by using Cactus Kev method of grouping certain types of hands that have same rank instead of recording
+				them all in the database. This will reduce (a) number of simulated games necessary to get good statistics and thus (b) 
+				total simulation time and (c) time for retrieving statistics from the sqlite database
+
 Sept 7 2019.	Program works. Uses multi-threading and BlockingCollection to simulate games quickly and save them to a SQLite database.
 				You need around 300 million games simulated (takes a few hours) to get good statistics for the post flop winning percentage.
 				The SQLite queries that calculate the probabilities is slow as hell once you have 10 million or so records. I believe I could 
