@@ -1,6 +1,10 @@
 # HoldemPokerTrainer
 Train yourself for live Texas Holdem games by seeing the probability of winning change as more cards are dealt.
+
 PROJECT STATUS:
+Oct 14 2019.	Implementing the idea below. Total number of unique hands (over 2 million) can be reduced to approximately 7462 hands (see Cactus
+				Kev's poker page for an explanation).
+
 Oct 7 2019.		Idea. Can make this faster by using Cactus Kev method of grouping certain types of hands that have same rank instead of recording
 				them all in the database. This will reduce (a) number of simulated games necessary to get good statistics and thus (b) 
 				total simulation time and (c) time for retrieving statistics from the sqlite database
