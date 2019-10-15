@@ -1,7 +1,4 @@
-﻿/*
- *
- * 
- */
+﻿
 using ConsoleTables;
 using System;
 using System.Collections.Generic;
@@ -72,6 +69,7 @@ namespace PokerConsoleApp
                 Console.WriteLine("-------------------------------------------------------------------------");
                 Console.WriteLine("Please make a selection:");
                 sInput = Console.ReadLine();
+                
                 if (Int32.TryParse(sInput, out userChoice))
                 {
                     switch (userChoice)
@@ -112,7 +110,6 @@ namespace PokerConsoleApp
             } while (exit_flag == false);
 
         }
-
         private static void Show_Database_Statistics()
         {
             Console.Clear();
