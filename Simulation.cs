@@ -1,9 +1,8 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Threading;
-using System.Diagnostics.Tracing;
-using System;
 
 namespace PokerConsoleApp
 {
@@ -19,7 +18,7 @@ namespace PokerConsoleApp
         private static int gamesPerTransaction = 1000;
         private static int recordsAdded = 0;
         private static object recordsAddedlock = new object();
-   
+
         public static int Simulate_Games(int games_to_simulate)
         {
             recordsTotal = games_to_simulate;
@@ -50,7 +49,7 @@ namespace PokerConsoleApp
                     break;
                 }
             }
-           
+
             Console.WriteLine($"Runtime duration: {timer.Result().TotalMinutes} minutes");
             return 0;
         }
@@ -106,7 +105,7 @@ namespace PokerConsoleApp
                         {
                             if (collection.TryAdd(record, 1) == true)
                             {
-                                     break;
+                                break;
                             }
                         }
                     }
@@ -129,7 +128,7 @@ namespace PokerConsoleApp
                         break;
                 }
                 SQLite_Methods.InsertResultItem(record, command);
-                recordsWritten++;    
+                recordsWritten++;
                 if (recordsWritten % gamesPerTransaction == 0)
                 {
                     transaction.Commit();

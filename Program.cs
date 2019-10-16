@@ -9,20 +9,17 @@ namespace PokerConsoleApp
     public class Program
     {
         public static int NUMBER_OF_PLAYERS = 4;
-        const int HEIGHT = 120;
-        const int WIDTH = 60;
         public static Dictionary<int, int> pairRankDict = new Dictionary<int, int> { };
         public static Dictionary<string, int> card_to_int_dict = new Dictionary<string, int> { };
         static void Main()
         {
             Build_Pair_Rank_Dict();
-            Utility_Methods.Set_Window_Size(HEIGHT, WIDTH);
+            Utility_Methods.Set_Window_Size(Console.LargestWindowWidth, Console.LargestWindowHeight);
             Build_Card_To_Int_Table();
             DisplayMenu();
             //Test_method();
 
         }
-
 
         public static void Build_Card_To_Int_Table()
         {
@@ -69,7 +66,7 @@ namespace PokerConsoleApp
                 Console.WriteLine("-------------------------------------------------------------------------");
                 Console.WriteLine("Please make a selection:");
                 sInput = Console.ReadLine();
-                
+
                 if (Int32.TryParse(sInput, out userChoice))
                 {
                     switch (userChoice)
@@ -201,14 +198,13 @@ namespace PokerConsoleApp
 
         }
 
-
-
         enum State { HOLE_CARDS_DEALT, FLOP_DEALT, TURN_DEALT, RIVER_DEALT, GAME_OVER };
         static int Play_Game()
         {
             bool exit_flag = false;
             do
-            { // begin outer game loop so user can keep playing
+            {
+                // begin outer game loop so user can keep playing
                 Console.Clear();
                 State state = new State();
                 state = State.HOLE_CARDS_DEALT;
@@ -432,27 +428,6 @@ namespace PokerConsoleApp
 
         }
 
-        static void Test_method()
-        {
-            // Compare one pair with a higher pair
-            Card c1 = new Card(Card.Suit.Spade, Card.Rank.TWO);
-            Card c2 = new Card(Card.Suit.Diamond, Card.Rank.TWO);
-            Card c3 = new Card(Card.Suit.Club, Card.Rank.SEVEN);
-            Card c4 = new Card(Card.Suit.Heart, Card.Rank.NINE);
-            Card c5 = new Card(Card.Suit.Spade, Card.Rank.JACK);
-            Hand h1 = new Hand(new List<Card> { c1, c2, c3, c4, c5 });
-            c1 = new Card(Card.Suit.Heart, Card.Rank.TWO);
-            c2 = new Card(Card.Suit.Diamond, Card.Rank.TWO);
-            c3 = new Card(Card.Suit.Club, Card.Rank.SIX);
-            c4 = new Card(Card.Suit.Club, Card.Rank.NINE);
-            c5 = new Card(Card.Suit.Spade, Card.Rank.JACK);
-            Hand h2 = new Hand(new List<Card> { c1, c2, c3, c4, c5 });
-            h1.EvaluateHandtype();
-            h2.EvaluateHandtype();
-            int ret_val = Hand.CompareTo(h1, h2);
-            Console.WriteLine($"Return Value : {ret_val}");
-
-        }
         public static void Build_Pair_Rank_Dict()
         {
             pairRankDict.Add(55915103, 1);

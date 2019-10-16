@@ -1,15 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Diagnostics;
+
 namespace PokerConsoleApp
 {
-    public class Card
+    class CardMethods
     {
-        public enum Suit { Heart = 1, Diamond = 2, Spade = 3, Club = 4 };
-        public enum Rank
+        public void Create_Deck(ref Card[] deck)
         {
-            TWO = 2, THREE = 3, FOUR = 4, FIVE = 5, SIX = 6, SEVEN = 7, EIGHT = 8,
-            NINE = 9, TEN = 10, JACK = 11, QUEEN = 12, KING = 13, ACE = 14
-        };
+            Debug.Assert(deck.Length == 52);
+        }
+
+        internal static Card RemoveCard(Card[] deck)
+        {
+            throw new NotImplementedException();
+        }
+
         public int GetPrimeId()
         {
             switch ((int)this.GetRank())
@@ -186,27 +191,7 @@ namespace PokerConsoleApp
         {
             return this.suit;
         }
-        public static void Reorder_Cards_Uniquely(ref List<Card> lst_input)
-        {
-            int MAX_COUNT = lst_input.Count;
-            // reorder list of cards by rank and suit, modifying the input list
-            List<Card> lst_output = new List<Card> { };
-            foreach (Card.Rank r in Enum.GetValues(typeof(Card.Rank)))
-            {
-                if (lst_output.Count == MAX_COUNT)
-                    break;
-                foreach (Card.Suit s in Enum.GetValues(typeof(Card.Suit)))
-                {
-                    for (int input_cards_index = 0; input_cards_index < lst_input.Count; input_cards_index++)
-                    {
-                        if (lst_input[input_cards_index].GetRank() == r && lst_input[input_cards_index].GetSuit() == s)
-                        {
-                            lst_output.Add(lst_input[input_cards_index]);
-                        }
-                    }
-                }
-            }
-            lst_input = lst_output;
-        }
+    
     }
+}
 }

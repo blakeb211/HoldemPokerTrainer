@@ -1,79 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
+using static PokerConsoleApp.CustomTypes;
 
-/* TODO
- * 
- * Also, if one hand has a higher rank than the other, it automatically beats it and we can
- * skip extra analysis steps.
- */
 namespace PokerConsoleApp
 {
-    public class Hand
+    class HandMethods
     {
-        // Enum for the general rank of a five-card hand
-        public enum HandType
-        {
-            NotAssignedYet = 9,
-            StraightFlush = 8,
-            FourOfAKind = 7,
-            FullHouse = 6,
-            Flush = 5,
-            Straight = 4,
-            ThreeOfAKind = 3,
-            TwoPair = 2,
-            OnePair = 1,
-            HighCard = 0
-        };
-
-        // Data members that each hand object has
-        private readonly List<Card> cards = new List<Card> { };
-        private HandType hand_type = new HandType();
-        private bool is_sorted = false;
-        private int prime_rank = -1;
-        readonly int[] rank_tally = new int[15];  // let 0 and 1 indices be a waste to make code more clear. 
-        readonly int[] suit_tally = new int[5];   // let 0 be waste, 1 = hearts, 2 = diamonds, 3 = spade, 4 = club
-
-        // Constructors
-        public Hand(List<Card> c)
-        {
-            if (c.Count != 5)
-                throw new Exception("Something other than a 5-Card List was passed to the Hand() constructor");
-            cards.Capacity = 5;
-            this.hand_type = HandType.NotAssignedYet;
-            foreach (var ci in c)
-                cards.Add(ci);
-
-        }
-        public Hand()
-        {
-            this.cards.Capacity = 5;
-            hand_type = HandType.NotAssignedYet;
-            for (int i = 0; i < 4; i++)
-                suit_tally[i] = 0;
-            for (int i = 0; i < 14; i++)
-                rank_tally[i] = 0;
-        }
-        // Indexer
-        public Card this[int index]
-        {
-            // The get accessor.
-            get
-            {
-                if (index >= 5 || index < 0)
-                    throw new Exception("index of card indexer out of range");
-                return this.cards[index];
-            }
-
-            // The set accessor.
-            set
-            {
-                if (index >= 5 || index < 0)
-                    throw new Exception("index of card indexer out of range");
-                this.cards[index] = value;
-            }
-        }
-
-
         // Get data From Hand
         public int GetPrimeRank()
         {
@@ -105,12 +36,7 @@ namespace PokerConsoleApp
             }
             return ret_string;
         }
-        public int GetCount()
-        {
-            return this.cards.Count;
-        }
 
-        // Build hand
         public void AddCard(Card c)
         {
             if (cards.Count == 5)
@@ -123,187 +49,15 @@ namespace PokerConsoleApp
             this.cards.Add(c);
 
         }
-        public void RemoveCards()
+
+        public void Sort(ref Hand h)
         {
-            if (cards.Count == 0)
-                throw new Exception("Can't remove cards of a hand that already has 0 cards!");
-            this.cards.RemoveRange(0, this.cards.Count);
+           
+
         }
 
-        // Sort hand
-        public void Sort()
-        {
-            //put doubles triples and quads at end
-            //each multiplet should be sorted by suit
-            //separate quads, triples, doubles to new lists
-            //don't forget the case of a low ace
-            bool[] has_been_added = new bool[5];
-            // init to false
-            for (int k = 0; k < 5; k++)
-                has_been_added[k] = false;
 
-            bool has_pair_been_found = false;
-            List<Card> lst_singles = new List<Card> { };
-            List<Card> lst_doubles1 = new List<Card> { };
-            List<Card> lst_doubles2 = new List<Card> { };
-            List<Card> lst_triples = new List<Card> { };
-            List<Card> lst_quads = new List<Card> { };
-            List<Card> mylist = new List<Card> { };
-            mylist.Capacity = 5;
-            for (int i = 2; i < 15; i++)
-            {
-                //1) decompose hand into singles, doubles, triples, etc lists
-                //2) sort singles by rank 
-                //3) concatenate lists together in order
-                //4) this way the hands can be compared to each other easily
-
-                switch (rank_tally[i])
-                {
-                    case 4:
-                        for (int k = 0; k < 5; k++)
-                        {
-                            Card.Rank cr = cards[k].GetRank();
-                            if ((int)cr == i && has_been_added[k] == false)
-                            {
-                                Card.Suit cs = cards[k].GetSuit();
-                                Card cc = new Card(cs, cr);
-                                lst_quads.Add(cc);
-                                has_been_added[k] = true;
-                            }
-                        }
-                        break;
-
-                    case 3:
-                        for (int k = 0; k < 5; k++)
-                        {
-                            Card.Rank cr = cards[k].GetRank();
-                            if ((int)cr == i && has_been_added[k] == false)
-                            {
-                                Card.Suit cs = cards[k].GetSuit();
-                                Card cc = new Card(cs, cr);
-                                lst_triples.Add(cc);
-                                has_been_added[k] = true;
-                            }
-                        }
-                        break;
-
-                    case 2:
-                        // TODO: REPLACE WITH METHOD CALL BC ITS BLOCK COPIED BELOW
-                        if (has_pair_been_found == false)
-                        {
-                            has_pair_been_found = true;
-
-                            for (int k = 0; k < 5; k++)
-                            {
-                                Card.Rank cr = cards[k].GetRank();
-
-                                if ((int)cr == i && has_been_added[k] == false)
-                                {
-                                    Card.Suit cs = cards[k].GetSuit();
-                                    Card cc = new Card(cs, cr);
-                                    lst_doubles1.Add(cc);
-                                    has_been_added[k] = true;
-                                }
-                            }
-
-                        }
-                        if (has_pair_been_found == true)
-                        {
-                            for (int k = 0; k < 5; k++)
-                            {
-                                Card.Rank cr = cards[k].GetRank();
-
-                                if ((int)cr == i && has_been_added[k] == false)
-                                {
-                                    Card.Suit cs = cards[k].GetSuit();
-                                    Card cc = new Card(cs, cr);
-                                    lst_doubles2.Add(cc);
-                                    has_been_added[k] = true;
-                                }
-                            }
-                        }
-                        break;
-
-                    case 1:
-                        for (int k = 0; k < 5; k++)
-                        {
-                            Card.Rank cr = cards[k].GetRank();
-
-                            if ((int)cr == i && has_been_added[k] == false)
-                            {
-                                Card.Suit cs = cards[k].GetSuit();
-                                Card cc = new Card(cs, cr);
-                                lst_singles.Add(cc);
-                                has_been_added[k] = true;
-                            }
-                        }
-
-                        break;
-
-                    default:
-                        break;
-
-                } // end of switch statement
-
-            } // end of for loop over rank_tally. cards should be split up into separate lists
-
-            for (int i = 0; i < lst_singles.Count; i++)
-            {
-                mylist.Add(lst_singles[i]);
-            }
-            // check which double is bigger so they are sorted low to high
-            if (lst_doubles1.Count == 2 && lst_doubles2.Count == 2 && (lst_doubles1[0].GetRank() > lst_doubles2[0].GetRank()))
-            {
-                for (int i = 0; i < lst_doubles2.Count; i++)
-                {
-                    mylist.Add(lst_doubles2[i]);
-                }
-                for (int i = 0; i < lst_doubles1.Count; i++)
-                {
-                    mylist.Add(lst_doubles1[i]);
-                }
-            }
-            else if (lst_doubles1.Count == 2 && lst_doubles2.Count == 2 && (lst_doubles1[0].GetRank() < lst_doubles2[0].GetRank()))
-            {
-                for (int i = 0; i < lst_doubles1.Count; i++)
-                {
-                    mylist.Add(lst_doubles1[i]);
-                }
-                for (int i = 0; i < lst_doubles2.Count; i++)
-                {
-                    mylist.Add(lst_doubles2[i]);
-                }
-            }
-            else
-            {
-                for (int i = 0; i < lst_doubles1.Count; i++)
-                {
-                    mylist.Add(lst_doubles1[i]);
-                }
-            }
-            for (int i = 0; i < lst_triples.Count; i++)
-            {
-                mylist.Add(lst_triples[i]);
-            }
-            for (int i = 0; i < lst_quads.Count; i++)
-            {
-                mylist.Add(lst_quads[i]);
-            }
-            Hand ret_hand = new Hand(mylist);
-            // change this hand's card list to the new sorted cards list
-            this.RemoveCards();
-            for (int i = 0; i < mylist.Count; i++)
-                this.AddCard(mylist[i]);
-            this.is_sorted = true;
-
-        }
-        public bool IsSorted()
-        {
-            return this.is_sorted;
-        }
-
-        // Generate 21 combinations possible for each player. Each player has 2 personal hole cards and all players share 5 other cards
-        public static List<Hand> Build_List_21_Hands(Card hole1, Card hole2, Card c1, Card c2, Card c3, Card c4, Card c5)
+        public static Hand[] Build_21_Hands(Card hole1, Card hole2, Card c1, Card c2, Card c3, Card c4, Card c5)
         {
             // Find individual players' best hand out of all possible
             // combos of hole, flop, turn, and river cards
@@ -473,33 +227,7 @@ namespace PokerConsoleApp
         {
             return this.hand_type;
         }
-        public bool IsStraight(int[] rank_tally)
-        {
-            if (rank_tally.Length != 15)
-                throw new Exception("The array passed to IsStraight doesn't have 15 elements!");
-            // count single cards that are in order
-            int cards_in_a_row_counter = 0;
-            int last_card = -2;
-            for (int i = 2; i < 15; i++)
-            {
-                if (rank_tally[i] == 1)
-                {
-                    if (last_card == -2 || (i - last_card) == 1)
-                    {
-                        cards_in_a_row_counter++;
-                        last_card = i;
-                    }
-                }
-            }
-            // check for Ace, Two, Three, Four, Five straight
-            if (rank_tally[(int)Card.Rank.ACE] == 1 && rank_tally[(int)Card.Rank.TWO] == 1 && rank_tally[(int)Card.Rank.THREE] == 1 && rank_tally[(int)Card.Rank.FOUR] == 1 && rank_tally[(int)Card.Rank.FIVE] == 1)
-                cards_in_a_row_counter = 5;
 
-            if (cards_in_a_row_counter == 5)
-                return true;
-            else
-                return false;
-        }
         public bool IsFlush(int[] suit_tally)
         {
             if (suit_tally.Length != 5)
@@ -515,87 +243,7 @@ namespace PokerConsoleApp
 
             return flush_flag;
         }
-        public bool IsFourOfAKind(int[] rank_tally)
-        {
-            bool ret_flag = false;
-            for (int i = 2; i < 15; i++)
-            {
-                if (rank_tally[i] == 4)
-                    ret_flag = true;
-            }
-            return ret_flag;
-        }
-        public bool IsFullHouse(int[] rank_tally)
-        {
-            bool ret_flag = false;
-            bool has_a_set_of_three = false;
-            bool has_a_pair = false;
 
-            for (int i = 2; i < 15; i++)
-            {
-                if (rank_tally[i] == 3)
-                {
-                    has_a_set_of_three = true;
-                }
-                if (rank_tally[i] == 2)
-                {
-                    has_a_pair = true;
-                }
-            }
-            if (has_a_pair && has_a_set_of_three)
-                ret_flag = true;
-
-            return ret_flag;
-        }
-        public bool IsThreeOfAKind(int[] rank_tally)
-        {
-            // note that this method would return false positive on a FourOfAKind hand or FullHouse 
-            // if run by itself outside of the evaluate hand method
-            bool ret_flag = false;
-            for (int i = 2; i < 15; i++)
-            {
-                if (rank_tally[i] == 3)
-                    ret_flag = true;
-            }
-            return ret_flag;
-        }
-        public bool IsTwoPair(int[] rank_tally)
-        {
-            bool ret_flag = false;
-            int rank_of_first_pair = -1;
-            int rank_of_second_pair = -1;
-            for (int i = 2; i < 15; i++)
-            {
-                if (rank_tally[i] == 2 && rank_of_first_pair == -1)
-                {
-                    rank_of_first_pair = i;
-                    continue;
-                }
-                if (rank_tally[i] == 2 && rank_of_first_pair != -1)
-                {
-                    rank_of_second_pair = i;
-                    continue;
-                }
-            }
-            if (rank_of_first_pair != -1 && rank_of_second_pair != -1 && rank_of_first_pair != rank_of_second_pair)
-                ret_flag = true;
-            return ret_flag;
-        }
-        public bool IsOnePair(int[] rank_tally)
-        {
-            bool ret_flag = false;
-            int rank_of_pair = -1;
-            for (int i = 2; i < 15; i++)
-            {
-                if (rank_tally[i] == 2 && rank_of_pair == -1)
-                {
-                    rank_of_pair = i;
-                }
-            }
-            if (rank_of_pair != -1)
-                ret_flag = true;
-            return ret_flag;
-        }
 
         // Methods to compare hands and determine there strength
         public static int CompareTo(Hand hand_1, Hand hand_2)
@@ -950,8 +598,5 @@ namespace PokerConsoleApp
             }
             return lst_winning_hand_indices;
         }
-
     }
 }
-
-

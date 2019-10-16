@@ -28,6 +28,10 @@
   <ItemGroup>
     <PackageReference Include="ConsoleTables" Version="2.3.0" />
     <PackageReference Include="EasyConsoleStd" Version="2.0.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.6">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="System.Data.SQLite" Version="1.0.111" />
   </ItemGroup>
 

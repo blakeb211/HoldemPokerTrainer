@@ -1,0 +1,84 @@
+// need flush dictionary
+// need nonflush dictionary
+// need handRank to handName dictionary
+
+class Hand
+{
+	public Card[] cards;
+	public int primeId;
+	public int handRank;
+	public string handName;
+	public List<string> outs;
+}
+
+class Board
+{
+	public Card[] Deck;
+	public Player[] Players;	
+}
+
+class Player
+{
+	Card[] hole;
+	Hand bestHand;
+	bool? wonTheGame;
+	
+	public Player(Card1, Card2)
+	{
+	}	
+}
+
+class Card
+{
+	public char Rank {get; private set;}
+	public char Suit; {get; private set;}
+	
+	public Card(char rank, char suit)
+	{
+	}
+	public Card(string rankAndSuit)
+	{
+	
+	}
+}
+
+bool CheckFlush(Hand h)
+{
+    if (h.suits[0] == h.suits[1] && h.suits[1] == h.suits[2]
+     && h.suits[2] == h.suits[3] && h.suits[3] == h.suits[4])
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+void AssignPrimeId(ref Hand h)
+{
+    Debug.Assert(h.ranks.Length == 5 && h.suits.Length == 5);
+    
+    h.primeId = 1;
+    
+    for (int i = 0; i < 5; i++)
+    {
+        h.primeId *= CardRankToPrimeDict( h.ranks[i] );   
+    }
+      
+    return;
+}
+
+void AssignHandRank(ref Hand h)
+{
+    if ( CheckFlush(h) )
+    {
+    	h.handRank = flushDict( h.primeId );
+    	return;
+    }
+    
+    h.handRank = nonFlushDict( h.primeId );
+    return;
+}
+
+	
