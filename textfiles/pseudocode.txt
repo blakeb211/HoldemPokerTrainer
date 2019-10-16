@@ -42,18 +42,7 @@ class Card
 	}
 }
 
-bool CheckFlush(Hand h)
-{
-    if (h.suits[0] == h.suits[1] && h.suits[1] == h.suits[2]
-     && h.suits[2] == h.suits[3] && h.suits[3] == h.suits[4])
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
+
 
 void AssignPrimeId(ref Hand h)
 {

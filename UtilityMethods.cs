@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace PokerConsoleApp
 {
-    class Utility_Methods
+    class UtilityMethods
     {
         public static List<E> ShuffleList<E>(List<E> inputList)
         {
@@ -55,21 +55,11 @@ namespace PokerConsoleApp
             }
 
         }
-        public static void Set_Window_Size(int w, int h)
+        public static void SetWindowProperties()
         {
             Console.SetWindowPosition(0, 0);
-
-            if (h < Console.LargestWindowHeight && w < Console.LargestWindowWidth)
-            {
-                Console.SetBufferSize(w, h);
-                Console.SetWindowSize(w, h);
-            }
-            else
-            {
-                Console.SetBufferSize(Console.LargestWindowWidth, Console.LargestWindowHeight);
-                Console.SetWindowSize(Console.LargestWindowWidth, Console.LargestWindowHeight);
-            }
-
+            Console.SetWindowSize(Console.LargestWindowWidth, Console.LargestWindowHeight);
+            Console.SetBufferSize(Console.LargestWindowWidth, Console.LargestWindowHeight);
         }
         public static string Trim_To_End(string s_to_trim, string s_substr)
         {
