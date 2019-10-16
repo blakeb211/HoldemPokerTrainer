@@ -3,8 +3,6 @@ using System.Collections.Generic;
 
 namespace PokerConsoleApp
 {
-    class CustomTypes
-    {
         public enum HandType
         {
             // enume for the name of the hand
@@ -34,17 +32,6 @@ namespace PokerConsoleApp
             private bool is_sorted = false;
             private int prime_rank = -1;
 
-            public Hand(List<Card> c)
-            {
-                if (c.Count != 5)
-                    throw new Exception("Something other than a 5-Card List was passed to the Hand() constructor");
-                cards.Capacity = 5;
-                this.hand_type = HandType.NotAssignedYet;
-                foreach (var ci in c)
-                    cards.Add(ci);
-
-            }
-
             public Hand()
             {
                 this.cards.Capacity = 5;
@@ -73,6 +60,19 @@ namespace PokerConsoleApp
                     this.cards[index] = value;
                 }
             }
+
+            public override string ToString()
+            {
+                string ret_string = "";
+                for (int i = 0; i < 5; i++)
+                {
+                    ret_string += " ";
+                    ret_string = ret_string + this.cards[i].ToString();
+                    ret_string += " ";
+                }
+                return ret_string;
+            }
+
         }
 
         public class Board
@@ -107,5 +107,32 @@ namespace PokerConsoleApp
             }
 
         }
-    }
+
+        public class Player
+        {
+            public Card[] hole = new Card[2];
+
+            public bool Won_The_Hand { get; set; }
+            public Hand best_hand = new Hand();
+            public Player()
+            {
+                this.Won_The_Hand = false;
+                this.hole[0] = new Card();
+                this.hole[1] = new Card();
+            }
+            public int GetWinflag()
+            {
+                if (this.Won_The_Hand == true)
+                    return 1;
+                else
+                    return 0;
+            }
+            public override string ToString()
+            {
+                string ret_string;
+                ret_string = "" + hole[0] + " " + hole[1];
+                return ret_string;
+            }
+        }
+    
 }

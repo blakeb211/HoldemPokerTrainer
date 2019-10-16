@@ -5,7 +5,6 @@ namespace PokerConsoleApp
 {
     class HandMethods
     {
-        // Get data From Hand
         public int GetPrimeRank()
         {
             int ret_val = 1;
@@ -24,17 +23,6 @@ namespace PokerConsoleApp
                 // if prime_rank has already been calculated, just return it
                 return prime_rank;
             }
-        }
-        public override string ToString()
-        {
-            string ret_string = "";
-            for (int i = 0; i < 5; i++)
-            {
-                ret_string += " ";
-                ret_string = ret_string + this.cards[i].ToString();
-                ret_string += " ";
-            }
-            return ret_string;
         }
 
         public void AddCard(Card c)
