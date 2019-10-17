@@ -18,11 +18,13 @@ namespace PokerConsoleApp
             }
             return randomList; //return the new random list
         }
+
         public static void GetKeyPress()
         {
             Console.WriteLine("Press a key and hit enter to continue...");
             Console.ReadLine();
         }
+
         public static int GetIntegerFromUser(int low, int high)
         {
             string sInput = "";
@@ -41,6 +43,7 @@ namespace PokerConsoleApp
                 }
             } while (true);
         }
+
         public static bool Ask_User_For_Quit_Signal()
         {
             Console.WriteLine("Press \"Q\" to quit...");
@@ -55,12 +58,14 @@ namespace PokerConsoleApp
             }
 
         }
+
         public static void SetWindowProperties()
         {
             Console.SetWindowPosition(0, 0);
             Console.SetWindowSize(Console.LargestWindowWidth, Console.LargestWindowHeight);
             Console.SetBufferSize(Console.LargestWindowWidth, Console.LargestWindowHeight);
         }
+
         public static string Trim_To_End(string s_to_trim, string s_substr)
         {
             int i_substr = s_to_trim.LastIndexOf(s_substr);

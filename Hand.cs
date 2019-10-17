@@ -7,7 +7,7 @@ namespace PokerConsoleApp
     {
         public List<Card> Cards { get; private set; }
         public int PrimeId { get; private set; }
-        public int? Rank { get; private set; }
+        public int Rank { get; private set; }
         public string Name { get; private set; }
         public List<HandType> Outs { get; private set; }
 
@@ -19,8 +19,9 @@ namespace PokerConsoleApp
 
         public void AssignName()
         {
-
-
+            if (Rank.Equals(default))
+                throw new InvalidOperationException("Cannot assign hand a name before it's rank has been assigned.");
+            Name = PokerLib.Lookups.RankToNameDict[Rank];
         }
 
 
@@ -38,7 +39,15 @@ namespace PokerConsoleApp
 
         private bool CheckFlush()
         {
-            throw new NotImplementedException();
+            if (Cards[0].Suit == Cards[1].Suit && Cards[1].Suit == Cards[2].Suit
+                 && Cards[2].Suit == Cards[3].Suit && Cards[3].Suit == Cards[4].Suit)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
         }
 
         public void AssignPrimeId()
@@ -77,7 +86,13 @@ namespace PokerConsoleApp
 
         public int CompareTo(Hand other)
         {
-            throw new NotImplementedException();
+            if (other.Equals(null))
+                throw new ArgumentNullException($"{nameof(other)} passed to CompareTo and is null");
+
+            if (this.Rank.Equals(default) || other.Rank.Equals(default))
+                throw new InvalidOperationException($"Cannot Compare this hand to {nameof(other)} until both have been assigned a Rank");
+
+
         }
     }
 }
