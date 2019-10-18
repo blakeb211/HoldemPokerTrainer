@@ -22,11 +22,11 @@ namespace PokerConsoleApp
         public static void Build_Card_To_Int_Table()
         {
             int card_value_index = 0;
-            foreach (var r in Enum.GetValues(typeof(Card.Rank)))
+            foreach (var r in Enum.GetValues(typeof(RankType)))
             {
-                foreach (var s in Enum.GetValues(typeof(Card.Suit)))
+                foreach (var s in Enum.GetValues(typeof(SuitType)))
                 {
-                    Card tempcard = new Card((Card.Suit)s, (Card.Rank)r);
+                    Card tempcard = new Card((RankType)r, (SuitType)s);
                     String str_card = tempcard.ToString();
                     card_to_int_dict.Add(str_card, card_value_index);
                     card_value_index++;
