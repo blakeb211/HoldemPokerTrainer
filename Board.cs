@@ -21,6 +21,17 @@ namespace PokerConsoleApp
                 // initialize player
             }
         }
+        public List<Card> BuildDeck()
+        {
+            List<Card> deck = new List<Card>(52);
+            foreach (var cr in Enum.GetValues(typeof(RankType)))
+                foreach (var cs in Enum.GetValues(typeof(SuitType)))
+                {
+                    deck.Add(new Card((RankType)cr, (SuitType)cs));
+                }
+            return deck;
+        }
+
         public void DealCard()
         {
             // deal hole cards
