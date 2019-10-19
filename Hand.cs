@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using static PokerLib.Lookups;
 
 namespace PokerConsoleApp
 {
-    public partial class Hand : IComparable<Hand>
+    public partial class Hand
     {
         public List<Card> Cards { get; private set; }
         public int PrimeId { get; private set; }
@@ -68,7 +69,7 @@ namespace PokerConsoleApp
                         break;
                 }
 
-                Char.TryParse(s[i + 1].ToString(), out char sChar);
+                _ = Char.TryParse(s[i + 1].ToString(), out char sChar);
                 Cards.Add(new Card((RankType)rNum, Card.CharToSuit(sChar)));
                 Debug.Assert(2 <= rNum && rNum <= 14);
             }
@@ -78,11 +79,15 @@ namespace PokerConsoleApp
         {
             Cards = new List<Card>(5);
         }
+        public Hand(List<Card> cards)
+        {
+            this.Cards = cards;
+        }
         public void AssignRankAndName()
         {
             // get primeId used for hand rank lookup
             int _primeId;
-            if (Rank == default)
+            if (Rank != default)
             {
                 return;
             }
@@ -94,24 +99,20 @@ namespace PokerConsoleApp
                     _temp *= Cards[i].GetPrimeIdForRankingHand();
                 }
                 _primeId = _temp;
+                Console.WriteLine("Prime ID is : {0}", _primeId);
             }
 
             // look up and assign hand rank
             if (CheckFlush())
             {
-                Rank = PokerLib.Lookups.FlushDict[_primeId];
+                Console.WriteLine("Is a flush!");
+                Rank = FlushDict[_primeId];
                 return;
             }
+            Console.WriteLine("Is not a flush!");
+            Rank = NonFlushDict[_primeId];
 
-            Rank = PokerLib.Lookups.NonFlushDict[_primeId];
-
-            // assign hand name
-            if (Rank.Equals(default))
-            {
-                throw new InvalidOperationException("Cannot assign hand a name before it's rank has been assigned.");
-            }
-
-            Name = PokerLib.Lookups.RankToNameDict[Rank];
+            Name = RankToNameDict[Rank];
         }
 
         private bool CheckFlush()
@@ -168,6 +169,19 @@ namespace PokerConsoleApp
             if (this.Rank.Equals(default) || other.Rank.Equals(default))
                 throw new InvalidOperationException($"Cannot Compare this hand to {nameof(other)} until both have been assigned a Rank");
 
+            if (other.Rank > this.Rank)
+            {
+                return 1;
+            }
+            else if (other.Rank < this.Rank)
+            {
+                return -1;
+            }
+            else if (other.Rank == this.Rank)
+            {
+                return 0;
+            }
+            return -99;
         }
     }
 }

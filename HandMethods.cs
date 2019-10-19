@@ -5,7 +5,7 @@ namespace PokerConsoleApp
     public partial class Hand
     {
 
-        public static Hand[] Build_21_Hands(Card hole1, Card hole2, Card c1, Card c2, Card c3, Card c4, Card c5)
+        public static List<Hand> Build21Hands(Card hole1, Card hole2, Card c1, Card c2, Card c3, Card c4, Card c5)
         {
             // Find individual players' best hand out of all possible
             // combos of hole, flop, turn, and river cards
@@ -55,7 +55,7 @@ namespace PokerConsoleApp
             return ret_list;
         }
 
-        public static List<int> FindBestHand(List<Hand> lst_input_hands)
+        public static List<int> FindBestHand(List<Hand> inputHands)
         {
             /*********************************************************
              * INPUT: a List of Hands to compare
@@ -64,22 +64,23 @@ namespace PokerConsoleApp
              * 
              * if two hands tie, they are both returned.
              *********************************************************/
-            Hand[] lst_hand_copy = lst_input_hands.ToArray();
-            int hand_count = lst_input_hands.Count;
+            Hand[] lst_hand_copy = inputHands.ToArray();
+            int hand_count = inputHands.Count;
             List<int> lst_winning_hand_indices = new List<int> { };
             List<Hand> lst_winning_hands = new List<Hand> { };
             List<int> lst_losing_hand_indices = new List<int> { };
+            
             for (int i = 0; i < hand_count; i++)
             {
                 int loss_counter = 0;
 
-                if (lst_hand_copy[i].GetHandType() == Hand.HandType.NotAssignedYet)
-                    lst_hand_copy[i].AssignName();
+                if (lst_hand_copy[i].Rank == default)
+                    lst_hand_copy[i].AssignRankAndName();
 
                 for (int j = 0; j < hand_count; j++)
                 {
-                    if (lst_hand_copy[j].GetHandType() == Hand.HandType.NotAssignedYet)
-                        lst_hand_copy[j].AssignName();
+                    if (lst_hand_copy[j].Rank == default)
+                        lst_hand_copy[j].AssignRankAndName();
                     // Continue if i OR j are one of losing indices
                     if (lst_losing_hand_indices.Contains(i))
                         break;
@@ -91,10 +92,8 @@ namespace PokerConsoleApp
                     }
                     else
                     {
-                        //DEBUG LINE TO SEE NUMBER OF COMPARISONS BEING DONE
-                        //Console.WriteLine($"CompareTo: Does i = {i} beat j = {j} being evaluated");
-                        int comparison_result = Hand.CompareTo(lst_hand_copy[i], lst_hand_copy[j]);
-                        if (comparison_result == 0) // if i loses
+                        int _comparisonResult = lst_hand_copy[i].CompareTo(lst_hand_copy[j]);
+                        if (_comparisonResult == 1 || _comparisonResult == 0) // if i loses
                         {
                             loss_counter++;
                             lst_losing_hand_indices.Add(i);
@@ -109,7 +108,7 @@ namespace PokerConsoleApp
             // Only thing left in lst_winning_hands should be tied winners or a single a winner
             for (int i = 0; i < lst_winning_hands.Count; i++)
             {
-                lst_winning_hand_indices.Add(lst_input_hands.IndexOf(lst_winning_hands[i]));
+                lst_winning_hand_indices.Add(inputHands.IndexOf(lst_winning_hands[i]));
             }
             return lst_winning_hand_indices;
         }

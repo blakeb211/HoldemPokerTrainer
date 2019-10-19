@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace PokerConsoleApp
 {
@@ -6,23 +7,21 @@ namespace PokerConsoleApp
     {
         public List<Card> Hole { get; set; }
 
-        public bool? IsWinner { get; set; }
+        public bool IsWinner { get; set; }
 
         public Hand BestHand { get; set; }
 
-        public Player()
+        public Player(List<Card> holeCards)
         {
-            this.IsWinner = null;
-            this.Hole = new List<Card>(2) { };
-            this.Hole[0] = new Card();
-            this.Hole[1] = new Card();
+            Debug.Assert(holeCards.Count == 2);
+            this.IsWinner = false;
+            this.Hole = new List<Card>(2);
+            this.Hole = holeCards;
         }
 
         public override string ToString()
         {
-            string ret_string;
-            ret_string = "" + hole[0] + " " + hole[1];
-            return ret_string;
+             return "" + Hole[0].ToString() + " " + Hole[1].ToString();
         }
     }
 

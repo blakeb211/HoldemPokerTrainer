@@ -4,6 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <Platforms>AnyCPU;x64</Platforms>
+    <StartupObject>PokerConsoleApp.Program</StartupObject>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -38,6 +39,7 @@
   <ItemGroup>
     <Reference Include="PokerLib">
       <HintPath>..\PokerDictionaries\bin\Release\netcoreapp3.0\PokerLib.dll</HintPath>
+      <Private>true</Private>
     </Reference>
   </ItemGroup>
 

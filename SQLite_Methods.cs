@@ -27,50 +27,24 @@ namespace PokerConsoleApp
         {
 
             SQLiteCommand sqlite_cmd;
-            string Createsql = "CREATE TABLE IF NOT EXISTS PlayerHandsTable (Hole1 INT, Hole2 INT, Flop1 INT, Flop2 INT, Flop3 INT, Winflag INT)";
+            string Createsql = "CREATE TABLE IF NOT EXISTS PlayerHandsTable (FlopUniquePrime LONG, Winflag INT)";
             sqlite_cmd = conn.CreateCommand();
             sqlite_cmd.CommandText = Createsql;
             sqlite_cmd.ExecuteNonQuery();
-
-
         }
 
-        public static int InsertResultItem(Card hole1, Card hole2, Card flop1, Card flop2, Card flop3, int win_flag, SQLiteCommand command)
-        {
-            command.Parameters.AddWithValue("@hole1", "");
-            command.Parameters.AddWithValue("@hole2", "");
-            command.Parameters.AddWithValue("@flop1", "");
-            command.Parameters.AddWithValue("@flop2", "");
-            command.Parameters.AddWithValue("@flop3", "");
-            command.Parameters.AddWithValue("@win_flag", "");
-            command.CommandText = "INSERT INTO PlayerHandsTable "
-                            + "(Hole1, Hole2, Flop1, Flop2, Flop3, Winflag) "
-                            + "VALUES (@hole1, @hole2, @flop1,@flop2, @flop3, @win_flag)";
-            command.Parameters["@hole1"].Value = Program.card_to_int_dict[hole1.ToString()];
-            command.Parameters["@hole2"].Value = Program.card_to_int_dict[hole2.ToString()];
-            command.Parameters["@flop1"].Value = Program.card_to_int_dict[flop1.ToString()];
-            command.Parameters["@flop2"].Value = Program.card_to_int_dict[flop2.ToString()];
-            command.Parameters["@flop3"].Value = Program.card_to_int_dict[flop3.ToString()];
-            command.Parameters["@win_flag"].Value = win_flag;
-            return command.ExecuteNonQuery();
-        }
         public static int InsertResultItem(Simulation.GameRecord record, SQLiteCommand command)
         {
-            command.Parameters.AddWithValue("@hole1", "");
-            command.Parameters.AddWithValue("@hole2", "");
-            command.Parameters.AddWithValue("@flop1", "");
-            command.Parameters.AddWithValue("@flop2", "");
-            command.Parameters.AddWithValue("@flop3", "");
-            command.Parameters.AddWithValue("@win_flag", "");
+            command.Parameters.AddWithValue("@flopCardsUniquePrime", "");
+            command.Parameters.AddWithValue("@winFlag", "");
+        
             command.CommandText = "INSERT INTO PlayerHandsTable "
-                            + "(Hole1, Hole2, Flop1, Flop2, Flop3, Winflag) "
-                            + "VALUES (@hole1, @hole2, @flop1,@flop2, @flop3, @win_flag)";
-            command.Parameters["@hole1"].Value = Program.card_to_int_dict[record.hole1.ToString()];
-            command.Parameters["@hole2"].Value = Program.card_to_int_dict[record.hole2.ToString()];
-            command.Parameters["@flop1"].Value = Program.card_to_int_dict[record.flop1.ToString()];
-            command.Parameters["@flop2"].Value = Program.card_to_int_dict[record.flop2.ToString()];
-            command.Parameters["@flop3"].Value = Program.card_to_int_dict[record.flop3.ToString()];
-            command.Parameters["@win_flag"].Value = record.winFlag;
+                            + "(flopCardsUniquePrime, winFlag) "
+                            + "VALUES (@flopCardsUniquePrime, @winFlag)";
+
+            command.Parameters["@flopCardsUniquePrime"].Value = 99;
+             command.Parameters["@winFlag"].Value = record.winFlag;
+
             return command.ExecuteNonQuery();
         }
 

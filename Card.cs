@@ -17,13 +17,19 @@ namespace PokerConsoleApp
         public static readonly List<string> SuitStr = new List<string> { "-1", "H", "D", "S", "C" };
 
         // primes used to save cards to database
-        public static List<ulong> CardTo52UniquePrimes = new List<ulong> { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41,
+        private static readonly List<ulong> CardTo52UniquePrimes = new List<ulong> { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41,
                                                                       43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101,
                                                                       103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167,
                                                                       173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239 };
-        
+
         public static Dictionary<Card, ulong> CardPrimeDict = BuildCardToPrimeDict();
         
+        public static Card DealCard(List<Card> inputCards)
+        {
+            Card temp = inputCards[0];
+            inputCards.RemoveAt(0);
+            return temp;
+        }
         public override int GetHashCode()
         {
             // Hashcodes are unique for each of 52 cards but are not primes
@@ -44,11 +50,6 @@ namespace PokerConsoleApp
         {
             this.Suit = cs;
             this.Rank = cr;
-        }
-
-        public int GetPrimeIdForRankingHand()
-        {
-            return PrimeValForRanking[(int)this.Rank];
         }
 
         public static string GetRankAsString(RankType cr)
@@ -87,6 +88,11 @@ namespace PokerConsoleApp
                 default:
                     throw new ArgumentException($"{c} is invalid character to pass {nameof(CharToSuit)}");
             }
+        }
+
+        public int GetPrimeIdForRankingHand()
+        {
+            return PrimeValForRanking[(int)this.Rank];
         }
 
         public override string ToString()

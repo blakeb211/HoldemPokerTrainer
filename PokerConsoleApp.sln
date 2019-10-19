@@ -7,11 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PokerConsoleApp", "PokerCon
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6552F773-4183-4309-AF3B-DD3AD63BD354}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PokerAppTestingProject", "..\PokerAppTestingProject\PokerAppTestingProject.csproj", "{3DBCE0D8-B50B-4A5A-89E7-446BC6F847E5}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PairHandDictionaryBuilder", "..\PairHandDictionaryBuilder\PairHandDictionaryBuilder.csproj", "{CA3E8790-298D-4643-A866-9297224B6D2E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PokerLib", "..\PokerDictionaries\PokerLib.csproj", "{3A3031E4-3E77-4DBC-A4F9-3AA4D4592700}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PokerLib", "..\PokerDictionaries\PokerLib.csproj", "{3A3031E4-3E77-4DBC-A4F9-3AA4D4592700}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,16 +25,8 @@ Global
 		{A86D9174-86AA-4F90-A46E-FAB3322F2D1D}.Debug|x64.Build.0 = Release|x64
 		{A86D9174-86AA-4F90-A46E-FAB3322F2D1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A86D9174-86AA-4F90-A46E-FAB3322F2D1D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A86D9174-86AA-4F90-A46E-FAB3322F2D1D}.Release|x64.ActiveCfg = Release|x64
-		{A86D9174-86AA-4F90-A46E-FAB3322F2D1D}.Release|x64.Build.0 = Release|x64
-		{3DBCE0D8-B50B-4A5A-89E7-446BC6F847E5}.Debug|Any CPU.ActiveCfg = Debug|x64
-		{3DBCE0D8-B50B-4A5A-89E7-446BC6F847E5}.Debug|Any CPU.Build.0 = Debug|x64
-		{3DBCE0D8-B50B-4A5A-89E7-446BC6F847E5}.Debug|x64.ActiveCfg = Debug|x64
-		{3DBCE0D8-B50B-4A5A-89E7-446BC6F847E5}.Debug|x64.Build.0 = Debug|x64
-		{3DBCE0D8-B50B-4A5A-89E7-446BC6F847E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3DBCE0D8-B50B-4A5A-89E7-446BC6F847E5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3DBCE0D8-B50B-4A5A-89E7-446BC6F847E5}.Release|x64.ActiveCfg = Release|x64
-		{3DBCE0D8-B50B-4A5A-89E7-446BC6F847E5}.Release|x64.Build.0 = Release|x64
+		{A86D9174-86AA-4F90-A46E-FAB3322F2D1D}.Release|x64.ActiveCfg = Debug|x64
+		{A86D9174-86AA-4F90-A46E-FAB3322F2D1D}.Release|x64.Build.0 = Debug|x64
 		{CA3E8790-298D-4643-A866-9297224B6D2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CA3E8790-298D-4643-A866-9297224B6D2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA3E8790-298D-4643-A866-9297224B6D2E}.Debug|x64.ActiveCfg = Debug|Any CPU
