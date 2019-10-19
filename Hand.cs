@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using static PokerLib.Lookups;
 
 namespace PokerConsoleApp
 {
@@ -98,14 +97,14 @@ namespace PokerConsoleApp
             // look up and assign hand rank
             if (CheckFlush())
             {
-                Rank = FlushDict[_primeId];
+                Rank = PokerLib.Lookups.FlushDict[_primeId];
             }
             else
             {
-                Rank = NonFlushDict[_primeId];
+                Rank = PokerLib.Lookups.NonFlushDict[_primeId];
             }
             
-            Name = RankToNameDict[Rank];
+            Name = PokerLib.Lookups.RankToNameDict[Rank];
         }
 
         private bool CheckFlush()
@@ -156,25 +155,39 @@ namespace PokerConsoleApp
 
         public int CompareTo(Hand other)
         {
+            //
+            // Summary:
+            //     Compares the current instance with another object of the same type and returns
+            //     an integer that indicates whether the current instance precedes, follows, or
+            //     occurs in the same position in the sort order as the other object.
+            //
+            // Parameters:
+            //   Hand:
+            //     An object to compare with this instance.
+            //
+            // Returns:
+            //     A value that indicates the relative order of the objects being compared. The
+            //     return value has these meanings: Value Meaning Less than zero This instance precedes
+            //     obj in the sort order. Zero This instance occurs in the same position in the
+            //     sort order as obj. Greater than zero This instance follows obj in the sort order.
+            //
             if (other.Equals(null))
                 throw new ArgumentNullException($"{nameof(other)} passed to CompareTo and is null");
 
-            if (this.Rank.Equals(default) || other.Rank.Equals(default))
-                throw new InvalidOperationException($"Cannot Compare this hand to {nameof(other)} until both have been assigned a Rank");
-
-            if (other.Rank > this.Rank)
+            int retVal = 0;
+            if (other.Rank < this.Rank)
             {
-                return 1;
+                retVal = 1;
             }
-            else if (other.Rank < this.Rank)
+            else if (other.Rank > this.Rank)
             {
-                return -1;
+                retVal = -1;
             }
             else if (other.Rank == this.Rank)
             {
-                return 0;
+                retVal = 0;
             }
-            return -99;
+            return retVal;
         }
     }
 }

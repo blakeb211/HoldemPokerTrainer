@@ -2,6 +2,19 @@
 Train yourself for live Texas Holdem games by seeing the probability of winning change as more cards are dealt.
 
 PROJECT STATUS:
+Oct 18 2019.	Implementing new database code. One database table per 2-card holecard pair. Each record will have a unique prime for the 3-card flop
+				and a count of wins and losses. Check the db before adding a record so that duplicate rows are note added like last time, which
+				made the db unnecessarily big and disorganized.
+				+can use an INTEGER column to store an 8 byte long in sqlite. Retrieve with the GetLong()?
+				+notes on a workaround for ulong if necessary: 
+				https://www.codeproject.com/Messages/3371916/Re-Sqlite-with-csharp-unsigned-long-problem.aspx
+				+attack plan
+					-switch ulong to long in my code..long will hold the primes I deal with and should work better with sqlite
+					-create 1326 tables for 2-card primes in format Tbl_N where N is prime number
+					-create all rows for database and zero wins and losses
+
+Oct 15 2019.	Decide to do major rewrite to decrease line count and database reading time and decrease line count / complexity.
+
 Oct 14 2019.	Implementing the idea below. Total number of unique hands (over 2 million) can be reduced to approximately 7462 hands (see Cactus
 				Kev's poker page for an explanation).
 

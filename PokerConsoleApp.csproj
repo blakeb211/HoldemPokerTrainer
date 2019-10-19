@@ -38,7 +38,7 @@
 
   <ItemGroup>
     <Reference Include="PokerLib">
-      <HintPath>..\PokerDictionaries\bin\Release\netcoreapp3.0\PokerLib.dll</HintPath>
+      <HintPath>bin\x64\Release\netcoreapp3.0\PokerLib.dll</HintPath>
       <Private>true</Private>
     </Reference>
   </ItemGroup>
