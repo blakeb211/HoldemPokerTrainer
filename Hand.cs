@@ -87,31 +87,24 @@ namespace PokerConsoleApp
         {
             // get primeId used for hand rank lookup
             int _primeId;
-            if (Rank != default)
-            {
-                return;
-            }
-            else
-            {
-                int _temp = 1;
+            int _temp = 1;
                 for (int i = 0; i < Cards.Count; i++)
                 {
                     _temp *= Cards[i].GetPrimeIdForRankingHand();
                 }
                 _primeId = _temp;
                 Console.WriteLine("Prime ID is : {0}", _primeId);
-            }
-
+        
             // look up and assign hand rank
             if (CheckFlush())
             {
-                Console.WriteLine("Is a flush!");
                 Rank = FlushDict[_primeId];
-                return;
             }
-            Console.WriteLine("Is not a flush!");
-            Rank = NonFlushDict[_primeId];
-
+            else
+            {
+                Rank = NonFlushDict[_primeId];
+            }
+            
             Name = RankToNameDict[Rank];
         }
 

@@ -13,12 +13,18 @@ namespace PokerConsoleApp
         static void Main()
         { 
             // assign rank test
-            Hand h = new Hand("8c-Jc-9c-Tc-Jd");
-            h.AssignRankAndName();
-            Console.WriteLine($"hand {h} rank = {h.Rank} name = {h.Name}");
             Hand h1 = new Hand("Tc-9c-8c-7c-6c");
             h1.AssignRankAndName();
             Console.WriteLine($"hand {h1} rank = {h1.Rank} name = {h1.Name}");
+
+            h1 = new Hand("Td-9c-8s-7s-6h");
+            h1.AssignRankAndName();
+            Console.WriteLine($"hand {h1} rank = {h1.Rank} name = {h1.Name}");
+
+            h1 = new Hand("2c-3c-3d-3h-3s");
+            h1.AssignRankAndName();
+            Console.WriteLine($"hand {h1} rank = {h1.Rank} name = {h1.Name}");
+
         }
 
         static  Program()
