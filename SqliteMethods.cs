@@ -2,8 +2,9 @@
 using System.Data.SQLite;
 namespace PokerConsoleApp
 {
-    class SQLite_Methods
+    class SqliteMethods
     {
+
 
         public static SQLiteConnection CreateConnection(int player_count)
         {
@@ -64,6 +65,11 @@ namespace PokerConsoleApp
             conn.Close();
         }
 
+        internal static void Show_Database_Statistics()
+        {
+            throw new NotImplementedException();
+        }
+        
         public static void Create_Fresh_Index_On_HoleCards(SQLiteConnection conn)
         {
             /**************************************************************

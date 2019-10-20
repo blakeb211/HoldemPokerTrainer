@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Threading;
+
 namespace PokerConsoleApp
 {
     public static class Program
@@ -12,7 +13,6 @@ namespace PokerConsoleApp
 
         static void Main()
         { 
-            // assign rank test
             Hand h1 = new Hand("Tc-Ts-6c-6d-4c");
             h1.AssignRankAndName();
             Console.WriteLine($"hand {h1} rank = {h1.Rank} name = {h1.Name}");
@@ -47,16 +47,7 @@ namespace PokerConsoleApp
                 Console.Clear();
                 int userChoice = 0;
                 string sInput = "";
-                Console.WriteLine("-------------------------------------------------------------------------");
-                Console.WriteLine("                              MAIN MENU                                  ");
-                Console.WriteLine("-------------------------------------------------------------------------");
-                Console.WriteLine("1 - Simulate games to build up database");
-                Console.WriteLine("2 - Enter poker training mode");
-                Console.WriteLine($"3 - Change number of players (currently set to {PlayerCount})");
-                Console.WriteLine("4 - View database statistics");
-                Console.WriteLine("5 - Exit");
-                Console.WriteLine("-------------------------------------------------------------------------");
-                Console.WriteLine("Please make a selection:");
+                PrintMenuText();
                 sInput = Console.ReadLine();
 
                 if (Int32.TryParse(sInput, out userChoice))
@@ -64,7 +55,6 @@ namespace PokerConsoleApp
                     switch (userChoice)
                     {
                         case 1:
-                            // get number of games to simulate
                             int num_games = UtilityMethods.GetIntegerFromUser(3000, 2000000000);
                             var watch = new System.Diagnostics.Stopwatch();
                             watch.Start();
@@ -74,19 +64,17 @@ namespace PokerConsoleApp
                             UtilityMethods.GetKeyPress();
                             break;
                         case 2:
-                            Play_Game();
+                            Game.Play_Game();
                             UtilityMethods.GetKeyPress();
                             Thread.Sleep(1000);
                             break;
                         case 3:
-                            // ask for number of players
-                            // and change value if b/w 2 and 8
                             Console.WriteLine("Enter number of players (2 to 8):");
                             PlayerCount = UtilityMethods.GetIntegerFromUser(2, 8);
                             Thread.Sleep(1000);
                             break;
                         case 4:
-                            Show_Database_Statistics();
+                            SqliteMethods.Show_Database_Statistics();
                             UtilityMethods.GetKeyPress();
                             break;
                         case 5:
@@ -99,34 +87,21 @@ namespace PokerConsoleApp
             } while (exit_flag == false);
 
         }
-        private static void Show_Database_Statistics()
+
+        private static void PrintMenuText()
         {
-            throw new NotImplementedException();
+            Console.WriteLine("-------------------------------------------------------------------------");
+            Console.WriteLine("                              MAIN MENU                                  ");
+            Console.WriteLine("-------------------------------------------------------------------------");
+            Console.WriteLine("1 - Simulate games to build up database");
+            Console.WriteLine("2 - Enter poker training mode");
+            Console.WriteLine($"3 - Change number of players (currently set to {PlayerCount})");
+            Console.WriteLine("4 - View database statistics");
+            Console.WriteLine("5 - Exit");
+            Console.WriteLine("-------------------------------------------------------------------------");
+            Console.WriteLine("Please make a selection:");
         }
-
-        enum State { HOLE_CARDS_DEALT, FLOP_DEALT, TURN_DEALT, RIVER_DEALT, GAME_OVER };
-        static int Play_Game()
-        {
-            throw new NotImplementedException();
-        }
-
-        private static string BuildGameTable(Board b, int num_players, State state)
-        {
-            throw new NotImplementedException();
-        }
-
-        private static string getPostFlopPercentage(Board b)
-        {
-            throw new NotImplementedException();
-        }
-
-        private static int getPreFlopPercentage(Board b)
-        {
-            throw new NotImplementedException();
-        }
-
-       
-
+                     
     }
 
 }

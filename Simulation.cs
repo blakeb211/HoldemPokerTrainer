@@ -23,9 +23,9 @@ namespace PokerConsoleApp
         {
             recordsTotal = games_to_simulate;
             // Database writing setup code
-            conn = SQLite_Methods.CreateConnection(Program.PlayerCount);
-            SQLite_Methods.CreateTableIfNotExists(conn);
-            SQLite_Methods.DropIndexIfExists(conn);
+            conn = SqliteMethods.CreateConnection(Program.PlayerCount);
+            SqliteMethods.CreateTableIfNotExists(conn);
+            SqliteMethods.DropIndexIfExists(conn);
 
             // CALL PRODUCERS AND CONSUMER HERE
             ThreadStart tProd = new ThreadStart(RecordProducer);
@@ -129,7 +129,7 @@ namespace PokerConsoleApp
                     if (collection.TryTake(out record, 1))
                         break;
                 }
-                SQLite_Methods.InsertResultItem(record, command);
+                SqliteMethods.InsertResultItem(record, command);
                 recordsWritten++;
                 if (recordsWritten % gamesPerTransaction == 0)
                 {
