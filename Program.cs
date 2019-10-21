@@ -1,8 +1,4 @@
-﻿
-using ConsoleTables;
-using System;
-using System.Collections.Generic;
-using System.Data.SQLite;
+﻿using System;
 using System.Threading;
 
 namespace PokerConsoleApp
@@ -12,7 +8,7 @@ namespace PokerConsoleApp
         public static int PlayerCount { get; private set; }
 
         static void Main()
-        { 
+        {
             Hand h1 = new Hand("Tc-Ts-6c-6d-4c");
             h1.AssignRankAndName();
             Console.WriteLine($"hand {h1} rank = {h1.Rank} name = {h1.Name}");
@@ -34,7 +30,7 @@ namespace PokerConsoleApp
             var watch = new System.Diagnostics.Stopwatch();
             watch.Start();
             int games_to_simulate = 5000;
-            Simulation.Simulate_Games(games_to_simulate);
+            Simulation.Simulate_Games(PlayerCount, games_to_simulate);
             watch.Stop();
             Console.WriteLine($"Total Execution Time: {watch.ElapsedMilliseconds / 60000.0 } min");
 
@@ -58,7 +54,7 @@ namespace PokerConsoleApp
                             int num_games = UtilityMethods.GetIntegerFromUser(3000, 2000000000);
                             var watch = new System.Diagnostics.Stopwatch();
                             watch.Start();
-                            Simulation.Simulate_Games(num_games);
+                            Simulation.Simulate_Games(PlayerCount, num_games);
                             watch.Stop();
                             Console.WriteLine($"Total Execution Time: {(watch.ElapsedMilliseconds / 60000.0).ToString("0.##")} minutes");
                             UtilityMethods.GetKeyPress();
@@ -74,7 +70,7 @@ namespace PokerConsoleApp
                             Thread.Sleep(1000);
                             break;
                         case 4:
-                            SqliteMethods.Show_Database_Statistics();
+                            SqliteMethods.ShowDatabaseStatistics();
                             UtilityMethods.GetKeyPress();
                             break;
                         case 5:
@@ -101,7 +97,7 @@ namespace PokerConsoleApp
             Console.WriteLine("-------------------------------------------------------------------------");
             Console.WriteLine("Please make a selection:");
         }
-                     
+
     }
 
 }

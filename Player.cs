@@ -21,7 +21,7 @@ namespace PokerConsoleApp
 
         public override string ToString()
         {
-             return "" + Hole[0].ToString() + " " + Hole[1].ToString();
+            return "" + Hole[0].ToString() + " " + Hole[1].ToString();
         }
     }
 

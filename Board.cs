@@ -7,8 +7,10 @@ namespace PokerConsoleApp
     public class Board
     {
         public List<Card> Cards { get; private set; }
+
         public List<Player> Players { get; private set; }
-        public List<Card> Deck { get; private set; }
+
+        public List<Card> Deck { get; set; }
 
         public int PlayerCount { get; private set; }
 
@@ -23,19 +25,19 @@ namespace PokerConsoleApp
                 // initialize player
             }
         }
-        public void BuildDeck()
+        public static List<Card> BuildDeck()
         {
             List<Card> deck = new List<Card>(52);
             foreach (var cr in Enum.GetValues(typeof(RankType)))
-             
+
                 foreach (var cs in Enum.GetValues(typeof(SuitType)))
                 {
                     deck.Add(new Card((RankType)cr, (SuitType)cs));
                 }
-            Deck = deck;
+            return deck;
         }
 
-        public void DealCards()
+        public void DealGame()
         {
             // deal hole cards
             for (int player_index = 0; player_index < Players.Count; player_index++)

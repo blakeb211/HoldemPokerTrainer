@@ -17,13 +17,13 @@ namespace PokerConsoleApp
         public static readonly List<string> SuitStr = new List<string> { "-1", "H", "D", "S", "C" };
 
         // primes used to save cards to database
-        private static readonly List<ulong> CardTo52UniquePrimes = new List<ulong> { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41,
+        private static readonly List<long> CardTo52UniquePrimes = new List<long> { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41,
                                                                       43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101,
                                                                       103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167,
                                                                       173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239 };
 
-        public static Dictionary<Card, ulong> CardPrimeDict = BuildCardToPrimeDict();
-        
+        public static Dictionary<Card, long> CardUniquePrimeDict = BuildCardToPrimeDict();
+
         public static Card DealCard(List<Card> inputCards)
         {
             Card temp = inputCards[0];
@@ -35,12 +35,12 @@ namespace PokerConsoleApp
             // Hashcodes are unique for each of 52 cards but are not primes
             return (int)Rank * 37 + (int)Suit * 17;
         }
-        
+
         public override bool Equals(object obj)
         {
             return Equals(obj as Card);
         }
-        
+
         public bool Equals(Card other)
         {
             return other != null && this.Rank == other.Rank && this.Suit == other.Suit;
@@ -57,9 +57,9 @@ namespace PokerConsoleApp
             return RankStr[(int)cr];
         }
 
-        public static Dictionary<Card, ulong> BuildCardToPrimeDict()
+        public static Dictionary<Card, long> BuildCardToPrimeDict()
         {
-            Dictionary<Card, ulong> CardToPrimeDict = new Dictionary<Card, ulong>() { };
+            Dictionary<Card, long> CardToPrimeDict = new Dictionary<Card, long>() { };
 
             int dictIndex = 0;
             foreach (RankType cr in Enum.GetValues(typeof(RankType)))

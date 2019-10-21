@@ -19,12 +19,11 @@ namespace PokerConsoleApp
         private static int recordsAdded = 0;
         private static object recordsAddedlock = new object();
 
-        public static int Simulate_Games(int games_to_simulate)
+        public static int Simulate_Games(int playerCount, int targetGameCount)
         {
-            recordsTotal = games_to_simulate;
+            recordsTotal = targetGameCount;
             // Database writing setup code
-            conn = SqliteMethods.CreateConnection(Program.PlayerCount);
-            SqliteMethods.CreateTableIfNotExists(conn);
+            SQLiteConnection conn = SqliteMethods.InitDatabase(playerCount);
             SqliteMethods.DropIndexIfExists(conn);
 
             // CALL PRODUCERS AND CONSUMER HERE
@@ -51,73 +50,76 @@ namespace PokerConsoleApp
             }
 
             Console.WriteLine($"Runtime duration: {timer.Result().TotalMinutes} minutes");
+
+            conn.Dispose();
             return 0;
         }
 
-
-
-        // Record producer simulates a game and adds the result to a BlockingCollection
         public static void RecordProducer()
         {
+            // Record producer simulates a game and adds the result to a BlockingCollection
+            int _dealCount = 0;
+
             do
             {
                 Board b = new Board(Program.PlayerCount);
-                for (int deal_count = 0; deal_count <= 2; deal_count++) // two deals per deck
+                b.DealGame();
+
+                // reset deck every 2 deals
+                if ((_dealCount + 1) % 2 == 0)
                 {
-                    b.DealCards();
-                    if ((deal_count + 1) % 2 == 0)
-                        b.BuildDeck();
-                    List<Hand> lst_best_hands = new List<Hand> { };
-                    for (int playerIndex = 0; playerIndex < Program.PlayerCount; playerIndex++)
+                    b.Deck = Board.BuildDeck();
+                    _dealCount = 0;
+                }
+
+                List<Hand> bestHands = new List<Hand> { };
+
+                for (int playerIndex = 0; playerIndex < Program.PlayerCount; playerIndex++)
+                {
+                    Card hole1 = b.Players[playerIndex].Hole[0];
+                    Card hole2 = b.Players[playerIndex].Hole[1];
+                    Card flop1 = b.Cards[0];
+                    Card flop2 = b.Cards[1];
+                    Card flop3 = b.Cards[2];
+                    Card turn = b.Cards[3];
+                    Card river = b.Cards[4];
+
+                    // Find individual players' best hand out of all possible
+                    // combos of hole, flop, turn, and river cards
+                    List<Hand> allPossibleHands = Hand.Build21Hands(hole1, hole2, flop1, flop2, flop3, turn, river);
+                    List<int> winningHandIndices = Hand.FindBestHand(allPossibleHands);
+                    bestHands.Add(allPossibleHands[winningHandIndices[0]]);
+                }
+
+                List<int> winningPlayerIndices = Hand.FindBestHand(bestHands);
+                // Set WON_THE_HAND boolean inside player class
+                foreach (var wi in winningPlayerIndices)
+                    b.Players[wi].IsWinner = true;
+
+                // Calculate unique primes and add GameRecord to the BlockingCollection
+                for (int playerIndex = 0; playerIndex < Program.PlayerCount; playerIndex++)
+                {
+                    long holeUniquePrime = Card.CardUniquePrimeDict[b.Players[playerIndex].Hole[0]] *
+                                            Card.CardUniquePrimeDict[b.Players[playerIndex].Hole[1]];
+                    long flopUniquePrime = Card.CardUniquePrimeDict[b.Cards[0]] *
+                                            Card.CardUniquePrimeDict[b.Cards[1]] *
+                                            Card.CardUniquePrimeDict[b.Cards[2]];
+
+                    var record = new GameRecord(holeUniquePrime, flopUniquePrime, b.Players[playerIndex].IsWinner);
+                    while (true)
                     {
-                        Card hole1 = b.Players[playerIndex].Hole[0];
-                        Card hole2 = b.Players[playerIndex].Hole[1];
-                        Card flop1 = b.Cards[0];
-                        Card flop2 = b.Cards[1];
-                        Card flop3 = b.Cards[2];
-                        Card turn = b.Cards[3];
-                        Card river = b.Cards[4];
-
-                        // Find individual players' best hand out of all possible
-                        // combos of hole, flop, turn, and river cards
-                        List<Hand> lst_hand = Hand.Build21Hands(hole1, hole2, flop1, flop2, flop3, turn, river);
-                        List<int> winning_hand_indices = Hand.FindBestHand(lst_hand);
-                        lst_best_hands.Add(lst_hand[winning_hand_indices[0]]);
-                    }
-                    List<int> winning_player_indices = Hand.FindBestHand(lst_best_hands);
-                    // Set WON_THE_HAND boolean inside player class
-                    foreach (var wi in winning_player_indices)
-                        b.Players[wi].IsWinner = true;
-
-                    // Sort the cards uniquely and add GameRecord to the BlockingCollection
-                    for (int playerIndex = 0; playerIndex < Program.PlayerCount; playerIndex++)
-                    {
-                        // Sort hole and flop cards uniquely 
-                        List<Card> lst_hole_cards = new List<Card> { };
-                        List<Card> lst_flop_cards = new List<Card> { };
-                        for (int i = 0; i < 2; i++)
-                            lst_hole_cards.Add(b.Players[playerIndex].Hole[i]);
-                        for (int i = 0; i < 3; i++)
-                            lst_flop_cards.Add(b.Cards[i]);
-
-                        ulong holeUniquePrime = 0;
-                        ulong flopUniquePrime = 0;
-                        var record = new GameRecord(holeUniquePrime, flopUniquePrime, b.Players[playerIndex].IsWinner);
-                        while (true)
+                        if (collection.TryAdd(record, 1) == true)
                         {
-                            if (collection.TryAdd(record, 1) == true)
-                            {
-                                break;
-                            }
+                            break;
                         }
                     }
                 }
             } while (recordsWritten < recordsTotal);
         }
 
-        // Record consumer writes records to the sqlite database
         public static void RecordConsumer()
         {
+            // Record consumer writes records to database
             command = conn.CreateCommand();
             transaction = conn.BeginTransaction();
             do
@@ -145,13 +147,12 @@ namespace PokerConsoleApp
             conn.Dispose();
         }
 
-
         public struct GameRecord
         {
-            public ulong holeUniquePrime;
-            public ulong flopUniquePrime;
+            public long holeUniquePrime;
+            public long flopUniquePrime;
             public int winFlag;
-            public GameRecord(ulong holeCardsUniquePrime, ulong flopCardsUniquePrime, bool winFlag)
+            public GameRecord(long holeCardsUniquePrime, long flopCardsUniquePrime, bool winFlag)
             {
                 holeUniquePrime = holeCardsUniquePrime;
                 flopUniquePrime = flopCardsUniquePrime;

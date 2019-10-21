@@ -69,7 +69,7 @@ namespace PokerConsoleApp
             List<int> lst_winning_hand_indices = new List<int> { };
             List<Hand> lst_winning_hands = new List<Hand> { };
             List<int> lst_losing_hand_indices = new List<int> { };
-            
+
             for (int i = 0; i < hand_count; i++)
             {
                 int loss_counter = 0;

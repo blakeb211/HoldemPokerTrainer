@@ -1,50 +1,143 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Data.SQLite;
 namespace PokerConsoleApp
 {
     class SqliteMethods
     {
+        public static SQLiteConnection InitDatabase(int playerCount)
+        {
+            SQLiteConnection conn = CreateConnection(playerCount);
+            Dictionary<Card, long> CardPrimeDict = Card.BuildCardToPrimeDict();
 
+            SQLiteCommand comm = new SQLiteCommand(conn);
+            SQLiteTransaction tran = conn.BeginTransaction();
+            comm.Transaction = tran;
+
+            List<long> tableNums = Generate2CardUniquePrimes(CardPrimeDict);
+            List<long> flopPrimes = Generate3CardUniquePrimes(CardPrimeDict);
+
+            foreach (var num in tableNums)
+            {
+                string tableStr = $"Tbl{num.ToString()}";
+                CreateTableIfNotExists(tableStr, conn);
+
+                foreach (var flopNum in flopPrimes)
+                {
+                    ZeroRecord($"Tbl{tableStr}", flopNum, comm);
+                }
+            }
+
+            comm.Dispose();
+            tran.Commit();
+            tran.Dispose();
+            return conn;
+        }
 
         public static SQLiteConnection CreateConnection(int player_count)
         {
-            SQLiteConnection sqlite_conn;
+            SQLiteConnection conn;
             // Create new database connection using number of players in the datasource name
             string datasource = $"{player_count}-player-database.db";
-            sqlite_conn = new SQLiteConnection("Data Source=" + datasource + ";Version=3;New=True;Compress=True;journal mode=Off;Synchronous=Off");
+            conn = new SQLiteConnection("Data Source=" + datasource + ";Version=3;New=True;Compress=True;journal mode=Off;Synchronous=Off");
+            conn.Flags = SQLiteConnectionFlags.BindUInt32AsInt64;
+
             // Open the connection:
             try
             {
-                sqlite_conn.Open();
+                conn.Open();
             }
             catch (Exception ex)
             {
                 Console.WriteLine("CreateConnection - Exception Msg: " + ex.ToString());
             }
-            return sqlite_conn;
+            return conn;
         }
 
-        public static void CreateTableIfNotExists(SQLiteConnection conn)
+        public static List<long> Generate3CardUniquePrimes(Dictionary<Card, long> dict)
+        {
+            List<long> threeCardPrimes = new List<long>(2652);
+            List<Card> deck1 = Board.BuildDeck();
+            List<Card> deck2 = Board.BuildDeck();
+            List<Card> deck3 = Board.BuildDeck();
+
+            for (int i = 0; i < 50; i++)
+            {
+                for (int j = i + 1; j < 51; j++)
+                {
+                    for (int k = j + 1; k < 52; k++)
+                    {
+                        if (i != j && i != k && j != k)
+                        {
+                            ulong num = (ulong)dict[deck1[i]] * (ulong)dict[deck2[j]] * (ulong)dict[deck3[k]];
+                            threeCardPrimes.Add((long)num);
+                        }
+                    }
+                }
+            }
+            return threeCardPrimes;
+        }
+
+        public static List<long> Generate2CardUniquePrimes(Dictionary<Card, long> dict)
+        {
+            List<long> twoCardPrimes = new List<long>(2652);
+            List<Card> deck1 = Board.BuildDeck();
+            List<Card> deck2 = Board.BuildDeck();
+
+            for (int i = 0; i < 51; i++)
+            {
+                for (int j = i + 1; j < 52; j++)
+                {
+                    if (i == j) break;
+                    long num = (long)dict[deck1[i]] * (long)dict[deck2[j]];
+                    twoCardPrimes.Add(num);
+                }
+            }
+            return twoCardPrimes;
+        }
+
+        private static void CreateTableIfNotExists(string tableName, SQLiteConnection conn)
         {
 
-            SQLiteCommand sqlite_cmd;
-            string Createsql = "CREATE TABLE IF NOT EXISTS PlayerHandsTable (FlopUniquePrime LONG, Winflag INT)";
-            sqlite_cmd = conn.CreateCommand();
-            sqlite_cmd.CommandText = Createsql;
-            sqlite_cmd.ExecuteNonQuery();
+            SQLiteCommand command;
+            command = conn.CreateCommand();
+            command.CommandText = $"CREATE TABLE IF NOT EXISTS {tableName} (FlopUniquePrime INT, Wins INT, Losses INT)";
+            command.ExecuteNonQuery();
+        }
+
+        private static int ZeroRecord(string tableString, long flopPrime, SQLiteCommand command)
+        {
+            command.CommandText = $"INSERT INTO {tableString} "
+                            + "(FlopUniquePrime, Wins, Losses) "
+                            + "VALUES (:FlopNum, :WinNum, :LossNum)";
+
+            command.Parameters.Add("tableName", DbType.String).Value = tableString;
+            command.Parameters.Add("FlopNum", DbType.Int64).Value = flopPrime;
+            command.Parameters.Add("WinNum", DbType.Int64).Value = 0;
+            command.Parameters.Add("LossNum", DbType.Int64).Value = 0;
+
+            return command.ExecuteNonQuery();
         }
 
         public static int InsertResultItem(Simulation.GameRecord record, SQLiteCommand command)
         {
-            command.Parameters.AddWithValue("@flopCardsUniquePrime", "");
-            command.Parameters.AddWithValue("@winFlag", "");
-        
-            command.CommandText = "INSERT INTO PlayerHandsTable "
-                            + "(flopCardsUniquePrime, winFlag) "
-                            + "VALUES (@flopCardsUniquePrime, @winFlag)";
+            string tableStr = $"Tbl{record.flopUniquePrime}";
 
-            command.Parameters["@flopCardsUniquePrime"].Value = 99;
-             command.Parameters["@winFlag"].Value = record.winFlag;
+            if (record.winFlag == 1)
+            {
+                // change to an update call
+                command.CommandText = $"INSERT INTO {tableStr} "
+                                + "(flopCardsUniquePrime, winFlag) "
+                                + "VALUES (@flopCardsUniquePrime, @winFlag)";
+                    
+                command.Parameters["@flopCardsUniquePrime"].Value = 99;
+                command.Parameters["@winFlag"].Value = record.winFlag;
+            }
+            else
+            {
+
+            }
 
             return command.ExecuteNonQuery();
         }
@@ -65,12 +158,12 @@ namespace PokerConsoleApp
             conn.Close();
         }
 
-        internal static void Show_Database_Statistics()
+        internal static void ShowDatabaseStatistics()
         {
             throw new NotImplementedException();
         }
-        
-        public static void Create_Fresh_Index_On_HoleCards(SQLiteConnection conn)
+
+        public static void CreateFreshIndex(SQLiteConnection conn)
         {
             /**************************************************************
              * This method creates an index so that queries on the database go much faster

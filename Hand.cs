@@ -87,13 +87,13 @@ namespace PokerConsoleApp
             // get primeId used for hand rank lookup
             int _primeId;
             int _temp = 1;
-                for (int i = 0; i < Cards.Count; i++)
-                {
-                    _temp *= Cards[i].GetPrimeIdForRankingHand();
-                }
-                _primeId = _temp;
-                Console.WriteLine("Prime ID is : {0}", _primeId);
-        
+            for (int i = 0; i < Cards.Count; i++)
+            {
+                _temp *= Cards[i].GetPrimeIdForRankingHand();
+            }
+            _primeId = _temp;
+            Console.WriteLine("Prime ID is : {0}", _primeId);
+
             // look up and assign hand rank
             if (CheckFlush())
             {
@@ -103,7 +103,7 @@ namespace PokerConsoleApp
             {
                 Rank = PokerLib.Lookups.NonFlushDict[_primeId];
             }
-            
+
             Name = PokerLib.Lookups.RankToNameDict[Rank];
         }
 

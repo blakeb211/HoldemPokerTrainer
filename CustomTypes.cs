@@ -1,13 +1,13 @@
 ﻿namespace PokerConsoleApp
 {
 
-    internal enum GameState 
-    { 
+    internal enum GameState
+    {
         HOLE_CARDS_DEALT,
         FLOP_DEALT,
         TURN_DEALT,
         RIVER_DEALT,
-        GAME_OVER 
+        GAME_OVER
     };
     public enum HandType
     {
