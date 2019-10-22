@@ -25,21 +25,21 @@ namespace PokerConsoleApp
 
                 foreach (var flopNum in flopPrimes)
                 {
-                    ZeroRecord($"Tbl{tableStr}", flopNum, comm);
+                    ZeroRecord(tableStr, flopNum, comm);
                 }
             }
 
-            comm.Dispose();
             tran.Commit();
+            comm.Dispose();
             tran.Dispose();
             return conn;
         }
 
-        public static SQLiteConnection CreateConnection(int player_count)
+        public static SQLiteConnection CreateConnection(int playerCount)
         {
             SQLiteConnection conn;
             // Create new database connection using number of players in the datasource name
-            string datasource = $"{player_count}-player-database.db";
+            string datasource = $"{playerCount}-player-database.db";
             conn = new SQLiteConnection("Data Source=" + datasource + ";Version=3;New=True;Compress=True;journal mode=Off;Synchronous=Off");
             conn.Flags = SQLiteConnectionFlags.BindUInt32AsInt64;
 
@@ -54,6 +54,60 @@ namespace PokerConsoleApp
             }
             return conn;
         }
+
+        private static void CreateTableIfNotExists(string tableName, SQLiteConnection conn)
+        {
+
+            SQLiteCommand command;
+            command = conn.CreateCommand();
+            command.CommandText = $"CREATE TABLE IF NOT EXISTS {tableName} (FlopUniquePrime INT, Wins INT, Losses INT)";
+            command.ExecuteNonQuery();
+        }
+
+        private static int ZeroRecord(string tableString, long flopPrime, SQLiteCommand command)
+        {
+            command.CommandText = $"INSERT INTO {tableString} "
+                            + "(FlopUniquePrime, Wins, Losses) "
+                            + "VALUES (:FlopNum, :WinNum, :LossNum)";
+
+            command.Parameters.Add("tableName", DbType.String).Value = tableString;
+            command.Parameters.Add("FlopNum", DbType.Int64).Value = flopPrime;
+            command.Parameters.Add("WinNum", DbType.Int64).Value = 0;
+            command.Parameters.Add("LossNum", DbType.Int64).Value = 0;
+
+            return command.ExecuteNonQuery();
+        }
+
+        public static int InsertResultItem(Simulation.GameRecord record, SQLiteCommand command)
+        {
+            string tableStr = $"Tbl{record.holeUniquePrime}";
+            command.CommandText = $"SELECT * FROM {tableStr} where FlopUniquePrime = {record.flopUniquePrime}";
+            SQLiteDataReader dr = command.ExecuteReader();
+
+            if (record.winFlag == 1)
+            {
+                // read integer in Wins column
+                dr.Read();
+                long updatedWinCount = dr.GetInt64( 1 ) + 1;
+
+                // update integer in Wins column
+                dr.Close();
+                command.CommandText = $"UPDATE {tableStr} SET Wins = {updatedWinCount} WHERE FlopUniquePrime = {record.flopUniquePrime}";
+            }
+            else if (record.winFlag == 0)
+            {
+                // read integer in Losses column
+                dr.Read();
+                long updatedLossCount = dr.GetInt64(2) + 1;
+
+                // update integer in Losses column
+                dr.Close();
+                command.CommandText = $"UPDATE {tableStr} SET Losses = {updatedLossCount} WHERE FlopUniquePrime = {record.flopUniquePrime}";
+            }
+
+            return command.ExecuteNonQuery();
+        }
+
 
         public static List<long> Generate3CardUniquePrimes(Dictionary<Card, long> dict)
         {
@@ -97,51 +151,6 @@ namespace PokerConsoleApp
             return twoCardPrimes;
         }
 
-        private static void CreateTableIfNotExists(string tableName, SQLiteConnection conn)
-        {
-
-            SQLiteCommand command;
-            command = conn.CreateCommand();
-            command.CommandText = $"CREATE TABLE IF NOT EXISTS {tableName} (FlopUniquePrime INT, Wins INT, Losses INT)";
-            command.ExecuteNonQuery();
-        }
-
-        private static int ZeroRecord(string tableString, long flopPrime, SQLiteCommand command)
-        {
-            command.CommandText = $"INSERT INTO {tableString} "
-                            + "(FlopUniquePrime, Wins, Losses) "
-                            + "VALUES (:FlopNum, :WinNum, :LossNum)";
-
-            command.Parameters.Add("tableName", DbType.String).Value = tableString;
-            command.Parameters.Add("FlopNum", DbType.Int64).Value = flopPrime;
-            command.Parameters.Add("WinNum", DbType.Int64).Value = 0;
-            command.Parameters.Add("LossNum", DbType.Int64).Value = 0;
-
-            return command.ExecuteNonQuery();
-        }
-
-        public static int InsertResultItem(Simulation.GameRecord record, SQLiteCommand command)
-        {
-            string tableStr = $"Tbl{record.flopUniquePrime}";
-
-            if (record.winFlag == 1)
-            {
-                // change to an update call
-                command.CommandText = $"INSERT INTO {tableStr} "
-                                + "(flopCardsUniquePrime, winFlag) "
-                                + "VALUES (@flopCardsUniquePrime, @winFlag)";
-                    
-                command.Parameters["@flopCardsUniquePrime"].Value = 99;
-                command.Parameters["@winFlag"].Value = record.winFlag;
-            }
-            else
-            {
-
-            }
-
-            return command.ExecuteNonQuery();
-        }
-
         public static void ReadData(SQLiteConnection conn)
         {
             SQLiteDataReader sqlite_datareader;
@@ -178,11 +187,11 @@ namespace PokerConsoleApp
 
         }
 
-        internal static void DropIndexIfExists(SQLiteConnection sqlite_conn)
+        internal static void DropIndexIfExists(SQLiteConnection conn)
         {
             SQLiteCommand sqlite_cmd;
             string dropsql = "DROP INDEX IF EXISTS hole1_idx";
-            sqlite_cmd = sqlite_conn.CreateCommand();
+            sqlite_cmd = conn.CreateCommand();
             sqlite_cmd.CommandText = dropsql;
             sqlite_cmd.ExecuteNonQuery();
 

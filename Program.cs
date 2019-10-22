@@ -9,16 +9,16 @@ namespace PokerConsoleApp
 
         static void Main()
         {
-            Hand h1 = new Hand("Tc-Ts-6c-6d-4c");
-            h1.AssignRankAndName();
-            Console.WriteLine($"hand {h1} rank = {h1.Rank} name = {h1.Name}");
+            
 
-            Hand h2 = new Hand("Td-Tc-6s-6h-4h");
-            h2.AssignRankAndName();
-            Console.WriteLine($"hand {h2} rank = {h2.Rank} name = {h2.Name}");
+            // var conn = SqliteMethods.InitDatabase(2);
+            var conn = SqliteMethods.CreateConnection(2);
+            var comm = conn.CreateCommand();
 
-            Console.WriteLine($"h1 cmp to h2: {h1.CompareTo(h2)}");
-
+            Simulation.GameRecord gr = new Simulation.GameRecord(10, 42, false);
+            SqliteMethods.InsertResultItem(gr, comm);
+            comm.Dispose();
+            conn.Dispose();
         }
 
         static Program()
