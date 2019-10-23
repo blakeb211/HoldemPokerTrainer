@@ -15,16 +15,14 @@ namespace PokerConsoleApp
         private static SQLiteTransaction transaction;
         private static int recordsTotal;
         private static int recordsWritten = 0;
-        private static int gamesPerTransaction = 1000;
+        private static int gamesPerTransaction = 2000;
         private static int recordsAdded = 0;
-        private static object recordsAddedlock = new object();
 
-        public static int Simulate_Games(int playerCount, int targetGameCount)
+        public static int SimulateGames(int playerCount, int targetGameCount)
         {
             recordsTotal = targetGameCount;
             // Database writing setup code
             SQLiteConnection conn = SqliteMethods.InitDatabase(playerCount);
-            SqliteMethods.DropIndexIfExists(conn);
 
             // CALL PRODUCERS AND CONSUMER HERE
             ThreadStart tProd = new ThreadStart(RecordProducer);
@@ -63,7 +61,6 @@ namespace PokerConsoleApp
             do
             {
                 Board b = new Board(Program.PlayerCount);
-                b.DealGame();
 
                 // reset deck every 2 deals
                 if ((_dealCount + 1) % 2 == 0)
@@ -72,21 +69,15 @@ namespace PokerConsoleApp
                     _dealCount = 0;
                 }
 
+                b.DealGame();
+
                 List<Hand> bestHands = new List<Hand> { };
 
                 for (int playerIndex = 0; playerIndex < Program.PlayerCount; playerIndex++)
                 {
-                    Card hole1 = b.Players[playerIndex].Hole[0];
-                    Card hole2 = b.Players[playerIndex].Hole[1];
-                    Card flop1 = b.Cards[0];
-                    Card flop2 = b.Cards[1];
-                    Card flop3 = b.Cards[2];
-                    Card turn = b.Cards[3];
-                    Card river = b.Cards[4];
-
                     // Find individual players' best hand out of all possible
                     // combos of hole, flop, turn, and river cards
-                    List<Hand> allPossibleHands = Hand.Build21Hands(hole1, hole2, flop1, flop2, flop3, turn, river);
+                    List<Hand> allPossibleHands = Hand.Build21Hands(b.Players[playerIndex].Hole, b.Cards);
                     List<int> winningHandIndices = Hand.FindBestHand(allPossibleHands);
                     bestHands.Add(allPossibleHands[winningHandIndices[0]]);
                 }
@@ -108,8 +99,9 @@ namespace PokerConsoleApp
                     var record = new GameRecord(holeUniquePrime, flopUniquePrime, b.Players[playerIndex].IsWinner);
                     while (true)
                     {
-                        if (collection.TryAdd(record, 1) == true)
+                        if (collection.TryAdd(record, 2) == true)
                         {
+                            recordsAdded++;
                             break;
                         }
                     }
@@ -141,6 +133,7 @@ namespace PokerConsoleApp
             } while (recordsWritten < recordsTotal);
             // Inevitably we broke out of loop with a partial transaction. Flush it to disk.
             transaction.Commit();
+
             // Clean up
             command.Dispose();
             transaction.Dispose();

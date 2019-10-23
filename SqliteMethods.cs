@@ -187,15 +187,6 @@ namespace PokerConsoleApp
 
         }
 
-        internal static void DropIndexIfExists(SQLiteConnection conn)
-        {
-            SQLiteCommand sqlite_cmd;
-            string dropsql = "DROP INDEX IF EXISTS hole1_idx";
-            sqlite_cmd = conn.CreateCommand();
-            sqlite_cmd.CommandText = dropsql;
-            sqlite_cmd.ExecuteNonQuery();
-
-        }
     }
 }
 

@@ -30,7 +30,7 @@ namespace PokerConsoleApp
             var watch = new System.Diagnostics.Stopwatch();
             watch.Start();
             int games_to_simulate = 5000;
-            Simulation.Simulate_Games(PlayerCount, games_to_simulate);
+            Simulation.SimulateGames(PlayerCount, games_to_simulate);
             watch.Stop();
             Console.WriteLine($"Total Execution Time: {watch.ElapsedMilliseconds / 60000.0 } min");
 
@@ -54,7 +54,7 @@ namespace PokerConsoleApp
                             int num_games = UtilityMethods.GetIntegerFromUser(3000, 2000000000);
                             var watch = new System.Diagnostics.Stopwatch();
                             watch.Start();
-                            Simulation.Simulate_Games(PlayerCount, num_games);
+                            Simulation.SimulateGames(PlayerCount, num_games);
                             watch.Stop();
                             Console.WriteLine($"Total Execution Time: {(watch.ElapsedMilliseconds / 60000.0).ToString("0.##")} minutes");
                             UtilityMethods.GetKeyPress();
