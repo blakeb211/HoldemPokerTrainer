@@ -88,7 +88,7 @@ namespace PokerConsoleApp
             {
                 // read integer in Wins column
                 dr.Read();
-                long updatedWinCount = dr.GetInt64( 1 ) + 1;
+                long updatedWinCount = dr.GetInt64(1) + 1;
 
                 // update integer in Wins column
                 dr.Close();

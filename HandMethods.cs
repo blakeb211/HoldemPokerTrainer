@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace PokerConsoleApp
 {
@@ -72,45 +71,48 @@ namespace PokerConsoleApp
             List<Hand> winningHands = new List<Hand> { };
             List<int> losingHands = new List<int> { };
 
-            for (int i = 0; i < inputHands.Count; i++)
+            for (int i = 0; i < lst_hand_copy.Length; i++)
             {
-                int lossCounter = 0;
-
-                if (lst_hand_copy[i].Rank == default)
-                    lst_hand_copy[i].AssignRankAndName();
-
-                for (int j = 0; j < inputHands.Count; j++)
+                for (int j = i + 1; j < lst_hand_copy.Length; j++)
                 {
+                    // assign ranks if they need us to
+                    if (lst_hand_copy[i].Rank == default)
+                        lst_hand_copy[i].AssignRankAndName();
+
                     if (lst_hand_copy[j].Rank == default)
                         lst_hand_copy[j].AssignRankAndName();
+
                     // Continue if i OR j are one of losing indices
-                    if (losingHands.Contains(i))
+                    if (lst_hand_copy[i] == null)
+                    {
                         break;
-                    if (losingHands.Contains(j))
-                        continue;
-                    if (i == j)
+                    }
+                    if (lst_hand_copy[j] == null)
                     {
                         continue;
                     }
-                    else
+
+                    int _compareResult = lst_hand_copy[i].CompareTo(lst_hand_copy[j]);
+                    if (_compareResult == -1)
                     {
-                        int _comparisonResult = lst_hand_copy[i].CompareTo(lst_hand_copy[j]);
-                        if (_comparisonResult == 1 || _comparisonResult == 0) // if i loses
-                        {
-                            lossCounter++;
-                            losingHands.Add(i);
-                        }
+                        // i loses
+                        lst_hand_copy[i] = null;
                     }
-                }
-                if (lossCounter == 0) // if i-th hand always wins or ties then its a winner
-                {
-                    winningHands.Add(lst_hand_copy[i]);
+                    else if (_compareResult == 1)
+                    {
+                        // j loses
+                        lst_hand_copy[j] = null;
+                    }
                 }
             }
-            // Only thing left in lst_winning_hands should be tied winners or a single a winner
-            for (int i = 0; i < winningHands.Count; i++)
+        
+            // Only non-null value in lst_hand_copy should be tied winners or a single winner
+            for (int i = 0; i < lst_hand_copy.Length; i++)
             {
-                winnerIndices.Add(inputHands.IndexOf(winningHands[i]));
+                if (lst_hand_copy[i] != null)
+                {
+                    winnerIndices.Add(i);
+                }
             }
             return winnerIndices;
         }

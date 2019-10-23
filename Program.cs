@@ -9,7 +9,7 @@ namespace PokerConsoleApp
 
         static void Main()
         {
-            
+
 
             // var conn = SqliteMethods.InitDatabase(2);
             var conn = SqliteMethods.CreateConnection(2);
