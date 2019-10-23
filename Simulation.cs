@@ -22,7 +22,7 @@ namespace PokerConsoleApp
         {
             recordsTotal = targetGameCount;
             // Database writing setup code
-            SQLiteConnection conn = SqliteMethods.InitDatabase(playerCount);
+            conn = SqliteMethods.InitDatabaseIfNotExists(playerCount);
 
             // CALL PRODUCERS AND CONSUMER HERE
             ThreadStart tProd = new ThreadStart(RecordProducer);
@@ -31,6 +31,7 @@ namespace PokerConsoleApp
             Thread producerThread2 = new Thread(tProd);
             Thread producerThread3 = new Thread(tProd);
             Thread consumerThread = new Thread(tCons);
+
             Timing timer = new Timing();
             timer.StartTime();
             producerThread.Start();
@@ -72,18 +73,21 @@ namespace PokerConsoleApp
                 b.DealGame();
 
                 List<Hand> bestHands = new List<Hand> { };
+                List<Hand> _allPossibleHands = new List<Hand>(21);
+                List<int> _winningHandIndices;
 
                 for (int playerIndex = 0; playerIndex < Program.PlayerCount; playerIndex++)
                 {
                     // Find individual players' best hand out of all possible
                     // combos of hole, flop, turn, and river cards
-                    List<Hand> allPossibleHands = Hand.Build21Hands(b.Players[playerIndex].Hole, b.Cards);
-                    List<int> winningHandIndices = Hand.FindBestHand(allPossibleHands);
-                    bestHands.Add(allPossibleHands[winningHandIndices[0]]);
+                    Hand.Build21Hands(b.Players[playerIndex].Hole, b.Cards, ref _allPossibleHands);
+                    _winningHandIndices = Hand.FindBestHand(_allPossibleHands);
+                    bestHands.Add(_allPossibleHands[_winningHandIndices[0]]);
                 }
 
                 List<int> winningPlayerIndices = Hand.FindBestHand(bestHands);
-                // Set WON_THE_HAND boolean inside player class
+
+                // mark the winner(s)
                 foreach (var wi in winningPlayerIndices)
                     b.Players[wi].IsWinner = true;
 
@@ -97,6 +101,7 @@ namespace PokerConsoleApp
                                             Card.CardUniquePrimeDict[b.Cards[2]];
 
                     var record = new GameRecord(holeUniquePrime, flopUniquePrime, b.Players[playerIndex].IsWinner);
+
                     while (true)
                     {
                         if (collection.TryAdd(record, 2) == true)

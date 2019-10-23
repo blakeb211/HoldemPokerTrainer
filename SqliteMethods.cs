@@ -6,32 +6,40 @@ namespace PokerConsoleApp
 {
     class SqliteMethods
     {
-        public static SQLiteConnection InitDatabase(int playerCount)
+        public static SQLiteConnection InitDatabaseIfNotExists(int playerCount)
         {
+            Console.WriteLine($"{nameof(InitDatabaseIfNotExists)} method -- Generating table names...");
+
+            List<long> tableNums = Generate2CardUniquePrimes(Card.CardUniquePrimeDict);
+            // Check if database already exists by counting tables and rows
+
+
             SQLiteConnection conn = CreateConnection(playerCount);
-            Dictionary<Card, long> CardPrimeDict = Card.BuildCardToPrimeDict();
+           
+            
+            List<long> flopPrimes = Generate3CardUniquePrimes(Card.CardUniquePrimeDict);
 
-            SQLiteCommand comm = new SQLiteCommand(conn);
-            SQLiteTransaction tran = conn.BeginTransaction();
-            comm.Transaction = tran;
-
-            List<long> tableNums = Generate2CardUniquePrimes(CardPrimeDict);
-            List<long> flopPrimes = Generate3CardUniquePrimes(CardPrimeDict);
-
-            foreach (var num in tableNums)
+            using (SQLiteCommand comm = new SQLiteCommand(conn))
             {
-                string tableStr = $"Tbl{num.ToString()}";
-                CreateTableIfNotExists(tableStr, conn);
 
-                foreach (var flopNum in flopPrimes)
+                foreach (var num in tableNums)
                 {
-                    ZeroRecord(tableStr, flopNum, comm);
-                }
-            }
+                    using (SQLiteTransaction tran = conn.BeginTransaction())
+                    {
 
-            tran.Commit();
-            comm.Dispose();
-            tran.Dispose();
+                        string tableStr = $"Tbl{num.ToString()}";
+                        CreateTableIfNotExists(tableStr, conn);
+
+                        comm.Transaction = tran;
+                        foreach (var flopNum in flopPrimes)
+                        {
+                            ZeroRecord(tableStr, flopNum, comm);
+                        }
+                        comm.Transaction.Commit();
+                    };
+                }
+            };
+
             return conn;
         }
 

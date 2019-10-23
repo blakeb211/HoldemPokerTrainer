@@ -9,16 +9,7 @@ namespace PokerConsoleApp
 
         static void Main()
         {
-
-
-            // var conn = SqliteMethods.InitDatabase(2);
-            var conn = SqliteMethods.CreateConnection(2);
-            var comm = conn.CreateCommand();
-
-            Simulation.GameRecord gr = new Simulation.GameRecord(10, 42, false);
-            SqliteMethods.InsertResultItem(gr, comm);
-            comm.Dispose();
-            conn.Dispose();
+            DisplayMenu();
         }
 
         static Program()
@@ -41,12 +32,10 @@ namespace PokerConsoleApp
             do
             {
                 Console.Clear();
-                int userChoice = 0;
-                string sInput = "";
                 PrintMenuText();
-                sInput = Console.ReadLine();
+                string sInput = Console.ReadLine();
 
-                if (Int32.TryParse(sInput, out userChoice))
+                if (Int32.TryParse(sInput, out int userChoice))
                 {
                     switch (userChoice)
                     {
