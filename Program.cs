@@ -9,7 +9,15 @@ namespace PokerConsoleApp
 
         static void Main()
         {
-            DisplayMenu();
+            SqliteMethods.CreateDatabaseDirectoryIfNotExists();
+            if (SqliteMethods.IsDatabaseInitialized(PlayerCount))
+            {
+                Console.WriteLine($"Database for {PlayerCount} players is initialized and passed integrity checks.");
+            }
+            else
+            {
+                 SqliteMethods.InitDatabase(PlayerCount);
+            }
         }
 
         static Program()
@@ -28,7 +36,7 @@ namespace PokerConsoleApp
         }
         public static void DisplayMenu()
         {
-            bool exit_flag = false;
+            bool _exitFlag = false;
             do
             {
                 Console.Clear();
@@ -40,16 +48,16 @@ namespace PokerConsoleApp
                     switch (userChoice)
                     {
                         case 1:
-                            int num_games = UtilityMethods.GetIntegerFromUser(3000, 2000000000);
+                            int _numGames = UtilityMethods.GetIntegerFromUser(3000, 2000000000);
                             var watch = new System.Diagnostics.Stopwatch();
                             watch.Start();
-                            Simulation.SimulateGames(PlayerCount, num_games);
+                            Simulation.SimulateGames(PlayerCount, _numGames);
                             watch.Stop();
                             Console.WriteLine($"Total Execution Time: {(watch.ElapsedMilliseconds / 60000.0).ToString("0.##")} minutes");
                             UtilityMethods.GetKeyPress();
                             break;
                         case 2:
-                            Game.Play_Game();
+                            Game.PlayGame();
                             UtilityMethods.GetKeyPress();
                             Thread.Sleep(1000);
                             break;
@@ -63,13 +71,13 @@ namespace PokerConsoleApp
                             UtilityMethods.GetKeyPress();
                             break;
                         case 5:
-                            exit_flag = true;
+                            _exitFlag = true;
                             break;
                         default:
                             break;
                     }
                 }
-            } while (exit_flag == false);
+            } while (_exitFlag == false);
 
         }
 

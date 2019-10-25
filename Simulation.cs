@@ -22,7 +22,8 @@ namespace PokerConsoleApp
         {
             recordsTotal = targetGameCount;
             // Database writing setup code
-            conn = SqliteMethods.InitDatabaseIfNotExists(playerCount);
+            SqliteMethods.InitDatabase(playerCount);
+            conn = SqliteMethods.CreateConnection(playerCount);
 
             // CALL PRODUCERS AND CONSUMER HERE
             ThreadStart tProd = new ThreadStart(RecordProducer);

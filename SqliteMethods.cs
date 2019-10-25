@@ -2,21 +2,20 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
+using System.IO;
+using System.Linq;
+using System.Text;
+
 namespace PokerConsoleApp
 {
     class SqliteMethods
     {
-        public static SQLiteConnection InitDatabaseIfNotExists(int playerCount)
+        public static void InitDatabase(int playerCount)
         {
-            Console.WriteLine($"{nameof(InitDatabaseIfNotExists)} method -- Generating table names...");
+            Console.WriteLine($"{nameof(InitDatabase)} method -- Generating table names...");
 
             List<long> tableNums = Generate2CardUniquePrimes(Card.CardUniquePrimeDict);
-            // Check if database already exists by counting tables and rows
-
-
             SQLiteConnection conn = CreateConnection(playerCount);
-           
-            
             List<long> flopPrimes = Generate3CardUniquePrimes(Card.CardUniquePrimeDict);
 
             using (SQLiteCommand comm = new SQLiteCommand(conn))
@@ -40,15 +39,18 @@ namespace PokerConsoleApp
                 }
             };
 
-            return conn;
+            conn.Dispose();
         }
 
         public static SQLiteConnection CreateConnection(int playerCount)
         {
             SQLiteConnection conn;
             // Create new database connection using number of players in the datasource name
+            StringBuilder _path = new StringBuilder(Directory.GetCurrentDirectory().ToString());
+            _path = _path.Append(@"\Databases");
             string datasource = $"{playerCount}-player-database.db";
-            conn = new SQLiteConnection("Data Source=" + datasource + ";Version=3;New=True;Compress=True;journal mode=Off;Synchronous=Off");
+            
+            conn = new SQLiteConnection("Data Source=" + _path + "\\" + datasource + ";Version=3;New=True;Compress=True;journal mode=Off;Synchronous=Off");
             conn.Flags = SQLiteConnectionFlags.BindUInt32AsInt64;
 
             // Open the connection:
@@ -115,7 +117,6 @@ namespace PokerConsoleApp
 
             return command.ExecuteNonQuery();
         }
-
 
         public static List<long> Generate3CardUniquePrimes(Dictionary<Card, long> dict)
         {
@@ -193,6 +194,79 @@ namespace PokerConsoleApp
             sqlite_cmd.CommandText = create_sql;
             sqlite_cmd.ExecuteNonQuery();
 
+        }
+
+        public static bool IsDatabaseInitialized(int playerCount)
+        {
+            var conn = CreateConnection(playerCount);
+            bool check1 = false;
+            bool check2 = false;
+            bool check3 = false;
+
+            using (var tran = conn.BeginTransaction())
+            {
+                var cmd = conn.CreateCommand(); 
+                cmd.CommandText = "SELECT COUNT(*) FROM sqlite_master " +
+                    "WHERE type = 'table'" +
+                    "ORDER BY 1";
+                object result = cmd.ExecuteScalar();
+                bool check0 = (Convert.ToInt32(result) == 1326);
+                
+                if (check0.Equals(false))
+                {
+                    return false;
+                }
+
+                cmd.Dispose();
+                var cmd2 = conn.CreateCommand();
+                cmd2.CommandText = "SELECT COUNT(*) FROM Tbl10";
+                var dr = cmd2.ExecuteReader();
+                dr.Read();
+                check1 = (dr.GetInt64(0) == 22100);
+
+                cmd2.Dispose();
+                var cmd3 = conn.CreateCommand();
+                cmd3.CommandText = "SELECT COUNT(*) FROM Tbl55687";
+                dr = cmd3.ExecuteReader();
+                dr.Read();
+                check2 = (dr.GetInt64(0) == 22100);
+
+                cmd3.Dispose();
+                var cmd4 = conn.CreateCommand();
+                cmd4.CommandText = "SELECT * FROM Tbl55687 WHERE FlopUniquePrime == 12752323";
+                dr = cmd4.ExecuteReader();
+                dr.Read();
+                long _wins = dr.GetInt64(1);
+                long _losses = dr.GetInt64(2);
+                check3 = (_wins >= 0 && _losses >= 0);
+
+                tran.Commit();
+            }
+            conn.Dispose();
+            return (check1 == true && check2 == true && check3 == true) ? true : false;
+        }
+
+
+
+        public static void CreateDatabaseDirectoryIfNotExists()
+        {
+            StringBuilder _path = new StringBuilder(Directory.GetCurrentDirectory().ToString());
+            _path = _path.Append(@"\Databases");
+
+            FileInfo[] _files = Directory.CreateDirectory(_path.ToString()).GetFiles();
+            _files.OrderByDescending(_files => _files.Name);
+
+            if (_files.Length < 1)
+            {
+                Console.WriteLine($"Databases will be saved to [{_path}]. Directory is currently empty.");
+                return;
+            }
+
+            Console.WriteLine($"{_files.Length} files in [{_path}]");
+            for (int i = 0; i < _files.Length; i++)
+            {
+                Console.WriteLine($"\t\t+{_files[i].Name} , {_files[i].Length / 1024 / 1024} megabytes");
+            }
         }
 
     }

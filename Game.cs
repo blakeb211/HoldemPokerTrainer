@@ -4,7 +4,7 @@ namespace PokerConsoleApp
 {
     internal class Game
     {
-        internal static int Play_Game()
+        internal static int PlayGame()
         {
             throw new NotImplementedException();
         }
