@@ -1,4 +1,7 @@
-L;p hole card combo to its own table for faster lookups
+
+Use ConfigurationManager to create an app.config to hold database connection string and other strings the program uses.
+
+hole card combo to its own table for faster lookups
 
 		Compress data by encoding it as integers (1 - 52 for each card and 1 or 0 for true or false)
 

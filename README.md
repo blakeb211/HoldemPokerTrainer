@@ -2,6 +2,14 @@
 Train yourself for live Texas Holdem games by seeing the probability of winning change as more cards are dealt.
 
 PROJECT STATUS:
+Oct 24 2019.	Added code to create a local 'databases' directory and check to see if they are already initialized before
+				rebuilding it. There is a database created for each number of players (2-8) in its own file. Each file has 1326 
+				tables, one for each possible set of pocket cards. Each of those tables has 22100 rows, one for each unique 
+				3-card flop. Each row records the Wins and Losses that hand has has simulated, which will make statistics easier
+				to calculate. Reading from the database should be much faster now but that hasn't been shown yet.
+
+				+ each database is 347 MB but they can be bzipped to about 65 MB for transferring over internet.
+
 Oct 18 2019.	Implementing new database code. One database table per 2-card holecard pair. Each record will have a unique prime for the 3-card flop
 				and a count of wins and losses. Check the db before adding a record so that duplicate rows are note added like last time, which
 				made the db unnecessarily big and disorganized.
