@@ -12,33 +12,36 @@ namespace PokerConsoleApp
         private static BlockingCollection<GameRecord> collection = new BlockingCollection<GameRecord>();
         private static SQLiteConnection conn;
         private static SQLiteCommand command;
-        private static SQLiteTransaction transaction;
         private static int recordsTotal;
         private static int recordsWritten = 0;
-        private static int gamesPerTransaction = 2000;
+        private static int gamesPerTransaction = 10_000;
         private static int recordsAdded = 0;
+        // producers and consumers
+        private static ThreadStart tProd = new ThreadStart(RecordProducer);
+        private static ThreadStart tCons = new ThreadStart(RecordConsumer);
+        private static Thread producerThread1 = new Thread(tProd);
+        private static Thread producerThread2 = new Thread(tProd);
+        private static Thread consumerThread = new Thread(tCons);
 
         public static int SimulateGames(int playerCount, int targetGameCount)
         {
             recordsTotal = targetGameCount;
-            // Database writing setup code
-            SqliteMethods.InitDatabase(playerCount);
             conn = SqliteMethods.CreateConnection(playerCount);
-
-            // CALL PRODUCERS AND CONSUMER HERE
-            ThreadStart tProd = new ThreadStart(RecordProducer);
-            ThreadStart tCons = new ThreadStart(RecordConsumer);
-            Thread producerThread = new Thread(tProd);
-            Thread producerThread2 = new Thread(tProd);
-            Thread producerThread3 = new Thread(tProd);
-            Thread consumerThread = new Thread(tCons);
 
             Timing timer = new Timing();
             timer.StartTime();
-            producerThread.Start();
+
+            Console.WriteLine("Starting producer and consumer threads...");
+            // play with thread priorities to get optimal balance of adding and writing records
+            producerThread1.Priority = ThreadPriority.Lowest;
+            producerThread2.Priority = ThreadPriority.Lowest;
+            consumerThread.Priority = ThreadPriority.Highest;
+
+            producerThread1.Start();
+            consumerThread.Start();
             producerThread2.Start();
 
-            consumerThread.Start();
+
             while (true)
             {
                 if (consumerThread.ThreadState == ThreadState.Stopped)
@@ -59,20 +62,19 @@ namespace PokerConsoleApp
         {
             // Record producer simulates a game and adds the result to a BlockingCollection
             int _dealCount = 0;
+            Board b = new Board(Program.PlayerCount);
 
             do
             {
-                Board b = new Board(Program.PlayerCount);
-
                 // reset deck every 2 deals
                 if ((_dealCount + 1) % 2 == 0)
                 {
-                    b.Deck = Board.BuildDeck();
+                    b = new Board(Program.PlayerCount);
                     _dealCount = 0;
                 }
 
                 b.DealGame();
-
+                _dealCount++;
                 List<Hand> bestHands = new List<Hand> { };
                 List<Hand> _allPossibleHands = new List<Hand>(21);
                 List<int> _winningHandIndices;
@@ -105,45 +107,56 @@ namespace PokerConsoleApp
 
                     while (true)
                     {
-                        if (collection.TryAdd(record, 2) == true)
+                        if (collection.TryAdd(record, 3) == true)
                         {
                             recordsAdded++;
                             break;
                         }
                     }
                 }
-            } while (recordsWritten < recordsTotal);
+
+
+            } while (recordsAdded < recordsTotal);
+            Console.WriteLine("Producer thread ended");
         }
 
         public static void RecordConsumer()
         {
             // Record consumer writes records to database
             command = conn.CreateCommand();
-            transaction = conn.BeginTransaction();
+            command.Transaction = conn.BeginTransaction();
             do
             {
                 // Execute Insert command on database, one row per player
                 GameRecord record;
                 while (true)
                 {
-                    if (collection.TryTake(out record, 1))
+                    if (collection.TryTake(out record, 3))
                         break;
                 }
                 SqliteMethods.InsertResultItem(record, command);
                 recordsWritten++;
                 if (recordsWritten % gamesPerTransaction == 0)
                 {
-                    transaction.Commit();
-                    transaction = conn.BeginTransaction();
+                    command.Transaction.Commit();
+                    command = conn.CreateCommand();
+                    command.Transaction = conn.BeginTransaction();
+                    Console.WriteLine($"Records Added: {String.Format("{0:n0}", recordsAdded)}  " +
+                        $"Records Written: {String.Format("{0:n0}", recordsWritten)} Difference: {String.Format("{0:n0}", recordsAdded - recordsWritten)}");
+
                 }
             } while (recordsWritten < recordsTotal);
             // Inevitably we broke out of loop with a partial transaction. Flush it to disk.
-            transaction.Commit();
-
+            if (command.Transaction != null)
+            {
+                command.Transaction.Commit();
+            }
             // Clean up
-            command.Dispose();
-            transaction.Dispose();
-            conn.Dispose();
+            if (command != null)
+            {
+                command.Dispose();
+            }
+            Console.WriteLine("Record writing thread ended.");
         }
 
         public struct GameRecord

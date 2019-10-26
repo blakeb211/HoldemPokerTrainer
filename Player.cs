@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace PokerConsoleApp
 {
@@ -11,12 +10,11 @@ namespace PokerConsoleApp
 
         public Hand BestHand { get; set; }
 
-        public Player(List<Card> holeCards)
+        public Player()
         {
-            Debug.Assert(holeCards.Count == 2);
             this.IsWinner = false;
             this.Hole = new List<Card>(2);
-            this.Hole = holeCards;
+
         }
 
         public override string ToString()

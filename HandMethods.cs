@@ -9,7 +9,7 @@ namespace PokerConsoleApp
         public static void Build21Hands(List<Card> hole, List<Card> board, ref List<Hand> retList)
         {
             // validate arguments
-            if (hole == null || board == null || hole.Count != 2 || board.Count != 5)
+            if (retList == null || hole == null || board == null || hole.Count != 2 || board.Count != 5)
             {
                 throw new ArgumentException($"{nameof(hole)} or {nameof(board)} were bad arguments to {nameof(Build21Hands)}");
             }
@@ -18,36 +18,36 @@ namespace PokerConsoleApp
             // combos of hole, flop, turn, and river cards
 
             // hands with both hole cards and 3 of the board cards
-            retList[0] = new Hand(new List<Card> { hole[0], hole[1], board[0], board[1], board[2] });
-            retList[1] = new Hand(new List<Card> { hole[0], hole[1], board[0], board[2], board[3] });
-            retList[2] = new Hand(new List<Card> { hole[0], hole[1], board[0], board[2], board[4] });
+            retList.Add(new Hand(new List<Card> { hole[0], hole[1], board[0], board[1], board[2] }));
+            retList.Add(new Hand(new List<Card> { hole[0], hole[1], board[0], board[2], board[3] }));
+            retList.Add(new Hand(new List<Card> { hole[0], hole[1], board[0], board[2], board[4] }));
 
-            retList[3] = new Hand(new List<Card> { hole[0], hole[1], board[0], board[1], board[3] });
-            retList[4] = new Hand(new List<Card> { hole[0], hole[1], board[0], board[1], board[4] });
-            retList[5] = new Hand(new List<Card> { hole[0], hole[1], board[0], board[3], board[4] });
+            retList.Add(new Hand(new List<Card> { hole[0], hole[1], board[0], board[1], board[3] }));
+            retList.Add(new Hand(new List<Card> { hole[0], hole[1], board[0], board[1], board[4] }));
+            retList.Add(new Hand(new List<Card> { hole[0], hole[1], board[0], board[3], board[4] }));
 
-            retList[6] = new Hand(new List<Card> { hole[0], hole[1], board[1], board[2], board[3] });
-            retList[7] = new Hand(new List<Card> { hole[0], hole[1], board[1], board[2], board[4] });
-            retList[8] = new Hand(new List<Card> { hole[0], hole[1], board[1], board[3], board[4] });
+            retList.Add(new Hand(new List<Card> { hole[0], hole[1], board[1], board[2], board[3] }));
+            retList.Add(new Hand(new List<Card> { hole[0], hole[1], board[1], board[2], board[4] }));
+            retList.Add(new Hand(new List<Card> { hole[0], hole[1], board[1], board[3], board[4] }));
 
-            retList[9] = new Hand(new List<Card> { hole[0], hole[1], board[2], board[3], board[4] });
+            retList.Add(new Hand(new List<Card> { hole[0], hole[1], board[2], board[3], board[4] }));
 
             // hands with hole card #1 and 4 board cards
-            retList[10] = new Hand(new List<Card> { hole[0], board[0], board[1], board[2], board[3] });
-            retList[11] = new Hand(new List<Card> { hole[0], board[0], board[1], board[2], board[4] });
-            retList[12] = new Hand(new List<Card> { hole[0], board[0], board[1], board[3], board[4] });
+            retList.Add(new Hand(new List<Card> { hole[0], board[0], board[1], board[2], board[3] }));
+            retList.Add(new Hand(new List<Card> { hole[0], board[0], board[1], board[2], board[4] }));
+            retList.Add(new Hand(new List<Card> { hole[0], board[0], board[1], board[3], board[4] }));
 
-            retList[13] = new Hand(new List<Card> { hole[0], board[0], board[2], board[3], board[4] });
-            retList[14] = new Hand(new List<Card> { hole[0], board[1], board[2], board[3], board[4] });
+            retList.Add(new Hand(new List<Card> { hole[0], board[0], board[2], board[3], board[4] }));
+            retList.Add(new Hand(new List<Card> { hole[0], board[1], board[2], board[3], board[4] }));
             // hands with hole card #2 and 4 board cards
-            retList[15] = new Hand(new List<Card> { hole[1], board[0], board[1], board[2], board[3] });
-            retList[16] = new Hand(new List<Card> { hole[1], board[0], board[1], board[2], board[4] });
-            retList[17] = new Hand(new List<Card> { hole[1], board[0], board[1], board[3], board[4] });
+            retList.Add(new Hand(new List<Card> { hole[1], board[0], board[1], board[2], board[3] }));
+            retList.Add(new Hand(new List<Card> { hole[1], board[0], board[1], board[2], board[4] }));
+            retList.Add(new Hand(new List<Card> { hole[1], board[0], board[1], board[3], board[4] }));
 
-            retList[18] = new Hand(new List<Card> { hole[1], board[0], board[2], board[3], board[4] });
-            retList[19] = new Hand(new List<Card> { hole[1], board[1], board[2], board[3], board[4] });
+            retList.Add(new Hand(new List<Card> { hole[1], board[0], board[2], board[3], board[4] }));
+            retList.Add(new Hand(new List<Card> { hole[1], board[1], board[2], board[3], board[4] }));
             // hand made up of all the board cards
-            retList[20] = new Hand(new List<Card> { board[0], board[1], board[2], board[3], board[4] });
+            retList.Add(new Hand(new List<Card> { board[0], board[1], board[2], board[3], board[4] }));
         }
 
         public static List<int> FindBestHand(List<Hand> inputHands)
@@ -70,13 +70,6 @@ namespace PokerConsoleApp
             {
                 for (int j = i + 1; j < lst_hand_copy.Length; j++)
                 {
-                    // assign ranks if they need us to
-                    if (lst_hand_copy[i].Rank == default)
-                        lst_hand_copy[i].AssignRankAndName();
-
-                    if (lst_hand_copy[j].Rank == default)
-                        lst_hand_copy[j].AssignRankAndName();
-
                     // Continue if i OR j are one of losing indices
                     if (lst_hand_copy[i] == null)
                     {
@@ -86,6 +79,13 @@ namespace PokerConsoleApp
                     {
                         continue;
                     }
+
+                    // assign ranks if they need us to
+                    if (lst_hand_copy[i].Rank == default)
+                        lst_hand_copy[i].AssignRankAndName();
+
+                    if (lst_hand_copy[j].Rank == default)
+                        lst_hand_copy[j].AssignRankAndName();
 
                     int _compareResult = lst_hand_copy[i].CompareTo(lst_hand_copy[j]);
                     if (_compareResult == -1)

@@ -1,12 +1,23 @@
 
 +Use ConfigurationManager to create an app.config to hold database connection string and other strings the program uses.
-+Add a Unique Constraint on Column 1 and an index
-+Wont have to drop the index once it is created because updating for each game will not affect the index.
-+Get the test suite working and use the Hand(string x) constructor
-+Make one line functions into lambda expressions for readability
-+get simulator working with the new database setup
 
-hole card combo to its own table for faster lookups
++Get the test suite working and use the Hand(string x) constructor
++get simulator working with the new database setup
++CheckDatabaseInit status does not detect partially created databases
++Make one line functions into lambda expressions for readability
+DONE +Add a Unique Index on Column 1 
+
+NEW TIMINGS
+
+Database Initialization Timing
+- 1.32 minutes to build tables (no indexes)
+- 1.52 minutes to build tables (with index on each table) -- size is now 674 MB (293 MB zipped)
+- 800,000 records in 0.7625 minutes
+- 1,200,000 in 1.044 minutes ~= 1,000,000 records per minute
+- 1,200,000 in 0.639 minutes ~= 1,870,000 records per minute (played with thread priorities)
+- 4,000,000 in 1.27 minutes ~= 3,000,000 records per minute 
+
+hole card combo to its own table and use prime number dictionary for faster lookups
 		Compress data by encoding it as integers (1 - 52 for each card and 1 or 0 for true or false)
 		Speed up hand evaluator - 2598960 unique 5 cards -- use dictionaries ==> (now PokerLib.dll)
 
@@ -29,7 +40,7 @@ DROP INDEX BEFORE SIMULATING GAMES
 
 200,004 = C2 * 3.5 minutes
 C2 = 57,142 records per minute
-hg9i
+
 200,004 = C1 * 8728 kilobytes
 C1 = 22.91 records per kilobyte
 

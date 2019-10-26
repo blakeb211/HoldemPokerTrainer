@@ -9,21 +9,15 @@ namespace PokerConsoleApp
 
         static void Main()
         {
-            SqliteMethods.CreateDatabaseDirectoryIfNotExists();
-            if (SqliteMethods.IsDatabaseInitialized(PlayerCount))
-            {
-                Console.WriteLine($"Database for {PlayerCount} players is initialized and passed integrity checks.");
-            }
-            else
-            {
-                 SqliteMethods.InitDatabase(PlayerCount);
-            }
+            SqliteMethods.InitDatabaseIfNeeded(PlayerCount);
+            DisplayMenu();
         }
 
         static Program()
         {
             PlayerCount = 4;
         }
+
         public static void DebugSimulation()
         {
             var watch = new System.Diagnostics.Stopwatch();
@@ -32,8 +26,8 @@ namespace PokerConsoleApp
             Simulation.SimulateGames(PlayerCount, games_to_simulate);
             watch.Stop();
             Console.WriteLine($"Total Execution Time: {watch.ElapsedMilliseconds / 60000.0 } min");
-
         }
+
         public static void DisplayMenu()
         {
             bool _exitFlag = false;

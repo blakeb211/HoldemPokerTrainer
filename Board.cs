@@ -12,8 +12,6 @@ namespace PokerConsoleApp
 
         public List<Card> Deck { get; set; }
 
-        public int PlayerCount { get; private set; }
-
         public Board(int playerCount)
         {
             Cards = new List<Card>(5);
@@ -22,18 +20,21 @@ namespace PokerConsoleApp
 
             for (int i = 0; i < playerCount; i++)
             {
-                // initialize player
+                Players.Add(new Player());
             }
+            this.Deck = GetFreshDeck();
+            this.Deck = UtilityMethods.ShuffleList(this.Deck);
         }
-        public static List<Card> BuildDeck()
+        public static List<Card> GetFreshDeck()
         {
             List<Card> deck = new List<Card>(52);
             foreach (var cr in Enum.GetValues(typeof(RankType)))
-
+            {
                 foreach (var cs in Enum.GetValues(typeof(SuitType)))
                 {
                     deck.Add(new Card((RankType)cr, (SuitType)cs));
                 }
+            }
             return deck;
         }
 
@@ -44,20 +45,16 @@ namespace PokerConsoleApp
             {
                 for (int hole_card_index = 0; hole_card_index < 2; hole_card_index++)
                 {
-                    this.Players[player_index].Hole[hole_card_index] = Card.DealCard(Deck);
+                    this.Players[player_index].Hole.Add(Card.DealCard(Deck));
                 }
             }
 
-            // deal flop cards
-            for (int flop_card_index = 0; flop_card_index < 3; flop_card_index++)
+            // deal board cards (flop1 flop2 flop3 turn river)
+            for (int _boardCardIndex = 0; _boardCardIndex < 5; _boardCardIndex++)
             {
-                this.Cards[flop_card_index] = Card.DealCard(Deck);
+                this.Cards.Add(Card.DealCard(Deck));
             }
 
-            // deal turn card
-            this.Cards[3] = Card.DealCard(Deck);
-            // deal river card
-            this.Cards[4] = Card.DealCard(Deck);
         }
         public override string ToString()
         {

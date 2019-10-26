@@ -74,14 +74,14 @@ namespace PokerConsoleApp
             }
 
         }
-        public Hand()
-        {
-            Cards = new List<Card>(5);
-        }
+
         public Hand(List<Card> cards)
         {
             this.Cards = cards;
+            this.Rank = default;
+            this.Name = default;
         }
+
         public void AssignRankAndName()
         {
             // get primeId used for hand rank lookup
@@ -92,8 +92,6 @@ namespace PokerConsoleApp
                 _temp *= Cards[i].GetPrimeIdForRankingHand();
             }
             _primeId = _temp;
-            Console.WriteLine("Prime ID is : {0}", _primeId);
-
             // look up and assign hand rank
             if (CheckFlush())
             {
