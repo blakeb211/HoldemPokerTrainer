@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace PokerConsoleApp
 {
@@ -26,6 +27,8 @@ namespace PokerConsoleApp
 
         public static Card DealCard(List<Card> inputCards)
         {
+            if (inputCards == null || inputCards.Count < 1)
+                throw new ArgumentException($"{nameof(inputCards)} passed to {nameof(DealCard)}");
             Card temp = inputCards[0];
             inputCards.RemoveAt(0);
             return temp;

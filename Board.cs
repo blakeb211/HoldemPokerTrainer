@@ -1,6 +1,7 @@
 ﻿using ConsoleTables;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace PokerConsoleApp
 {
@@ -23,6 +24,7 @@ namespace PokerConsoleApp
                 Players.Add(new Player());
             }
             this.Deck = GetFreshDeck();
+            Debug.Assert(this.Deck.Count == 52);
             this.Deck = UtilityMethods.ShuffleList(this.Deck);
         }
         public static List<Card> GetFreshDeck()
@@ -47,8 +49,9 @@ namespace PokerConsoleApp
                 {
                     this.Players[player_index].Hole.Add(Card.DealCard(Deck));
                 }
+                Debug.Assert(this.Players[player_index].Hole.Count == 2);
             }
-
+            
             // deal board cards (flop1 flop2 flop3 turn river)
             for (int _boardCardIndex = 0; _boardCardIndex < 5; _boardCardIndex++)
             {
