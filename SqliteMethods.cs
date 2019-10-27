@@ -87,6 +87,10 @@ namespace PokerConsoleApp
             {
                 Console.WriteLine($"{nameof(BuildTables)} method -- Generating table names...");
 
+
+                // CAN SIMPLIFY TO BE A SINGLE LOOP -- CURRENTLY CARDS IN tableNums are 
+                // duplicated in flopPrimes, resulting in table entries that will never 
+                // occur during the simulation
                 List<long> tableNums = Generate2CardUniquePrimes(Card.CardUniquePrimeDict);
                 SQLiteConnection conn = CreateConnection(playerCount);
                 List<long> flopPrimes = Generate3CardUniquePrimes(Card.CardUniquePrimeDict);
@@ -94,6 +98,7 @@ namespace PokerConsoleApp
                 int _IndexNameSubscript = 0;
                 // zero out Wins and Losses in each row
                 Console.WriteLine($"{nameof(BuildTables)} method -- Creating tables and zeroing the Win and Loss counts...");
+
 
                 using (SQLiteCommand comm = new SQLiteCommand(conn))
                 {

@@ -12,10 +12,15 @@ namespace PokerConsoleApp
         private static BlockingCollection<GameRecord> collection = new BlockingCollection<GameRecord>();
         private static SQLiteConnection conn;
         private static SQLiteCommand command;
+        // total games to be simulated (from user input)
         private static int recordsTotal;
-        private static int recordsWritten = 0;
-        private static int gamesPerTransaction = 10_000;
+        // counter for games that have been simulated by the RecordProducer threads
         private static int recordsAdded = 0;
+        // counter for games that have been inserted into database by RecordConsumer threads
+        private static int recordsWritten = 0;
+        // when recordsWritten % gamesPerTransaction == 0, commit the sqlite transaction and start a new one
+        private static int gamesPerTransaction = 10_000;
+
         // producers and consumers
         private static ThreadStart tProd = new ThreadStart(RecordProducer);
         private static ThreadStart tCons = new ThreadStart(RecordConsumer);
@@ -25,14 +30,18 @@ namespace PokerConsoleApp
 
         public static int SimulateGames(int playerCount, int targetGameCount)
         {
-            recordsTotal = targetGameCount;
+            // total games to be simulated (from user input)
+            int recordsTotal = targetGameCount;
+
+            // open connection to the database
             conn = SqliteMethods.CreateConnection(playerCount);
 
             Timing timer = new Timing();
             timer.StartTime();
 
+            // play with thread priorities to get optimal balance of adding and writing GameRecords
+            // on your system
             Console.WriteLine("Starting producer and consumer threads...");
-            // play with thread priorities to get optimal balance of adding and writing records
             producerThread1.Priority = ThreadPriority.Lowest;
             producerThread2.Priority = ThreadPriority.Lowest;
             consumerThread.Priority = ThreadPriority.Highest;
@@ -53,7 +62,6 @@ namespace PokerConsoleApp
             }
 
             Console.WriteLine($"Runtime duration: {timer.Result().TotalMinutes} minutes");
-
             conn.Dispose();
             return 0;
         }
