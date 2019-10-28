@@ -27,6 +27,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="PokerTests\PokerTests.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="ConsoleTables" Version="2.3.0" />
     <PackageReference Include="EasyConsoleStd" Version="2.0.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.6">
