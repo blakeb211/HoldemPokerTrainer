@@ -51,6 +51,7 @@ namespace PokerConsoleApp
             producerThread2.Start();
 
 
+
             while (true)
             {
                 if (consumerThread.ThreadState == ThreadState.Stopped)

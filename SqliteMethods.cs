@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -163,6 +164,49 @@ namespace PokerConsoleApp
             {
                 BuildTables(playerCount);
             }
+        }
+
+        internal static int CullEmptyRowsFromDatabase(int playerCount)
+        {
+            int recordsRemoved = 0;
+            List<long> Integer2Prime = new List<long> { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67,
+                                                            71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139,
+                                                            149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223,
+                                                            227, 229, 233, 239 };
+            SQLiteConnection conn = CreateConnection(playerCount);
+            for (int a = 0; a < 51; a++)
+            {
+                for (int b = a + 1; b < 52; b++)
+                {
+                    Debug.Assert(a != b);
+                    long tableid = Integer2Prime[a] * Integer2Prime[b];
+                    string cmdStr = $"SELECT * FROM Tbl{tableid};";
+                    using (SQLiteCommand cmd = new SQLiteCommand(cmdStr, conn))
+                    {
+                        using (SQLiteDataReader dr = cmd.ExecuteReader())
+                        {
+                            while (dr.Read())
+                            {
+                                long _win = dr.GetInt64(1);
+                                long _loss = dr.GetInt64(2);
+                                long _flop = dr.GetInt64(0);
+
+                                if (_win == 0 && _loss == 0)
+                                {
+                                    Console.WriteLine($"deleting from table {tableid}, row {_flop}");
+                                    string delString = $"DELETE FROM Tbl{tableid} WHERE Flop = {_flop};";
+                                    SQLiteCommand delCmd = new SQLiteCommand(delString, conn);
+                                    delCmd.ExecuteNonQuery();
+                                    recordsRemoved++;
+                                    delCmd.Dispose();
+                                }
+                            }
+                        }
+                    } // end of cmd loop
+                }
+            }
+            conn.Dispose();
+            return recordsRemoved;
         }
 
         public static SQLiteConnection CreateConnection(int playerCount)

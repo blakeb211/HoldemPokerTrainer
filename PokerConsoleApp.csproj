@@ -21,13 +21,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="desktop.ini" />
-    <None Remove="poker-hand-rankings.pdf" />
-    <None Remove="Report20190817-1820_performance report on simulating games.vsp" />
+    <Compile Remove="PokerTests\**" />
+    <EmbeddedResource Remove="PokerTests\**" />
+    <None Remove="PokerTests\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="PokerTests\PokerTests.csproj" />
+    <None Remove="desktop.ini" />
+    <None Remove="poker-hand-rankings.pdf" />
+    <None Remove="Report20190817-1820_performance report on simulating games.vsp" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,6 +40,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="System.Data.SQLite" Version="1.0.111" />
+    <PackageReference Include="System.Reflection" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>

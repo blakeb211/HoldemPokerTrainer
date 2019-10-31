@@ -170,7 +170,7 @@ namespace PokerConsoleApp
             //      0 This instance occurs in the same position in the sort order.
             //      1 This instance follows other in the sort order.
             //
-            if (other.Equals(null))
+            if (other == null)
                 throw new ArgumentNullException($"{nameof(other)} passed to CompareTo and is null");
 
             int retVal = 0;

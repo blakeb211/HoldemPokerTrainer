@@ -1,11 +1,11 @@
 
 +Use ConfigurationManager to create an app.config to hold database connection string and other strings the program uses.
-
-+Get the test suite working and use the Hand(string x) constructor
++Remove impossible-to-obtain flop combos from tables and fix init code to not include them
 +Get preflop and postflop statistics working
-DONE +get simulator working with the new database setup
 +CheckDatabaseInit status does not detect partially created databases
 +Make one line functions into lambda expressions for readability
+DONE +get simulator working with the new database setup
+DONE +Get the test suite working and use the Hand(string x) constructor
 DONE +Add a Unique Index on Column 1 
 
 NEW TIMINGS

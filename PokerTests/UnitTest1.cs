@@ -89,7 +89,7 @@ namespace PokerTests
             h2.AssignRankAndName();
             Assert.AreEqual(1, h1.CompareTo(h2));
         }
-        [TestMethod]                                                                                              
+        [TestMethod]
         public void TwoPair1()
         {
             Hand h1 = new Hand("3c-3d-4h-4c-5h");

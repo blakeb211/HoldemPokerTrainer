@@ -9,9 +9,12 @@ namespace PokerConsoleApp
 
         static void Main()
         {
-            SqliteMethods.InitDatabaseIfNeeded(PlayerCount);
-            DisplayMenu();
+            //SqliteMethods.InitDatabaseIfNeeded(PlayerCount);
+            //DisplayMenu();
+            Console.WriteLine($"Records removed: {SqliteMethods.CullEmptyRowsFromDatabase(4)}");
+            Console.ReadLine();
         }
+
 
         static Program()
         {

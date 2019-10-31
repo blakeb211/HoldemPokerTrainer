@@ -51,7 +51,7 @@ namespace PokerConsoleApp
                 }
                 Debug.Assert(this.Players[player_index].Hole.Count == 2);
             }
-            
+
             // deal board cards (flop1 flop2 flop3 turn river)
             for (int _boardCardIndex = 0; _boardCardIndex < 5; _boardCardIndex++)
             {
