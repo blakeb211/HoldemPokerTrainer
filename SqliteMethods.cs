@@ -38,10 +38,8 @@ namespace PokerConsoleApp
                 // this function needs improved to detect partial databases
 
                 var conn = CreateConnection(playerCount);
+                bool check0 = false;
                 bool check1 = false;
-                bool check2 = false;
-                bool check3 = false;
-
                 using (var tran = conn.BeginTransaction())
                 {
                     var cmd = conn.CreateCommand();
@@ -49,45 +47,73 @@ namespace PokerConsoleApp
                         "WHERE type = 'table'" +
                         "ORDER BY 1";
                     object result = cmd.ExecuteScalar();
-                    bool check0 = (Convert.ToInt32(result) == 1326);
-
-                    if (check0.Equals(false))
-                    {
-                        return false;
-                    }
+                    check0 = (Convert.ToInt32(result) == 1326);
 
                     cmd.Dispose();
                     var cmd2 = conn.CreateCommand();
                     cmd2.CommandText = "SELECT COUNT(*) FROM Tbl10";
                     var dr = cmd2.ExecuteReader();
                     dr.Read();
-                    check1 = (dr.GetInt64(0) == 22100);
-
-                    cmd2.Dispose();
-                    var cmd3 = conn.CreateCommand();
-                    cmd3.CommandText = "SELECT COUNT(*) FROM Tbl55687";
-                    dr = cmd3.ExecuteReader();
-                    dr.Read();
-                    check2 = (dr.GetInt64(0) == 22100);
-
-                    cmd3.Dispose();
-                    var cmd4 = conn.CreateCommand();
-                    cmd4.CommandText = "SELECT * FROM Tbl55687 WHERE Flop == 12752323";
-                    dr = cmd4.ExecuteReader();
-                    dr.Read();
-                    long _wins = dr.GetInt64(1);
-                    long _losses = dr.GetInt64(2);
-                    check3 = (_wins >= 0 && _losses >= 0);
+                    check1 = (dr.GetInt64(0) == 19600);
 
                     tran.Commit();
                 }
                 conn.Dispose();
-                return (check1 == true && check2 == true && check3 == true) ? true : false;
+                return (check0 == true && check1 == true) ? true : false;
             }
+
+            void BuildTables2(int playerCount)
+            {
+                //each table has a different set of flops available
+                Console.WriteLine($"{nameof(BuildTables)} method -- Creating tables and zeroing the Win and Loss counts...");
+
+                List<long> Integer2Prime = new List<long> { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41,
+                43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101,
+                103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167,
+                173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239 };
+
+                SQLiteConnection conn = CreateConnection(playerCount);
+                int _IndexNameSubscript = 0;
+
+                long tableid = 0;
+                long flopid = 0;
+
+                for (int a = 0; a < 51; a++)
+                    for (int b = a + 1; b < 52; b++)
+                        using (SQLiteCommand comm = new SQLiteCommand(conn))
+                        {
+                            if (b == a) continue;
+                            tableid = Integer2Prime[a] * Integer2Prime[b];
+                            string tableStr = $"Tbl{tableid}";
+                            CreateTableIfNotExists(tableStr, conn);
+
+                            using (SQLiteTransaction tran = conn.BeginTransaction())
+                            {
+                                for (int c = 0; c < 50; c++)
+                                    for (int d = c + 1; d < 51; d++)
+                                        for (int e = d + 1; e < 52; e++)
+                                        {
+                                            comm.Transaction = tran;
+                                            if (a != b && a != c && a != d && a != e && b != c && b != d && b != e && c != d && c != e && d != e)
+                                            {
+                                                // Zero flop record
+                                                flopid = Integer2Prime[c] * Integer2Prime[d] * Integer2Prime[e];
+                                                ZeroRecord(tableStr, flopid, comm);
+                                            }
+                                        }
+                                CreateFreshIndex(_IndexNameSubscript, tableStr, comm);
+                                _IndexNameSubscript++;
+                                comm.Transaction.Commit();
+                            };
+                        };
+                conn.Dispose();
+                return;
+            }
+
+
             void BuildTables(int playerCount)
             {
                 Console.WriteLine($"{nameof(BuildTables)} method -- Generating table names...");
-
 
                 // CAN SIMPLIFY TO BE A SINGLE LOOP -- CURRENTLY CARDS IN tableNums are 
                 // duplicated in flopPrimes, resulting in table entries that will never 
@@ -99,7 +125,6 @@ namespace PokerConsoleApp
                 int _IndexNameSubscript = 0;
                 // zero out Wins and Losses in each row
                 Console.WriteLine($"{nameof(BuildTables)} method -- Creating tables and zeroing the Win and Loss counts...");
-
 
                 using (SQLiteCommand comm = new SQLiteCommand(conn))
                 {
@@ -125,6 +150,7 @@ namespace PokerConsoleApp
 
                 conn.Dispose();
             }
+
             void CreateTableIfNotExists(string tableName, SQLiteConnection conn)
             {
                 SQLiteCommand command;
@@ -145,6 +171,7 @@ namespace PokerConsoleApp
 
                 return cmd.ExecuteNonQuery();
             }
+
             void CreateFreshIndex(int i, string tableString, SQLiteCommand cmd)
             {
                 /**************************************************************
@@ -162,10 +189,33 @@ namespace PokerConsoleApp
             }
             else
             {
-                BuildTables(playerCount);
+                BuildTables2(playerCount);
             }
         }
 
+        internal static void ReindexTables(int playerCount)
+        {
+            List<long> Integer2Prime = new List<long> { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67,
+                                                            71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139,
+                                                            149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223,
+                                                            227, 229, 233, 239 };
+            SQLiteConnection conn = CreateConnection(playerCount);
+            for (int a = 0; a < 51; a++)
+            {
+                for (int b = a + 1; b < 52; b++)
+                {
+                    long tableid = Integer2Prime[a] * Integer2Prime[b];
+                    string cmdStr = $"REINDEX Tbl{tableid};";
+                    Console.WriteLine($"Reindex Tbl{tableid}");
+                    using (SQLiteCommand cmd = new SQLiteCommand(cmdStr, conn))
+                    {
+                        cmd.CommandText = cmdStr;
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            conn.Close();
+        }
         internal static int CullEmptyRowsFromDatabase(int playerCount)
         {
             int recordsRemoved = 0;
@@ -229,6 +279,7 @@ namespace PokerConsoleApp
             {
                 Console.WriteLine("CreateConnection - Exception Msg: " + ex.ToString());
             }
+            Console.WriteLine($"Connection created to {datasource}");
             return conn;
         }
         public static int InsertResultItem(Simulation.GameRecord record, SQLiteCommand command)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading;
 
 namespace PokerConsoleApp
@@ -9,10 +10,11 @@ namespace PokerConsoleApp
 
         static void Main()
         {
-            //SqliteMethods.InitDatabaseIfNeeded(PlayerCount);
-            //DisplayMenu();
-            Console.WriteLine($"Records removed: {SqliteMethods.CullEmptyRowsFromDatabase(4)}");
+            Console.WriteLine(Directory.GetCurrentDirectory().ToString());
             Console.ReadLine();
+            SqliteMethods.InitDatabaseIfNeeded(PlayerCount);
+            DisplayMenu();
+
         }
 
 

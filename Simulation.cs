@@ -49,12 +49,14 @@ namespace PokerConsoleApp
             producerThread1.Start();
             consumerThread.Start();
             producerThread2.Start();
+            producerThread1.Priority = ThreadPriority.Lowest;
+            producerThread2.Priority = ThreadPriority.Lowest;
+            consumerThread.Priority = ThreadPriority.Highest;
 
-
-
+            Thread.Sleep(1000);
             while (true)
             {
-                if (consumerThread.ThreadState == ThreadState.Stopped)
+                if (consumerThread.ThreadState == ThreadState.Stopped && producerThread1.ThreadState == ThreadState.Stopped && producerThread2.ThreadState == ThreadState.Stopped)
                 {
                     timer.StopTime();
                     Thread.Sleep(1000);
