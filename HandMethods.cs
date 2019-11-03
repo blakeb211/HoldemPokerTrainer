@@ -88,12 +88,12 @@ namespace PokerConsoleApp
                         lst_hand_copy[j].AssignRankAndName();
 
                     int _compareResult = lst_hand_copy[i].CompareTo(lst_hand_copy[j]);
-                    if (_compareResult == -1)
+                    if (_compareResult == 1)
                     {
                         // i loses
                         lst_hand_copy[i] = null;
                     }
-                    else if (_compareResult == 1)
+                    else if (_compareResult == -1)
                     {
                         // j loses
                         lst_hand_copy[j] = null;

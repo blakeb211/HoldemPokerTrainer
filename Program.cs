@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
+using System.Collections.Generic;
 
 namespace PokerConsoleApp
 {
@@ -10,9 +11,8 @@ namespace PokerConsoleApp
 
         static void Main()
         {
-            Console.WriteLine($"Current Directory: \n\t\tDirectory.GetCurrentDirectory().ToString()");
+            Console.WriteLine($"Current Directory: \n\t\t{Directory.GetCurrentDirectory().ToString()}");
             Console.ReadLine();
-         
             DisplayMenu();
 
         }

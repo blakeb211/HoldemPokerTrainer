@@ -33,6 +33,7 @@ namespace PokerConsoleApp
                     Console.WriteLine($"\t\t+{_files[i].Name} , {_files[i].Length / 1024 / 1024} megabytes");
                 }
             }
+            
             bool IsDatabaseInitialized(int playerCount)
             {
                 // this function needs improved to detect partial databases
@@ -50,105 +51,63 @@ namespace PokerConsoleApp
                     check0 = (Convert.ToInt32(result) == 1326);
 
                     cmd.Dispose();
-                    var cmd2 = conn.CreateCommand();
-                    cmd2.CommandText = "SELECT COUNT(*) FROM Tbl10";
-                    var dr = cmd2.ExecuteReader();
-                    dr.Read();
-                    check1 = (dr.GetInt64(0) == 19600);
-
                     tran.Commit();
                 }
                 conn.Dispose();
-                return (check0 == true && check1 == true) ? true : false;
+                return (check0 == true) ? true : false;
             }
 
-            void BuildTables2(int playerCount)
+            Tuple<int,int> BuildTables(int playerCount)
             {
                 //each table has a different set of flops available
-                Console.WriteLine($"{nameof(BuildTables)} method -- Creating tables and zeroing the Win and Loss counts...");
-
-                List<long> Integer2Prime = new List<long> { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41,
-                43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101,
-                103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167,
-                173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239 };
-
                 SQLiteConnection conn = CreateConnection(playerCount);
-                int _IndexNameSubscript = 0;
+                List<long> Integer2Prime = new List<long> { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41,
+                43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139,
+                149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239 };
 
                 long tableid = 0;
                 long flopid = 0;
+                int tableCount = 0;
+                int rowCount = 0;
+
+                Tuple<int, int> tbs_rows = new Tuple<int, int>(0, 0);
 
                 for (int a = 0; a < 51; a++)
-                    for (int b = a + 1; b < 52; b++)
-                        using (SQLiteCommand comm = new SQLiteCommand(conn))
-                        {
-                            if (b == a) continue;
-                            tableid = Integer2Prime[a] * Integer2Prime[b];
-                            string tableStr = $"Tbl{tableid}";
-                            CreateTableIfNotExists(tableStr, conn);
-
-                            using (SQLiteTransaction tran = conn.BeginTransaction())
-                            {
-                                for (int c = 0; c < 50; c++)
-                                    for (int d = c + 1; d < 51; d++)
-                                        for (int e = d + 1; e < 52; e++)
-                                        {
-                                            comm.Transaction = tran;
-                                            if (a != b && a != c && a != d && a != e && b != c && b != d && b != e && c != d && c != e && d != e)
-                                            {
-                                                // Zero flop record
-                                                flopid = Integer2Prime[c] * Integer2Prime[d] * Integer2Prime[e];
-                                                ZeroRecord(tableStr, flopid, comm);
-                                            }
-                                        }
-                                CreateFreshIndex(_IndexNameSubscript, tableStr, comm);
-                                _IndexNameSubscript++;
-                                comm.Transaction.Commit();
-                            };
-                        };
-                conn.Dispose();
-                return;
-            }
-
-
-            void BuildTables(int playerCount)
-            {
-                Console.WriteLine($"{nameof(BuildTables)} method -- Generating table names...");
-
-                // CAN SIMPLIFY TO BE A SINGLE LOOP -- CURRENTLY CARDS IN tableNums are 
-                // duplicated in flopPrimes, resulting in table entries that will never 
-                // occur during the simulation
-                List<long> tableNums = Generate2CardUniquePrimes(Card.CardUniquePrimeDict);
-                SQLiteConnection conn = CreateConnection(playerCount);
-                List<long> flopPrimes = Generate3CardUniquePrimes(Card.CardUniquePrimeDict);
-
-                int _IndexNameSubscript = 0;
-                // zero out Wins and Losses in each row
-                Console.WriteLine($"{nameof(BuildTables)} method -- Creating tables and zeroing the Win and Loss counts...");
-
-                using (SQLiteCommand comm = new SQLiteCommand(conn))
                 {
-                    foreach (var num in tableNums)
+                    for (int b = a + 1; b < 52; b++)
                     {
-                        string tableStr = $"Tbl{num.ToString()}";
-                        using (SQLiteTransaction tran = conn.BeginTransaction())
+                        if (b == a) continue;
+
+                        tableid = Integer2Prime[a] * Integer2Prime[b];
+                        string tableName = $"Tbl{tableid}";
+                        CreateTableIfNotExists(tableName, conn);
+                        tableCount++;
+
+                        using (SQLiteCommand cmd = conn.CreateCommand())
                         {
+                            cmd.Transaction = conn.BeginTransaction();
 
-                            CreateTableIfNotExists(tableStr, conn);
-
-                            comm.Transaction = tran;
-                            foreach (var flopNum in flopPrimes)
-                            {
-                                ZeroRecord(tableStr, flopNum, comm);
-                            }
-                            CreateFreshIndex(_IndexNameSubscript, tableStr, comm);
-                            _IndexNameSubscript++;
-                            comm.Transaction.Commit();
-                        };
+                            for (int c = 0; c < 50; c++)
+                                for (int d = c + 1; d < 51; d++)
+                                    for (int e = d + 1; e < 52; e++)
+                                    {
+                                        if (a != b && a != c && a != d && a != e && b != c && b != d && b != e && c != d && c != e && d != e)
+                                        {
+                                            // Zero flop record - flopid 0	0
+                                            flopid = Integer2Prime[c] * Integer2Prime[d] * Integer2Prime[e];
+                                            ZeroRecord(tableName, flopid, cmd);
+                                            rowCount++;
+                                        }
+                                    }
+                            CreateFreshIndex(tableCount, tableName, cmd);
+                            cmd.Transaction.Commit();
+                        }
+                        // create index here
                     }
-                };
-
+                }
                 conn.Dispose();
+                tbs_rows = new Tuple<int, int>(tableCount, rowCount);
+                return tbs_rows;
             }
 
             void CreateTableIfNotExists(string tableName, SQLiteConnection conn)
@@ -158,6 +117,7 @@ namespace PokerConsoleApp
                 command.CommandText = $"CREATE TABLE IF NOT EXISTS {tableName} (Flop INT, W INT, L INT)";
                 command.ExecuteNonQuery();
             }
+           
             int ZeroRecord(string tableString, long flopPrime, SQLiteCommand cmd)
             {
                 cmd.CommandText = $"INSERT INTO {tableString} "
@@ -186,10 +146,18 @@ namespace PokerConsoleApp
             if (IsDatabaseInitialized(playerCount))
             {
                 Console.WriteLine($"Database for {playerCount} players is initialized and passed integrity checks.");
+                UtilityMethods.GetKeyPress();
             }
             else
             {
-                BuildTables2(playerCount);
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+                Console.WriteLine($"Database for {playerCount} is being built now...");
+                var countsTuple = BuildTables(playerCount);
+                sw.Stop();
+                Console.WriteLine($"Tables Created: {countsTuple.Item1} Rows Created: {countsTuple.Item2}");
+                Console.WriteLine($"Database {playerCount} was built in {sw.ElapsedMilliseconds / 60_000} minutes.");
+                UtilityMethods.GetKeyPress();
             }
         }
 

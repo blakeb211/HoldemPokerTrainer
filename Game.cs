@@ -1,6 +1,7 @@
 ﻿using ConsoleTables;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace PokerConsoleApp
 {
@@ -39,12 +40,17 @@ namespace PokerConsoleApp
                 // Find individual players' best hand out of all possible
                 // combos of hole, flop, turn, and river cards
                 Hand.Build21Hands(b.Players[playerIndex].Hole, b.Cards, ref _allPossibleHands);
+                Debug.Assert(_allPossibleHands.Count == 21);
                 _winningHandIndices = Hand.FindBestHand(_allPossibleHands);
+                b.Players[playerIndex].BestHand = _allPossibleHands[_winningHandIndices[0]];
+                b.Players[playerIndex].BestHand.Sort();
                 _bestHands.Add(_allPossibleHands[_winningHandIndices[0]]);
+                _winningHandIndices.Clear();
+                _allPossibleHands.Clear();
             }
-
+            
+            Debug.Assert(_bestHands.Count == Program.PlayerCount);
             List<int> winningPlayerIndices = Hand.FindBestHand(_bestHands);
-
             // mark the winner(s)
             foreach (var wi in winningPlayerIndices)
                 b.Players[wi].IsWinner = true;
