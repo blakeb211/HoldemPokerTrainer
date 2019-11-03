@@ -31,7 +31,7 @@ namespace PokerConsoleApp
         public static int SimulateGames(int playerCount, int targetGameCount)
         {
             // total games to be simulated (from user input)
-            int recordsTotal = targetGameCount;
+            recordsTotal = targetGameCount;
 
             // open connection to the database
             conn = SqliteMethods.CreateConnection(playerCount);
@@ -42,9 +42,6 @@ namespace PokerConsoleApp
             // play with thread priorities to get optimal balance of adding and writing GameRecords
             // on your system
             Console.WriteLine("Starting producer and consumer threads...");
-            producerThread1.Priority = ThreadPriority.Lowest;
-            producerThread2.Priority = ThreadPriority.Lowest;
-            consumerThread.Priority = ThreadPriority.Highest;
 
             producerThread1.Start();
             consumerThread.Start();
@@ -53,10 +50,9 @@ namespace PokerConsoleApp
             producerThread2.Priority = ThreadPriority.Lowest;
             consumerThread.Priority = ThreadPriority.Highest;
 
-            Thread.Sleep(1000);
             while (true)
             {
-                if (consumerThread.ThreadState == ThreadState.Stopped && producerThread1.ThreadState == ThreadState.Stopped && producerThread2.ThreadState == ThreadState.Stopped)
+                if (consumerThread.ThreadState == ThreadState.Stopped && recordsWritten >= recordsTotal)
                 {
                     timer.StopTime();
                     Thread.Sleep(1000);

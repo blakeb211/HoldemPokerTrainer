@@ -12,7 +12,7 @@ namespace PokerConsoleApp
         {
             Console.WriteLine(Directory.GetCurrentDirectory().ToString());
             Console.ReadLine();
-            SqliteMethods.InitDatabaseIfNeeded(PlayerCount);
+            //SqliteMethods.InitDatabaseIfNeeded(PlayerCount);
             DisplayMenu();
 
         }
