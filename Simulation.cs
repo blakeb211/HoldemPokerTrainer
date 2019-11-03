@@ -30,6 +30,10 @@ namespace PokerConsoleApp
 
         public static int SimulateGames(int playerCount, int targetGameCount)
         {
+            //Check if we need to build sqlite tables for the first time.
+            SqliteMethods.InitDatabaseIfNeeded(playerCount);
+            Console.WriteLine("Press any key to continue!");
+            Console.ReadKey();
             // total games to be simulated (from user input)
             recordsTotal = targetGameCount;
 
@@ -82,25 +86,8 @@ namespace PokerConsoleApp
 
                 b.DealGame();
                 _dealCount++;
-                List<Hand> bestHands = new List<Hand> { };
-                List<Hand> _allPossibleHands = new List<Hand>(21);
-                List<int> _winningHandIndices;
-
-                for (int playerIndex = 0; playerIndex < Program.PlayerCount; playerIndex++)
-                {
-                    // Find individual players' best hand out of all possible
-                    // combos of hole, flop, turn, and river cards
-                    Hand.Build21Hands(b.Players[playerIndex].Hole, b.Cards, ref _allPossibleHands);
-                    _winningHandIndices = Hand.FindBestHand(_allPossibleHands);
-                    bestHands.Add(_allPossibleHands[_winningHandIndices[0]]);
-                }
-
-                List<int> winningPlayerIndices = Hand.FindBestHand(bestHands);
-
-                // mark the winner(s)
-                foreach (var wi in winningPlayerIndices)
-                    b.Players[wi].IsWinner = true;
-
+                Game.CompleteGame(b,out List<Hand> bestHands);
+                
                 // Calculate unique primes and add GameRecord to the BlockingCollection
                 for (int playerIndex = 0; playerIndex < Program.PlayerCount; playerIndex++)
                 {
@@ -126,6 +113,8 @@ namespace PokerConsoleApp
             } while (recordsAdded < recordsTotal);
             Console.WriteLine("Producer thread ended");
         }
+
+
 
         public static void RecordConsumer()
         {

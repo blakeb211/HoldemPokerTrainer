@@ -10,9 +10,9 @@ namespace PokerConsoleApp
 
         static void Main()
         {
-            Console.WriteLine(Directory.GetCurrentDirectory().ToString());
+            Console.WriteLine($"Current Directory: \n\t\tDirectory.GetCurrentDirectory().ToString()");
             Console.ReadLine();
-            //SqliteMethods.InitDatabaseIfNeeded(PlayerCount);
+         
             DisplayMenu();
 
         }
