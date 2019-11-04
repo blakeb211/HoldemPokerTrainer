@@ -21,16 +21,6 @@ namespace PokerConsoleApp
             PlayerCount = 4;
         }
 
-        public static void DebugSimulation()
-        {
-            var watch = new System.Diagnostics.Stopwatch();
-            watch.Start();
-            int games_to_simulate = 5000;
-            Simulation.SimulateGames(PlayerCount, games_to_simulate);
-            watch.Stop();
-            Console.WriteLine($"Total Execution Time: {watch.ElapsedMilliseconds / 60000.0 } min");
-        }
-
         public static void DisplayMenu()
         {
             bool _exitFlag = false;

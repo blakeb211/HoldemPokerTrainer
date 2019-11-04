@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Data.SQLite;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace PokerConsoleApp
 {
@@ -26,7 +27,7 @@ namespace PokerConsoleApp
         private static Thread producerThread = new Thread(tProd);
         private static Thread consumerThread = new Thread(tCons);
 
-        public static int SimulateGames(int playerCount, int targetGameCount)
+        public static async void SimulateGames(int playerCount, int targetGameCount)
         {
             //Check if we need to build sqlite tables for the first time.
             SqliteMethods.InitDatabaseIfNeeded(playerCount);
@@ -55,12 +56,13 @@ namespace PokerConsoleApp
 
             while (true)
             {
+                // non blocking pause
+                await Task.Delay(5000).ConfigureAwait(false);
                 if (consumerThread.ThreadState == ThreadState.Stopped &&
                     recordsWritten >= recordsTotal &&
                     producerThread.ThreadState == ThreadState.Stopped)
                 {
                     timer.StopTime();
-                    Thread.Sleep(1000);
                     break;
                 }
             }
