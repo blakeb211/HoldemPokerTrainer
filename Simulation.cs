@@ -23,7 +23,7 @@ namespace PokerConsoleApp
         // producers and consumers
         private static ThreadStart tProd = new ThreadStart(RecordProducer);
         private static ThreadStart tCons = new ThreadStart(RecordConsumer);
-        private static Thread producerThread1 = new Thread(tProd);
+        private static Thread producerThread = new Thread(tProd);
         private static Thread consumerThread = new Thread(tCons);
 
         public static int SimulateGames(int playerCount, int targetGameCount)
@@ -45,16 +45,19 @@ namespace PokerConsoleApp
             // on your system
             Console.WriteLine("Starting producer and consumer threads...");
 
-            producerThread1.Start();
+            // set thread priority
+            producerThread.Priority = ThreadPriority.Lowest;
+            consumerThread.Priority = ThreadPriority.Highest;
+            producerThread.Start();
             consumerThread.Start();
-            producerThread1.Priority = ThreadPriority.Lowest;
+            producerThread.Priority = ThreadPriority.Lowest;
             consumerThread.Priority = ThreadPriority.Highest;
 
             while (true)
             {
                 if (consumerThread.ThreadState == ThreadState.Stopped &&
                     recordsWritten >= recordsTotal &&
-                    producerThread1.ThreadState == ThreadState.Stopped)
+                    producerThread.ThreadState == ThreadState.Stopped)
                 {
                     timer.StopTime();
                     Thread.Sleep(1000);
