@@ -57,7 +57,8 @@ namespace PokerConsoleApp
             while (true)
             {
                 // non blocking pause
-                await Task.Delay(5000).ConfigureAwait(false);
+                await Task.Delay(10_000).ConfigureAwait(false);
+                Console.WriteLine($"Main thread {Thread.CurrentThread.ManagedThreadId} returning from pause");
                 if (consumerThread.ThreadState == ThreadState.Stopped &&
                     recordsWritten >= recordsTotal &&
                     producerThread.ThreadState == ThreadState.Stopped)
@@ -69,17 +70,24 @@ namespace PokerConsoleApp
 
             Console.WriteLine($"Runtime duration: {timer.Result().TotalMinutes} minutes");
             conn.Dispose();
-            return 0;
         }
 
-        public static void RecordProducer()
-        {
-            // Record producer simulates a game and adds the result to a BlockingCollection
-            int _dealCount = 0;
-            Board b = new Board(Program.PlayerCount);
+        public static async void RecordProducer()
+        {   
+
+                // Record producer simulates a game and adds the result to a BlockingCollection
+                int _dealCount = 0;
+                Board b = new Board(Program.PlayerCount);
 
             do
             {
+                // check if need to sleep
+                if (recordsAdded - recordsWritten > 1_000_000)
+                {
+                    Console.WriteLine($"Pausing Producer Thread {Thread.CurrentThread.ManagedThreadId} for 120 s");
+                    await Task.Delay(80_000).ConfigureAwait(true);
+                }
+
                 // reset deck every 2 deals
                 if ((_dealCount + 1) % 2 == 0)
                 {
