@@ -11,7 +11,7 @@ namespace PokerConsoleApp
 
         public List<Player> Players { get; private set; }
 
-        public List<Card> Deck { get; set; }
+        public List<Card> Deck { get; }
 
         public Board(int playerCount)
         {

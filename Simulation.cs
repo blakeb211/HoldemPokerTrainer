@@ -25,7 +25,6 @@ namespace PokerConsoleApp
         private static ThreadStart tProd = new ThreadStart(RecordProducer);
         private static ThreadStart tCons = new ThreadStart(RecordConsumer);
         private static Thread producerThread1 = new Thread(tProd);
-        private static Thread producerThread2 = new Thread(tProd);
         private static Thread consumerThread = new Thread(tCons);
 
         public static int SimulateGames(int playerCount, int targetGameCount)
@@ -49,14 +48,14 @@ namespace PokerConsoleApp
 
             producerThread1.Start();
             consumerThread.Start();
-            producerThread2.Start();
             producerThread1.Priority = ThreadPriority.Lowest;
-            producerThread2.Priority = ThreadPriority.Lowest;
             consumerThread.Priority = ThreadPriority.Highest;
 
             while (true)
             {
-                if (consumerThread.ThreadState == ThreadState.Stopped && recordsWritten >= recordsTotal)
+                if (consumerThread.ThreadState == ThreadState.Stopped &&
+                    recordsWritten >= recordsTotal && 
+                    producerThread1.ThreadState == ThreadState.Stopped)
                 {
                     timer.StopTime();
                     Thread.Sleep(1000);
@@ -86,7 +85,7 @@ namespace PokerConsoleApp
 
                 b.DealGame();
                 _dealCount++;
-                Game.CompleteGame(b,out List<Hand> bestHands);
+                Game.CompleteGame(b);
                 
                 // Calculate unique primes and add GameRecord to the BlockingCollection
                 for (int playerIndex = 0; playerIndex < Program.PlayerCount; playerIndex++)

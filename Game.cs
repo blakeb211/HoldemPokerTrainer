@@ -14,13 +14,13 @@ namespace PokerConsoleApp
             {
                 Board b = new Board(Program.PlayerCount);
                 b.DealGame();
-                CompleteGame(b, out List<Hand> bestHands);
+                CompleteGame(b);
                 GameState state = GameState.FLOP_DEALT;
 
                 while (state < GameState.GAME_OVER)
                 {
                     Console.Clear();
-                    Console.WriteLine(BuildGameTable(b, Program.PlayerCount, state, bestHands));
+                    Console.WriteLine(BuildGameTable(b, state));
                     UtilityMethods.GetKeyPress();
                     state++;
                 }
@@ -29,9 +29,9 @@ namespace PokerConsoleApp
             }
         }
 
-        internal static void CompleteGame(Board b, out List<Hand> _bestHands)
+        internal static void CompleteGame(Board b)
         {
-            _bestHands = new List<Hand> { };
+            List<Hand> _bestHands = new List<Hand> { };
             List<Hand> _allPossibleHands = new List<Hand>(21);
             List<int> _winningHandIndices;
 
@@ -42,8 +42,11 @@ namespace PokerConsoleApp
                 Hand.Build21Hands(b.Players[playerIndex].Hole, b.Cards, ref _allPossibleHands);
                 Debug.Assert(_allPossibleHands.Count == 21);
                 _winningHandIndices = Hand.FindBestHand(_allPossibleHands);
+                // store best hand to the player object and sort it
                 b.Players[playerIndex].BestHand = _allPossibleHands[_winningHandIndices[0]];
                 b.Players[playerIndex].BestHand.Sort();
+                // store best hand to the _bestHands list so that the winning players can be 
+                // found later from it
                 _bestHands.Add(_allPossibleHands[_winningHandIndices[0]]);
                 _winningHandIndices.Clear();
                 _allPossibleHands.Clear();
@@ -56,7 +59,7 @@ namespace PokerConsoleApp
                 b.Players[wi].IsWinner = true;
         }
 
-        internal static string BuildGameTable(Board b, int num_players, GameState state, List<Hand> bestHands)
+        internal static string BuildGameTable(Board b, GameState state)
         {
             var tblPlayers = new ConsoleTable("Player", "Hole Cards", "Best Hand", "IsWinner");
             var   tblBoard = new ConsoleTable("Flop", "Turn", "River");
@@ -90,7 +93,7 @@ namespace PokerConsoleApp
                     for (int i = 0; i < b.Players.Count; i++)
                     {
                         string holeStr = $"{b.Players[i].Hole[0]} {b.Players[i].Hole[1]}";
-                        tblPlayers.AddRow(i, holeStr, $"{bestHands[i]}", b.Players[i].IsWinner.ToString());
+                        tblPlayers.AddRow(i, holeStr, $"{b.Players[i].BestHand}", b.Players[i].IsWinner.ToString());
                     }
                     tblBoard.AddRow($"{b.Cards[0]} {b.Cards[1]} {b.Cards[2]}", $"{b.Cards[3]}", $"{b.Cards[4]}");
                     break;
