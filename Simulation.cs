@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Threading;
 
@@ -54,7 +53,7 @@ namespace PokerConsoleApp
             while (true)
             {
                 if (consumerThread.ThreadState == ThreadState.Stopped &&
-                    recordsWritten >= recordsTotal && 
+                    recordsWritten >= recordsTotal &&
                     producerThread1.ThreadState == ThreadState.Stopped)
                 {
                     timer.StopTime();
@@ -86,7 +85,7 @@ namespace PokerConsoleApp
                 b.DealGame();
                 _dealCount++;
                 Game.CompleteGame(b);
-                
+
                 // Calculate unique primes and add GameRecord to the BlockingCollection
                 for (int playerIndex = 0; playerIndex < Program.PlayerCount; playerIndex++)
                 {

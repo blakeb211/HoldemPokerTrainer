@@ -33,7 +33,7 @@ namespace PokerConsoleApp
                     Console.WriteLine($"\t\t+{_files[i].Name} , {_files[i].Length / 1024 / 1024} megabytes");
                 }
             }
-            
+
             bool IsDatabaseInitialized(int playerCount)
             {
                 // this function needs improved to detect partial databases
@@ -57,7 +57,7 @@ namespace PokerConsoleApp
                 return (check0 == true) ? true : false;
             }
 
-            Tuple<int,int> BuildTables(int playerCount)
+            Tuple<int, int> BuildTables(int playerCount)
             {
                 //each table has a different set of flops available
                 SQLiteConnection conn = CreateConnection(playerCount);
@@ -117,7 +117,7 @@ namespace PokerConsoleApp
                 command.CommandText = $"CREATE TABLE IF NOT EXISTS {tableName} (Flop INT, W INT, L INT)";
                 command.ExecuteNonQuery();
             }
-           
+
             int ZeroRecord(string tableString, long flopPrime, SQLiteCommand cmd)
             {
                 cmd.CommandText = $"INSERT INTO {tableString} "

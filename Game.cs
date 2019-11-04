@@ -51,7 +51,7 @@ namespace PokerConsoleApp
                 _winningHandIndices.Clear();
                 _allPossibleHands.Clear();
             }
-            
+
             Debug.Assert(_bestHands.Count == Program.PlayerCount);
             List<int> winningPlayerIndices = Hand.FindBestHand(_bestHands);
             // mark the winner(s)
@@ -62,12 +62,12 @@ namespace PokerConsoleApp
         internal static string BuildGameTable(Board b, GameState state)
         {
             var tblPlayers = new ConsoleTable("Player", "Hole Cards", "Best Hand", "IsWinner");
-            var   tblBoard = new ConsoleTable("Flop", "Turn", "River");
+            var tblBoard = new ConsoleTable("Flop", "Turn", "River");
 
-            switch(state)
+            switch (state)
             {
                 case GameState.HOLE_CARDS_DEALT:
-                    for(int i = 0; i < b.Players.Count; i++)
+                    for (int i = 0; i < b.Players.Count; i++)
                     {
                         string holeStr = $"{b.Players[i].Hole[0]} {b.Players[i].Hole[1]}";
                         tblPlayers.AddRow(i, holeStr, "   ", "    ");
