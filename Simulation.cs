@@ -14,11 +14,17 @@ namespace PokerConsoleApp
         private static SQLiteCommand command;
         // total games to be simulated (from user input)
         private static int recordsTotal;
-        // counter for games that have been simulated by the RecordProducer threads
+        private static readonly object recordsTotalLock = new object();
+        // Producer thread updates recordsAdded number; main thread reads it
         private static int recordsAdded = 0;
+        private static readonly object recordsAddedLock = new object();
         // counter for games that have been inserted into database by RecordConsumer threads
+        // only RecordConsumer views this value
         private static int recordsWritten = 0;
-        // when recordsWritten % gamesPerTransaction == 0, commit the sqlite transaction and start a new one
+        // shared value updated by the consumer thread and read by the producer thread
+        private static int difference = 0;
+        private static readonly object differenceLock = new object();
+        // game records per SQLite transaction
         private static int gamesPerTransaction = 10_000;
 
         // producers and consumers
@@ -49,18 +55,18 @@ namespace PokerConsoleApp
             // set thread priority
             producerThread.Priority = ThreadPriority.Lowest;
             consumerThread.Priority = ThreadPriority.Highest;
+            producerThread.Name = "Producer";
+            consumerThread.Name = "Consumer";
             producerThread.Start();
             consumerThread.Start();
-            producerThread.Priority = ThreadPriority.Lowest;
-            consumerThread.Priority = ThreadPriority.Highest;
+
 
             while (true)
             {
                 // non blocking pause
                 await Task.Delay(10_000).ConfigureAwait(false);
-                Console.WriteLine($"Main thread {Thread.CurrentThread.ManagedThreadId} returning from pause");
-                if (consumerThread.ThreadState == ThreadState.Stopped &&
-                    recordsWritten >= recordsTotal &&
+                Console.WriteLine($"Main thread {Thread.CurrentThread.Name} returning from pause");
+                if (consumerThread.ThreadState == ThreadState.Stopped &
                     producerThread.ThreadState == ThreadState.Stopped)
                 {
                     timer.StopTime();
@@ -72,20 +78,28 @@ namespace PokerConsoleApp
             conn.Dispose();
         }
 
-        public static async void RecordProducer()
-        {   
+        public static void RecordProducer()
+        {
 
-                // Record producer simulates a game and adds the result to a BlockingCollection
-                int _dealCount = 0;
-                Board b = new Board(Program.PlayerCount);
-
+            // Record producer simulates a game and adds the result to a BlockingCollection
+            int _dealCount = 0;
+            Board b = new Board(Program.PlayerCount);
+            // read recordsTotal once at the start
+            int _recordsTotal = 0;
+            lock (recordsTotalLock)
+            {
+                _recordsTotal = recordsTotal;
+            }
             do
             {
                 // check if need to sleep
-                if (recordsAdded - recordsWritten > 1_000_000)
+                lock (differenceLock)
                 {
-                    Console.WriteLine($"Pausing Producer Thread {Thread.CurrentThread.ManagedThreadId} for 120 s");
-                    await Task.Delay(80_000).ConfigureAwait(true);
+                    if (difference > 500_000)
+                    {
+                        Console.WriteLine($"Pausing Producer Thread {Thread.CurrentThread.Name} for 40 s");
+                        Thread.Sleep(40_000);
+                    }
                 }
 
                 // reset deck every 2 deals
@@ -114,24 +128,35 @@ namespace PokerConsoleApp
                     {
                         if (collection.TryAdd(record, 3) == true)
                         {
-                            recordsAdded++;
-                            break;
+                            lock (recordsAddedLock)
+                            {
+                                recordsAdded++;
+                                break;
+                            }
                         }
                     }
                 }
 
+                lock (recordsAddedLock)
+                {
+                    if (recordsAdded >= _recordsTotal) { break; }
+                }
 
-            } while (recordsAdded < recordsTotal);
+            } while (true);
             Console.WriteLine("Producer thread ended");
         }
-
-
 
         public static void RecordConsumer()
         {
             // Record consumer writes records to database
             command = conn.CreateCommand();
             command.Transaction = conn.BeginTransaction();
+            // read recordsTotal once a the start
+            int _recordsTotal = 0;
+            lock (recordsTotalLock)
+            {
+                _recordsTotal = recordsTotal;
+            }
             do
             {
                 // Execute Insert command on database, one row per player
@@ -148,11 +173,18 @@ namespace PokerConsoleApp
                     command.Transaction.Commit();
                     command = conn.CreateCommand();
                     command.Transaction = conn.BeginTransaction();
-                    Console.WriteLine($"Records Added: {String.Format("{0:n0}", recordsAdded)}  " +
-                        $"Records Written: {String.Format("{0:n0}", recordsWritten)} Difference: {String.Format("{0:n0}", recordsAdded - recordsWritten)}");
-
+                    lock (recordsAddedLock)
+                    {
+                        Console.WriteLine($"Records Added: {String.Format("{0:n0}", recordsAdded)}  " +
+                            $"Records Written: {String.Format("{0:n0}", recordsWritten)} Difference: {String.Format("{0:n0}", recordsAdded - recordsWritten)}");
+                        lock (differenceLock)
+                        {
+                            difference = recordsAdded - recordsWritten;
+                        }
+                    }
                 }
-            } while (recordsWritten < recordsTotal);
+            } while (recordsWritten < _recordsTotal);
+
             // Inevitably we broke out of loop with a partial transaction. Flush it to disk.
             if (command.Transaction != null)
             {
@@ -166,7 +198,7 @@ namespace PokerConsoleApp
             Console.WriteLine("Record writing thread ended.");
         }
 
-        public struct GameRecord
+        public class GameRecord
         {
             public long holeUniquePrime;
             public long flopUniquePrime;
