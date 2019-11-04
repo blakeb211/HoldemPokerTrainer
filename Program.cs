@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Threading;
 
 namespace PokerConsoleApp
 {
@@ -57,12 +56,12 @@ namespace PokerConsoleApp
                         case 2:
                             Game.PlayGame();
                             UtilityMethods.GetKeyPress();
-                            Thread.Sleep(1000);
                             break;
                         case 3:
                             Console.WriteLine("Enter number of players (2 to 8):");
+                            // update value of Program.PlayerCount for use by other methods
                             PlayerCount = UtilityMethods.GetIntegerFromUser(2, 8);
-                            Thread.Sleep(1000);
+                            UtilityMethods.GetKeyPress();
                             break;
                         case 4:
                             SqliteMethods.ShowDatabaseStatistics();

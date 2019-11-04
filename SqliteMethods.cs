@@ -40,7 +40,6 @@ namespace PokerConsoleApp
 
                 var conn = CreateConnection(playerCount);
                 bool check0 = false;
-                bool check1 = false;
                 using (var tran = conn.BeginTransaction())
                 {
                     var cmd = conn.CreateCommand();
@@ -185,6 +184,52 @@ namespace PokerConsoleApp
             Console.WriteLine($"Connection created to {datasource}");
             return conn;
         }
+
+        internal static long CountTotalGamesInDatabase()
+        {
+            // Calc total of wins and losses columns for all tables.
+            // This tells us how many games have already been simulated.
+            long total = 0;
+            var conn = CreateConnection(Program.PlayerCount);
+            SQLiteCommand cmd = new SQLiteCommand(conn);
+            cmd.Transaction = conn.BeginTransaction();
+
+            // read in table names
+            Console.WriteLine("Reading table names from the database...");
+            cmd.CommandText = "SELECT * FROM sqlite_master " +
+                        "WHERE type = 'table';";
+            var drTables = cmd.ExecuteReader();
+            List<string> tableNames = new List<string>(19600);
+            while (drTables.Read())
+            {
+                // column with index 1 holds the string of the table name
+                tableNames.Add(drTables.GetString(1));
+            }
+            cmd.Transaction.Commit();
+            drTables.Close();
+
+            // read each row of each table and add the win and loss
+            // column to total
+            Console.WriteLine("Read each row of each table and add the wins and losses to the total...");
+            foreach (string tblName in tableNames)
+            {
+                cmd.Transaction = conn.BeginTransaction();
+                cmd.CommandText = $"SELECT * FROM {tblName} LIMIT 19600;";
+                var drRows = cmd.ExecuteReader();
+                while (drRows.Read())
+                {
+                    total += drRows.GetInt64(1);
+                    total += drRows.GetInt64(2);
+                }
+                cmd.Transaction.Commit();
+                drRows.Close();
+            }
+
+            cmd.Dispose();
+            conn.Close();
+            return total;
+        }
+
         public static int InsertResultItem(Simulation.GameRecord record, SQLiteCommand command)
         {
             string tableStr = $"Tbl{record.holeUniquePrime}";
@@ -215,49 +260,6 @@ namespace PokerConsoleApp
             return command.ExecuteNonQuery();
         }
 
-        public static List<long> Generate3CardUniquePrimes(Dictionary<Card, long> dict)
-        {
-            List<long> threeCardPrimes = new List<long>(2652);
-            List<Card> deck1 = Board.GetFreshDeck();
-            List<Card> deck2 = Board.GetFreshDeck();
-            List<Card> deck3 = Board.GetFreshDeck();
-
-            for (int i = 0; i < 50; i++)
-            {
-                for (int j = i + 1; j < 51; j++)
-                {
-                    for (int k = j + 1; k < 52; k++)
-                    {
-                        if (i != j && i != k && j != k)
-                        {
-                            ulong num = (ulong)dict[deck1[i]] * (ulong)dict[deck2[j]] * (ulong)dict[deck3[k]];
-                            threeCardPrimes.Add((long)num);
-                        }
-                    }
-                }
-            }
-            return threeCardPrimes;
-        }
-
-        public static List<long> Generate2CardUniquePrimes(Dictionary<Card, long> dict)
-        {
-            List<long> twoCardPrimes = new List<long>(2652);
-            List<Card> deck1 = Board.GetFreshDeck();
-            List<Card> deck2 = Board.GetFreshDeck();
-
-            for (int i = 0; i < 51; i++)
-            {
-                for (int j = i + 1; j < 52; j++)
-                {
-                    if (i == j) break;
-                    long num = (long)dict[deck1[i]] * (long)dict[deck2[j]];
-                    twoCardPrimes.Add(num);
-                }
-            }
-            return twoCardPrimes;
-        }
-
-
         public static void ReadData(SQLiteConnection conn)
         {
             SQLiteDataReader sqlite_datareader;
@@ -276,7 +278,9 @@ namespace PokerConsoleApp
 
         internal static void ShowDatabaseStatistics()
         {
-            throw new NotImplementedException();
+            string totalGamesStr = String.Format("{0:n0}", CountTotalGamesInDatabase());
+            Console.WriteLine($"Total Games in {Program.PlayerCount}-player database: {totalGamesStr}");
+            UtilityMethods.GetKeyPress();
         }
 
 

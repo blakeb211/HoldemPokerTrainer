@@ -4,7 +4,7 @@ namespace PokerConsoleApp
 {
     public class Player
     {
-        public List<Card> Hole { get; set; }
+        public List<Card> Hole { get; }
 
         public bool IsWinner { get; set; }
 
