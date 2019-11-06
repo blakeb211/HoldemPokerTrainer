@@ -2,6 +2,9 @@
 Train yourself for live Texas Holdem games by seeing the probability of winning change as more cards are dealt.
 
 PROJECT STATUS:
+
+Nov 6 2019.     Simulation is working much faster now (2-3 million records added to DB per minute). Next will rewrite the pre and post flop probability methods and upload the prebuilt databases.
+
 Oct 14 2019.	Implementing the idea below. Total number of unique hands (over 2 million) can be reduced to approximately 7462 hands (see Cactus
 				Kev's poker page for an explanation).
 
