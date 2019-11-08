@@ -63,37 +63,33 @@ namespace PokerConsoleApp
         {
             var tblPlayers = new ConsoleTable("Player", "Hole Cards", "Pre-Flop %", "Post-Flop %", "Best Hand", "IsWinner");
             var tblBoard = new ConsoleTable("Flop", "Turn", "River");
-
+            int playerIndex = 0;
             switch (state)
             {
                 case GameState.HOLE_CARDS_DEALT:
-                    for (int i = 0; i < b.Players.Count; i++)
+                    foreach (var p in b.Players)
                     {
-                        string holeStr = b.Players[i].GetHoleCardString();
-                        tblPlayers.AddRow(i, holeStr, "-", "-", "-", "-");
+                        tblPlayers.AddRow(playerIndex++, p.GetHoleCardsString(), "-", "-", "-", "-");
                     }
                     break;
                 case GameState.FLOP_DEALT:
-                    for (int i = 0; i < b.Players.Count; i++)
+                    foreach (var p in b.Players)
                     {
-                        string holeStr = b.Players[i].GetHoleCardString();
-                        tblPlayers.AddRow(i, holeStr, "-", "-", "-", "-");
+                        tblPlayers.AddRow(playerIndex++, p.GetHoleCardsString(), "-", "-", "-", "-");
                     }
                     tblBoard.AddRow($"{b.Cards[0]} {b.Cards[1]} {b.Cards[2]}", " ", " ");
                     break;
                 case GameState.TURN_DEALT:
-                    for (int i = 0; i < b.Players.Count; i++)
+                    foreach (var p in b.Players)
                     {
-                        string holeStr = b.Players[i].GetHoleCardString();
-                        tblPlayers.AddRow(i, holeStr, "   ", "    ");
+                        tblPlayers.AddRow(playerIndex++, p.GetHoleCardsString(), "-", "-", "-", "-");
                     }
                     tblBoard.AddRow($"{b.Cards[0]} {b.Cards[1]} {b.Cards[2]}", $"{b.Cards[3]}", " ");
                     break;
                 case GameState.RIVER_DEALT:
-                    for (int i = 0; i < b.Players.Count; i++)
+                    foreach (var p in b.Players)
                     {
-                        string holeStr = b.Players[i].GetHoleCardString();
-                        tblPlayers.AddRow(i, holeStr, $"{b.Players[i].BestHand}", b.Players[i].IsWinner.ToString());
+                        tblPlayers.AddRow(playerIndex, p.GetHoleCardsString(), "-", "-", p.BestHand, p.IsWinner);
                     }
                     tblBoard.AddRow($"{b.Cards[0]} {b.Cards[1]} {b.Cards[2]}", $"{b.Cards[3]}", $"{b.Cards[4]}");
                     break;
@@ -106,15 +102,72 @@ namespace PokerConsoleApp
 
         internal static int CalcPreFlopPercentage(Board b)
         {
-            throw new NotImplementedException();
+            void Main()
+            {
+                // wrap all players in a transaction
+                // preflop calc and postflop calc depending on if needed
+                // commit transaction
+            }
+
+            // Define other methods, classes and namespaces here
+            float CalculatePreFlopPercentage(long holeId, SQLiteCommand cmd)
+            {
+                /**********************************************
+                * Each table corresponds to a specific set of hole
+                * cards.Add up all the wins and losses of in a given
+                * table and take the ratio of wins to the total games
+                * that the holecards have participated in (wins + losses)
+                * to get the pre-flop probability of winning.
+                ***********************************************/
+                long _winTotal = 0;
+                long _lossTotal = 0;
+                // need to test this command in Sqlite DB Viewer
+                cmd.CommandText = $"SELECT (W, L) FROM Tbl{holeId};";
+                using (SQLiteDataReader dr = cmd.ExecuteReader())
+                {
+                    while (dr.Read())
+                    {
+                        // note the indices start at 0 because we only
+                        // selected the win and loss columns
+                        _winTotal += dr.GetInt64(0);
+                        _lossTotal += dr.GetInt64(1);
+                    }
+                }
+                return (float)(_winTotal / (_winTotal + _lossTotal));
+            }
+
+
         }
 
         internal static string CalcPostFlopPercentage(Board b)
         {
-            throw new NotImplementedException();
+            //CalculatePostFlopPercentage(long holeId, long flopId, SQLiteCommand cmd)
+            /**********************************************
+            * Each table corresponds to a specific set of hole
+            * cards. Each FlopId corresponds to a specific
+            * set of flop cards. Take the ratio of wins
+            * to the total games (wins + losses) that hole & flop combination
+            * has participated in to get the post-flop
+            * probability of winning.
+            ***********************************************/
+            foreach (var p in b.Players)
+            {
+                long _winTotal = 0;
+                long _lossTotal = 0;
+                // need to test this command in Sqlite DB Viewer
+                cmd.CommandText = $"SELECT (W, L) FROM Tbl{holeId} WHERE Flop = {flopId};";
+                using (SQLiteDataReader dr = cmd.ExecuteReader())
+                {
+                    while (dr.Read())
+                    {
+                        // note the indices start at 0 because we only
+                        // selected the win and loss columns
+                        _winTotal += dr.GetInt64(0);
+                        _lossTotal += dr.GetInt64(1);
+                    }
+                }
+                (float)(_winTotal / (_winTotal + _lossTotal));
+            }
         }
-
-
-
     }
 }

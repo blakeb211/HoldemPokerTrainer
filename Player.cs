@@ -27,7 +27,7 @@ namespace PokerConsoleApp
             return "" + Hole[0].ToString() + " " + Hole[1].ToString();
         }
 
-        internal string GetHoleCardString()
+        internal string GetHoleCardsString()
         {
             return $"{this.Hole[0]} {this.Hole[1]}";
         }
