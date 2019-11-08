@@ -15,11 +15,17 @@ namespace PokerConsoleApp
 
         public Hand(string s)
         {
+            if (s == null)
+                throw new ArgumentNullException($"{nameof(Hand)} method with parameter {nameof(s)}");
+            // Remove dashes from string if they are present.
+            // The fact that dashes are optional in the Hand(string) constructor makes it easier to 
+            // type out and re-read tests that use the constructor a lot.
+
             while (s.Contains('-'))
             {
                 s = s.Remove(s.IndexOf('-'), 1);
             }
-            Debug.Assert(s.Length == 10);
+            Trace.Assert(s.Length == 10);
             Cards = new List<Card>(5);
 
             for (int i = 0; i <= s.Length - 2; i += 2)
