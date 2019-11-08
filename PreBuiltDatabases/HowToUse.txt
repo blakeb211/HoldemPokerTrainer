@@ -1,0 +1,5 @@
+﻿Unzip and copy the pre-built databases into a folder named "Databases" in the same directory as the program file.
+
+This location is created by the program the first time you Simulate games, 
+so you could also let it create the folder and build an empty database 
+(which takes about 1.5 minutes) and then copy and paste the pre-build database over it.
