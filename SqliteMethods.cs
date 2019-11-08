@@ -291,7 +291,8 @@ namespace PokerConsoleApp
                     _lossTotal += dr.GetInt64(1);
                 }
             }
-            return (float)((float)_winTotal / (float)(_winTotal + _lossTotal));
+            // return odds of winning as a percentage of 100
+            return (float)(100.0 * (float)_winTotal / (float)(_winTotal + _lossTotal));
         }
 
         internal static float CalculatePostFlopPercentage(long holeId, long flopId, SQLiteCommand cmd)
@@ -318,7 +319,8 @@ namespace PokerConsoleApp
                     _lossTotal += dr.GetInt64(1);
                 }
             }
-            return (float)((float)_winTotal / (float)(_winTotal + _lossTotal));
+            // return odds of winning as a percentage of 100
+            return (float)(100.0 * (float)_winTotal / (float)(_winTotal + _lossTotal));
         }
 
     }

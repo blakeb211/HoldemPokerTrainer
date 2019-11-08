@@ -11,9 +11,9 @@ namespace PokerConsoleApp
 
         public Hand BestHand { get; set; }
 
-        public float PreFlopOdds { get; set; }
+        public string PreFlopOdds { get; set; }
 
-        public float PostFlopOdds { get; set; }
+        public string PostFlopOdds { get; set; }
 
         public Player()
         {

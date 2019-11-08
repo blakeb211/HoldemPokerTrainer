@@ -97,7 +97,7 @@ namespace PokerConsoleApp
                 case GameState.RIVER_DEALT:
                     foreach (var p in b.Players)
                     {
-                        tblPlayers.AddRow(playerIndex, p.GetHoleCardsString(), p.PreFlopOdds, p.PostFlopOdds, p.BestHand, p.IsWinner);
+                        tblPlayers.AddRow(playerIndex++, p.GetHoleCardsString(), p.PreFlopOdds, p.PostFlopOdds, p.BestHand, p.IsWinner);
                     }
                     tblBoard.AddRow($"{b.Cards[0]} {b.Cards[1]} {b.Cards[2]}", $"{b.Cards[3]}", $"{b.Cards[4]}");
                     break;
@@ -125,7 +125,7 @@ namespace PokerConsoleApp
 
                     using (SQLiteCommand cmd = conn.CreateCommand())
                     {
-                        p.PreFlopOdds = SqliteMethods.CalculatePreFlopPercentage(holeId, cmd);
+                        p.PreFlopOdds = String.Format("{0:0.0}", SqliteMethods.CalculatePreFlopPercentage(holeId, cmd));
                     }
                 }
                 tran.Commit();
@@ -150,7 +150,7 @@ namespace PokerConsoleApp
 
                     using (SQLiteCommand cmd = conn.CreateCommand())
                     {
-                       p.PostFlopOdds = SqliteMethods.CalculatePostFlopPercentage(holeId, flopId, cmd);
+                       p.PostFlopOdds = String.Format("{0:0.0}", SqliteMethods.CalculatePostFlopPercentage(holeId, flopId, cmd));
                     }
                 }
                 tran.Commit();
