@@ -64,7 +64,7 @@ namespace PokerConsoleApp
             while (true)
             {
                 // non blocking pause
-                await Task.Delay(120_000).ConfigureAwait(false);
+                await Task.Delay(120_000).ConfigureAwait(true);
                 Console.WriteLine($"Main thread {Thread.CurrentThread.Name} returning from pause");
                 if (consumerThread.ThreadState == ThreadState.Stopped &
                     producerThread.ThreadState == ThreadState.Stopped)

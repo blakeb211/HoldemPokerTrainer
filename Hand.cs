@@ -141,6 +141,9 @@ namespace PokerConsoleApp
 
         public bool Contains(Card other)
         {
+            if (other == null)
+                throw new ArgumentNullException($"{nameof(other)} passed to {nameof(Contains)}");
+
             bool retVal = false;
             int otherHashcode = other.GetHashCode();
             foreach (var cc in Cards)

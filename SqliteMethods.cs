@@ -179,6 +179,7 @@ namespace PokerConsoleApp
             catch (Exception ex)
             {
                 Console.WriteLine("CreateConnection - Exception Msg: " + ex.ToString());
+                throw;
             }
             Console.WriteLine($"Connection created to {datasource}");
             return conn;
