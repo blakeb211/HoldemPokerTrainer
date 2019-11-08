@@ -11,3 +11,6 @@ dotnet_diagnostic.CA1305.severity = suggestion
 
 # IDE0059: Unnecessary assignment of a value
 csharp_style_unused_value_assignment_preference = discard_variable:suggestion
+
+# CA1307: Specify StringComparison
+dotnet_diagnostic.CA1307.severity = suggestion

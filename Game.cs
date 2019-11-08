@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Diagnostics;
+using System.Text;
 
 namespace PokerConsoleApp
 {
@@ -105,7 +106,18 @@ namespace PokerConsoleApp
                     Console.Clear();
                     break;
             }
-            return tblBoard.ToString() + tblPlayers.ToString();
+
+            // Remove "Count :" from bottom of ConsoleTable for the board
+            string boardStr = tblBoard.ToString();
+            int countPos = boardStr.LastIndexOf('C');
+            boardStr = boardStr.Substring(0, countPos - 1);
+
+            // Remove "Count :" from bottom of ConsoleTables for the players
+            string playerStr = tblPlayers.ToString();
+            countPos = playerStr.LastIndexOf('C');
+            playerStr = playerStr.Substring(0, countPos - 1);
+
+            return boardStr + "\n" + playerStr;
         }
 
         internal static void AssignPreFlopPercentages(Board b)
