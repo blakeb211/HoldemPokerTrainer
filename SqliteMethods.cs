@@ -266,7 +266,60 @@ namespace PokerConsoleApp
             UtilityMethods.GetKeyPress();
         }
 
+        internal static float CalculatePreFlopPercentage(long holeId, SQLiteCommand cmd)
+        {
+            /**********************************************
+            * Each table corresponds to a specific set of hole
+            * cards.Add up all the wins and losses of in a given
+            * table and take the ratio of wins to the total games
+            * that the holecards have participated in (wins + losses)
+            * to get the pre-flop probability of winning.
+            ***********************************************/
+            Trace.WriteLine($"{nameof(CalculatePreFlopPercentage)} method running with HoleId = {holeId}");
+            long _winTotal = 0;
+            long _lossTotal = 0;
+            // need to test this command in Sqlite DB Viewer
+            cmd.CommandText = $"SELECT W, L FROM Tbl{holeId};";
+            using (SQLiteDataReader dr = cmd.ExecuteReader())
+            {
+                Trace.Assert(dr.HasRows == true);
+                while (dr.Read())
+                {
+                    // note the indices start at 0 because we only
+                    // selected the win and loss columns
+                    _winTotal += dr.GetInt64(0);
+                    _lossTotal += dr.GetInt64(1);
+                }
+            }
+            return (float)((float)_winTotal / (float)(_winTotal + _lossTotal));
+        }
 
+        internal static float CalculatePostFlopPercentage(long holeId, long flopId, SQLiteCommand cmd)
+        {
+            /**********************************************
+            * Each table corresponds to a specific set of hole
+            * cards. Each FlopId corresponds to a specific
+            * set of flop cards. Take the ratio of wins
+            * to the total games (wins + losses) that hole & flop combination
+            * has participated in to get the post-flop
+            * probability of winning.
+            ***********************************************/
+            long _winTotal = 0;
+            long _lossTotal = 0;
+            // need to test this command in Sqlite DB Viewer
+            cmd.CommandText = $"SELECT W, L FROM Tbl{holeId} WHERE Flop = {flopId};";
+            using (SQLiteDataReader dr = cmd.ExecuteReader())
+            {
+                while (dr.Read())
+                {
+                    // note the indices start at 0 because we only
+                    // selected the win and loss columns
+                    _winTotal += dr.GetInt64(0);
+                    _lossTotal += dr.GetInt64(1);
+                }
+            }
+            return (float)((float)_winTotal / (float)(_winTotal + _lossTotal));
+        }
 
     }
 }
