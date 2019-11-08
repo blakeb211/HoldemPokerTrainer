@@ -2,15 +2,17 @@
 Train yourself for live Texas Holdem games by seeing the probability of winning change as more cards are dealt.
 
 PROJECT STATUS:
-Oct 24 2019.	Added code to create a local 'databases' directory and check to see if they are already initialized before
+Nov 08 2019. 			Starting uploading pre-built databases with 3,000,000,000 records. Simulating games, the poker trainer, 				and the statistics are all working great.
+
+Oct 24 2019.			Added code to create a local 'databases' directory and check to see if they are already initialized before
 				rebuilding it. There is a database created for each number of players (2-8) in its own file. Each file has 1326 
 				tables, one for each possible set of pocket cards. Each of those tables has 22100 rows, one for each unique 
 				3-card flop. Each row records the Wins and Losses that hand has has simulated, which will make statistics easier
 				to calculate. Reading from the database should be much faster now but that hasn't been shown yet.
 
-				+ each database is 347 MB but they can be bzipped to about 65 MB for transferring over internet.
+				+ each database is 347 MB zipped - about 640 MB unzipped
 
-Oct 18 2019.	Implementing new database code. One database table per 2-card holecard pair. Each record will have a unique prime for the 3-card flop
+Oct 18 2019.			Implementing new database code. One database table per 2-card holecard pair. Each record will have a 					unique prime for the 3-card flop
 				and a count of wins and losses. Check the db before adding a record so that duplicate rows are note added like last time, which
 				made the db unnecessarily big and disorganized.
 				+can use an INTEGER column to store an 8 byte long in sqlite. Retrieve with the GetLong()?
@@ -26,8 +28,8 @@ Oct 15 2019.	Decide to do major rewrite to decrease line count and database read
 Oct 14 2019.	Implementing the idea below. Total number of unique hands (over 2 million) can be reduced to approximately 7462 hands (see Cactus
 				Kev's poker page for an explanation).
 
-Oct 7 2019.		Idea. Can make this faster by using Cactus Kev method of grouping certain types of hands that have same rank instead of recording
-				them all in the database. This will reduce (a) number of simulated games necessary to get good statistics and thus (b) 
+Oct 7 2019.			Idea. Can make this faster by using Cactus Kev method of grouping certain types of hands that have same 				rank instead of recording
+				them all in the database. This will reduce (a) number of simulated games necessary to get good 						statistics and thus (b) 
 				total simulation time and (c) time for retrieving statistics from the sqlite database
 
 Sept 7 2019.	Program works. Uses multi-threading and BlockingCollection to simulate games quickly and save them to a SQLite database.
