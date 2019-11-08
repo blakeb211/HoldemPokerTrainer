@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace PokerConsoleApp
 {
@@ -10,6 +11,10 @@ namespace PokerConsoleApp
 
         public Hand BestHand { get; set; }
 
+        public float PreFlopOdds { get; set; }
+
+        public float PostFlopOdds { get; set; }
+
         public Player()
         {
             this.IsWinner = false;
@@ -20,6 +25,11 @@ namespace PokerConsoleApp
         public override string ToString()
         {
             return "" + Hole[0].ToString() + " " + Hole[1].ToString();
+        }
+
+        internal string GetHoleCardString()
+        {
+            return $"{this.Hole[0]} {this.Hole[1]}";
         }
     }
 

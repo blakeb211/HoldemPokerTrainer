@@ -61,7 +61,7 @@ namespace PokerConsoleApp
 
         internal static string BuildGameTable(Board b, GameState state)
         {
-            var tblPlayers = new ConsoleTable("Player", "Hole Cards", "Best Hand", "IsWinner");
+            var tblPlayers = new ConsoleTable("Player", "Hole Cards", "Pre-Flop %", "Post-Flop %", "Best Hand", "IsWinner");
             var tblBoard = new ConsoleTable("Flop", "Turn", "River");
 
             switch (state)
@@ -69,22 +69,22 @@ namespace PokerConsoleApp
                 case GameState.HOLE_CARDS_DEALT:
                     for (int i = 0; i < b.Players.Count; i++)
                     {
-                        string holeStr = $"{b.Players[i].Hole[0]} {b.Players[i].Hole[1]}";
-                        tblPlayers.AddRow(i, holeStr, "   ", "    ");
+                        string holeStr = b.Players[i].GetHoleCardString();
+                        tblPlayers.AddRow(i, holeStr, "-", "-", "-", "-");
                     }
                     break;
                 case GameState.FLOP_DEALT:
                     for (int i = 0; i < b.Players.Count; i++)
                     {
-                        string holeStr = $"{b.Players[i].Hole[0]} {b.Players[i].Hole[1]}";
-                        tblPlayers.AddRow(i, holeStr, "   ", "    ");
+                        string holeStr = b.Players[i].GetHoleCardString();
+                        tblPlayers.AddRow(i, holeStr, "-", "-", "-", "-");
                     }
                     tblBoard.AddRow($"{b.Cards[0]} {b.Cards[1]} {b.Cards[2]}", " ", " ");
                     break;
                 case GameState.TURN_DEALT:
                     for (int i = 0; i < b.Players.Count; i++)
                     {
-                        string holeStr = $"{b.Players[i].Hole[0]} {b.Players[i].Hole[1]}";
+                        string holeStr = b.Players[i].GetHoleCardString();
                         tblPlayers.AddRow(i, holeStr, "   ", "    ");
                     }
                     tblBoard.AddRow($"{b.Cards[0]} {b.Cards[1]} {b.Cards[2]}", $"{b.Cards[3]}", " ");
@@ -92,7 +92,7 @@ namespace PokerConsoleApp
                 case GameState.RIVER_DEALT:
                     for (int i = 0; i < b.Players.Count; i++)
                     {
-                        string holeStr = $"{b.Players[i].Hole[0]} {b.Players[i].Hole[1]}";
+                        string holeStr = b.Players[i].GetHoleCardString();
                         tblPlayers.AddRow(i, holeStr, $"{b.Players[i].BestHand}", b.Players[i].IsWinner.ToString());
                     }
                     tblBoard.AddRow($"{b.Cards[0]} {b.Cards[1]} {b.Cards[2]}", $"{b.Cards[3]}", $"{b.Cards[4]}");
@@ -104,15 +104,17 @@ namespace PokerConsoleApp
             return tblBoard.ToString() + tblPlayers.ToString();
         }
 
-        internal static string GetPostFlopPercentage(Board b)
+        internal static int CalcPreFlopPercentage(Board b)
         {
             throw new NotImplementedException();
         }
 
-        internal static int GetPreFlopPercentage(Board b)
+        internal static string CalcPostFlopPercentage(Board b)
         {
             throw new NotImplementedException();
         }
+
+
 
     }
 }

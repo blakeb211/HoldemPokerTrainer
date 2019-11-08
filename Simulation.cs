@@ -25,7 +25,7 @@ namespace PokerConsoleApp
         private static int difference = 0;
         private static readonly object differenceLock = new object();
         // game records per SQLite transaction
-        private static int gamesPerTransaction = 10_000;
+        private static int gamesPerTransaction = 9_000;
 
         // producers and consumers
         private static ThreadStart tProd = new ThreadStart(RecordProducer);
@@ -64,7 +64,7 @@ namespace PokerConsoleApp
             while (true)
             {
                 // non blocking pause
-                await Task.Delay(10_000).ConfigureAwait(false);
+                await Task.Delay(120_000).ConfigureAwait(false);
                 Console.WriteLine($"Main thread {Thread.CurrentThread.Name} returning from pause");
                 if (consumerThread.ThreadState == ThreadState.Stopped &
                     producerThread.ThreadState == ThreadState.Stopped)
@@ -78,7 +78,7 @@ namespace PokerConsoleApp
             conn.Dispose();
         }
 
-        public static void RecordProducer()
+        public static async void RecordProducer()
         {
 
             // Record producer simulates a game and adds the result to a BlockingCollection
@@ -92,16 +92,22 @@ namespace PokerConsoleApp
             }
             do
             {
+                bool awaitFlag = false;
                 // check if need to sleep
                 lock (differenceLock)
                 {
+                    
                     if (difference > 500_000)
                     {
-                        Console.WriteLine($"Pausing Producer Thread {Thread.CurrentThread.Name} for 40 s");
-                        Thread.Sleep(40_000);
+                        Console.WriteLine($"Pausing Producer Thread {Thread.CurrentThread.Name} for 35 s");
+                        awaitFlag = true;
                     }
                 }
 
+                if (awaitFlag)
+                {
+                    await Task.Delay(35_000).ConfigureAwait(false);
+                }
                 // reset deck every 2 deals
                 if ((_dealCount + 1) % 2 == 0)
                 {
