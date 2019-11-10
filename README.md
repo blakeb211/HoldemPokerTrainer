@@ -2,13 +2,17 @@
 Train yourself for live Texas Holdem games by seeing the probability of winning change as more cards are dealt.
 
 PROJECT STATUS:
+Nov 10 2019.	Simulation code works and Poker training mode works. Screenshots in the screenshots folder. Statistics look good.
+		Improvements that could still be made would be a) using ConcurrentBag instead of BlockingCollection in the simulation
+		code to re-use GameRecord objects which would decrease GC pressure. b) Sometimes you have to hit a key and hit Enter 			twice during each stage of Poker Training Mode. c) At end of Simulating a number of games, the main thread doesn't 			return right away because it is on a 2 minute timer. d) Number of Outs a player has at each stage could be calculated 			and shown. e) No user interface. f) Database initialization code doens't warn the user not to quit during operation and 		doesn't detect partial or corrupted databases if hte user has quit prematurely in a previous use. g) Better database 			statistics could be printed when the Show Database Statistics menu option is selected. I am moving on to other projects 		once I upload the rest of the pre-build databases.
+
 Oct 24 2019.	Added code to create a local 'databases' directory and check to see if they are already initialized before
 				rebuilding it. There is a database created for each number of players (2-8) in its own file. Each file has 1326 
 				tables, one for each possible set of pocket cards. Each of those tables has 22100 rows, one for each unique 
 				3-card flop. Each row records the Wins and Losses that hand has has simulated, which will make statistics easier
-				to calculate. Reading from the database should be much faster now but that hasn't been shown yet.
+				to calculate. Reading from the database is much faster now.
 
-				+ each database is 347 MB but they can be bzipped to about 65 MB for transferring over internet.
+				
 
 Oct 18 2019.	Implementing new database code. One database table per 2-card holecard pair. Each record will have a unique prime for the 3-card flop
 				and a count of wins and losses. Check the db before adding a record so that duplicate rows are note added like last time, which
