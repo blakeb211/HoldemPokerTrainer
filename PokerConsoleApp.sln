@@ -4,13 +4,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 16.0.29102.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PokerConsoleApp", "PokerConsoleApp.csproj", "{A86D9174-86AA-4F90-A46E-FAB3322F2D1D}"
-	ProjectSection(ProjectDependencies) = postProject
-		{3A3031E4-3E77-4DBC-A4F9-3AA4D4592700} = {3A3031E4-3E77-4DBC-A4F9-3AA4D4592700}
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6552F773-4183-4309-AF3B-DD3AD63BD354}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PokerLib", "..\PokerDictionaries\PokerLib.csproj", "{3A3031E4-3E77-4DBC-A4F9-3AA4D4592700}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,14 +23,6 @@ Global
 		{A86D9174-86AA-4F90-A46E-FAB3322F2D1D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A86D9174-86AA-4F90-A46E-FAB3322F2D1D}.Release|x64.ActiveCfg = Release|x64
 		{A86D9174-86AA-4F90-A46E-FAB3322F2D1D}.Release|x64.Build.0 = Release|x64
-		{3A3031E4-3E77-4DBC-A4F9-3AA4D4592700}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3A3031E4-3E77-4DBC-A4F9-3AA4D4592700}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3A3031E4-3E77-4DBC-A4F9-3AA4D4592700}.Debug|x64.ActiveCfg = Release|Any CPU
-		{3A3031E4-3E77-4DBC-A4F9-3AA4D4592700}.Debug|x64.Build.0 = Release|Any CPU
-		{3A3031E4-3E77-4DBC-A4F9-3AA4D4592700}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3A3031E4-3E77-4DBC-A4F9-3AA4D4592700}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3A3031E4-3E77-4DBC-A4F9-3AA4D4592700}.Release|x64.ActiveCfg = Release|Any CPU
-		{3A3031E4-3E77-4DBC-A4F9-3AA4D4592700}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
