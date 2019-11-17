@@ -1,6 +1,8 @@
 # HoldemPokerTrainer
 Train yourself for live Texas Holdem games by seeing the probability of winning change as more cards are dealt.
 
+![what poker training mode looks like](https://github.com/blakeb211/HoldemPokerTrainer/screenshots/screenshot_poker training mode_3.JPG)
+
 PROJECT STATUS:
 Nov 10 2019.	Simulation code works and Poker training mode works. Screenshots in the screenshots folder. Statistics look good.
 		Improvements that could still be made would be a) using ConcurrentBag instead of BlockingCollection in the simulation
