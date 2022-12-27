@@ -16,5 +16,5 @@ For example, if you have pocket jacks and the flop is 2, 4, queen unsuited, what
 of winning a game with 4 other players? This program teaches you that.
 
 ♣️ ♦️ ♥️ ♠️
-# Goal of project
-This is one of two C# projects I've created. It is a "rapid working prototype."
+# Design rationale
+This is a "rapid working prototype" and not a tutorial on optimal C# design. It is the first of of two small projects that I've done in that language. 
