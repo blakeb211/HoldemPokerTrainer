@@ -21,4 +21,4 @@ game.
 
 ♣️ ♦️ ♥️ ♠️
 # Design rationale
-This is a **working prototype** and not a tutorial on optimal C# design.
+This is a **working prototype** and not a tutorial on optimal C# design. I'd be willing to re-write this in a different programming language if I had a good reason to.
