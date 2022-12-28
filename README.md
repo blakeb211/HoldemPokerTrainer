@@ -17,4 +17,4 @@ of winning a game with 4 other players? This program teaches you that.
 
 ♣️ ♦️ ♥️ ♠️
 # Design rationale
-This is a "rapid working prototype" and not a tutorial on optimal C# design. It is the first of of two small projects that I've done in that language. 
+This is a **working prototype** and not a tutorial on optimal C# design.
