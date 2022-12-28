@@ -15,6 +15,10 @@ The probabilities are calculated by running **SQL queries** on the database of s
 For example, if you have pocket jacks and the flop is 2, 4, queen unsuited, what are your chances
 of winning a game with 4 other players? This program teaches you that.
 
+# Use case
+Some of us have watched poker on TV and wondered how they come up with the live probabilities on screen... Others might be wanting to improve their poker
+game.
+
 ♣️ ♦️ ♥️ ♠️
 # Design rationale
 This is a **working prototype** and not a tutorial on optimal C# design.
